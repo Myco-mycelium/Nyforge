@@ -84,6 +84,11 @@ milestone per `engineering/ROADMAP.md`:
   StatusBar, NavigationRail, Sidebar, Toolbar, stat cards, an event
   log, quick actions, theme switching, a bound Do-not-disturb Toggle,
   and `$state:` substitution — the reference for the final product.
+- **The Security Center screen** — [`examples/nyrqis-shell/security-center.nstudio`](examples/nyrqis-shell/security-center.nstudio)
+  is the second Nyrqis workspace: security posture cards, a threat
+  event log, quick actions, and a lockdown Toggle bound to state with
+  a conditional behavior — designed to the same 4 px grid and
+  contract tables.
 
 ## What's still not there yet
 

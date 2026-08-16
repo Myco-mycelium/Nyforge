@@ -46,6 +46,13 @@ theme switching, a Do-not-disturb Toggle bound to state, a conditional
 behavior, and `$state:` substitution — all components/events/actions
 within the NUI v0.1 vocabulary (§4) and the contract tables.
 
+**New example:** `examples/nyrqis-shell/security-center.nstudio` — the
+second Nyrqis workspace: a 1440×900 Security Center on the same 4 px
+grid — posture status bar with a lockdown Toggle bound to state, stat
+cards (containers / capabilities / updates), a threat event log, quick
+actions, and a conditional lockdown behavior — 71 components, 4
+behaviors, 1 binding, all within the contract tables.
+
 ### What exists (cumulative)
 
 - The v0.4 milestone below (self-hosted Home + `$state:` substitution).
