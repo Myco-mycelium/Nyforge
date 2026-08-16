@@ -79,6 +79,11 @@ milestone per `engineering/ROADMAP.md`:
 - **A worked dashboard example** — [`examples/vault-dashboard/vault-dashboard.nstudio`](examples/vault-dashboard/vault-dashboard.nstudio)
   is a Vault Monitor designed to the design system: card hierarchy,
   bound state, a conditional behavior, and `$state:` substitution.
+- **The Nyrqis shell UI** — [`examples/nyrqis-shell/nyrqis-shell.nstudio`](examples/nyrqis-shell/nyrqis-shell.nstudio)
+  is the first draft of the shell itself: a 1440×900 workspace with
+  StatusBar, NavigationRail, Sidebar, Toolbar, stat cards, an event
+  log, quick actions, theme switching, a bound Do-not-disturb Toggle,
+  and `$state:` substitution — the reference for the final product.
 
 ## What's still not there yet
 

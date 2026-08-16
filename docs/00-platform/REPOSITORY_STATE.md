@@ -38,6 +38,14 @@ Vault Monitor dashboard designed to the system: 8 px layout grid,
 label/value card hierarchy, semantic status, a bound Toggle, and
 behaviors exercising both a conditional `IF` and `$state:` substitution.
 
+**New example:** `examples/nyrqis-shell/nyrqis-shell.nstudio` — the first
+draft of the Nyrqis shell UI itself (the final product the design work
+feeds): a 1440×900 workspace on the 4 px grid — StatusBar, NavigationRail,
+Sidebar, Toolbar, stat cards, event log, quick actions, Eclipse/Solar
+theme switching, a Do-not-disturb Toggle bound to state, a conditional
+behavior, and `$state:` substitution — all components/events/actions
+within the NUI v0.1 vocabulary (§4) and the contract tables.
+
 ### What exists (cumulative)
 
 - The v0.4 milestone below (self-hosted Home + `$state:` substitution).
