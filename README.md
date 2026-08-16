@@ -89,6 +89,11 @@ milestone per `engineering/ROADMAP.md`:
   event log, quick actions, and a lockdown Toggle bound to state with
   a conditional behavior — designed to the same 4 px grid and
   contract tables.
+- **The Vault Workspace screen** — [`examples/nyrqis-shell/vault-workspace.nstudio`](examples/nyrqis-shell/vault-workspace.nstudio)
+  is the third Nyrqis workspace: volume stat cards with a storage
+  usage bar, a volume list with quota indicators, quick actions, and
+  an auto-snapshot Toggle bound to state with a conditional pause
+  behavior.
 
 ## What's still not there yet
 

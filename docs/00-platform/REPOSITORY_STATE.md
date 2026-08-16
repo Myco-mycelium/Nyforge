@@ -53,6 +53,13 @@ cards (containers / capabilities / updates), a threat event log, quick
 actions, and a conditional lockdown behavior — 71 components, 4
 behaviors, 1 binding, all within the contract tables.
 
+**New example:** `examples/nyrqis-shell/vault-workspace.nstudio` — the
+third Nyrqis workspace: a 1440×900 Vault screen on the same 4 px grid —
+volume stat cards with a storage-usage progress bar, a six-row volume
+list with quota indicators, quick actions, and an auto-snapshot Toggle
+bound to state with a conditional pause behavior — 71 components, 4
+behaviors, 1 binding, all within the contract tables.
+
 ### What exists (cumulative)
 
 - The v0.4 milestone below (self-hosted Home + `$state:` substitution).
