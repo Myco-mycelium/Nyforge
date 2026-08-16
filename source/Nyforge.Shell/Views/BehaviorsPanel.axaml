@@ -8,11 +8,10 @@
   <!--
     Buttons/ComboBoxes inside the ItemsControl.ItemTemplate below need to
     reach commands and lists that live on the outer MainWindowViewModel,
-    not on the per-item BehaviorViewModel. Rather than the more error-prone
-    "$parent[Type].((cast)DataContext)" binding syntax, this uses a named
-    root element (#Root) and walks .DataContext explicitly — plain element-
-    name binding, the most standard and least ambiguous way to reach
-    outside a DataTemplate in Avalonia.
+    not on the per-item BehaviorViewModel. Because compiled bindings are
+    enabled, DataContext is statically typed as object, so reaching the
+    VM requires the cast syntax ((vm:MainWindowViewModel)DataContext)
+    anchored on the named root element (#Root).
   -->
   <Grid ColumnDefinitions="220,*" Margin="8">
 
@@ -29,7 +28,7 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <Button Content="{Binding}" Margin="0,2" HorizontalAlignment="Stretch"
-                    Command="{Binding #Root.DataContext.AddBehaviorForSelectedCommand}"
+                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).AddBehaviorForSelectedCommand}"
                     CommandParameter="{Binding}" />
           </DataTemplate>
         </ItemsControl.ItemTemplate>
@@ -55,7 +54,7 @@
                              Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
                              TextWrapping="Wrap" VerticalAlignment="Center" />
                   <Button Grid.Column="1" Content="✕" Padding="6,2"
-                          Command="{Binding #Root.DataContext.RemoveBehaviorCommand}"
+                          Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveBehaviorCommand}"
                           CommandParameter="{Binding}" />
                 </Grid>
 
@@ -63,7 +62,7 @@
                   <TextBlock Grid.Column="0" Classes="field-label" Text="DO"
                              VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
                   <ComboBox Grid.Column="1" Margin="0,0,10,0"
-                            ItemsSource="{Binding #Root.DataContext.AvailableActionTargets}"
+                            ItemsSource="{Binding #Root.((vm:MainWindowViewModel)DataContext).AvailableActionTargets}"
                             SelectedItem="{Binding ActionTarget}" />
                   <TextBlock Grid.Column="2" Text="." VerticalAlignment="Center" Margin="0,0,6,0"
                              Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />

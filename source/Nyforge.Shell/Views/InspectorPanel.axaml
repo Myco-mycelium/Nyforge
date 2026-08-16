@@ -14,10 +14,15 @@
         <TextBlock Classes="field-label" Text="Nothing selected." />
       </StackPanel>
 
-      <StackPanel IsVisible="{Binding HasSelection}" Margin="{DynamicResource Nyforge.Margin.Panel}" Spacing="{DynamicResource Nyforge.Space.2}"
-                  DataContext="{Binding SelectedElement}"
-                  x:DataType="vm:CanvasElementViewModel">
-        <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
+      <!-- The IsVisible toggle binds on MainWindowViewModel, so the
+           DataContext override to the selected element moves one level
+           down: the outer panel keeps the root VM type for its own
+           bindings (compiled bindings are statically typed). -->
+      <StackPanel IsVisible="{Binding HasSelection}" Margin="{DynamicResource Nyforge.Margin.Panel}">
+        <StackPanel Spacing="{DynamicResource Nyforge.Space.2}"
+                    DataContext="{Binding SelectedElement}"
+                    x:DataType="vm:CanvasElementViewModel">
+          <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
           <TextBlock Classes="field-label" Text="Id" />
           <TextBlock Text="{Binding Id}" FontSize="{DynamicResource Nyforge.Type.Body}"
                      Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
@@ -52,6 +57,7 @@
         <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
           <TextBlock Classes="field-label" Text="Text" />
           <TextBox Text="{Binding DisplayText}" Watermark="(no text property)" />
+          </StackPanel>
         </StackPanel>
       </StackPanel>
     </Panel>
