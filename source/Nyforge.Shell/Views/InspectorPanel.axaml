@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Nyforge.Shell.ViewModels"
+             x:Class="Nyforge.Shell.Views.InspectorPanel"
+             x:DataType="vm:MainWindowViewModel">
+
+  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}">
+    <TextBlock DockPanel.Dock="Top" Text="INSPECTOR" FontSize="11" FontWeight="Bold"
+               Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+               Margin="12,12,12,4" LetterSpacing="1" />
+
+    <Panel>
+      <StackPanel IsVisible="{Binding !HasSelection}" Margin="12" Spacing="4">
+        <TextBlock Text="Nothing selected." Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" FontSize="12" />
+      </StackPanel>
+
+      <StackPanel IsVisible="{Binding HasSelection}" Margin="12" Spacing="10"
+                  DataContext="{Binding SelectedElement}"
+                  x:DataType="vm:CanvasElementViewModel">
+        <StackPanel Spacing="2">
+          <TextBlock Text="Id" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBlock Text="{Binding Id}" FontSize="12" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+        </StackPanel>
+
+        <StackPanel Spacing="2">
+          <TextBlock Text="Type" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBlock Text="{Binding Type}" FontSize="12" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+        </StackPanel>
+
+        <TextBlock Text="POSITION" FontSize="10" FontWeight="Bold"
+                    Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,8,0,0" />
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" >
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="X" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBlock Grid.Row="0" Grid.Column="1" Text="Y" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding X}" Margin="0,2,4,0" />
+          <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Y}" Margin="4,2,0,0" />
+        </Grid>
+
+        <TextBlock Text="SIZE" FontSize="10" FontWeight="Bold"
+                    Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,8,0,0" />
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Width" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBlock Grid.Row="0" Grid.Column="1" Text="Height" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding Width}" Margin="0,2,4,0" />
+          <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Height}" Margin="4,2,0,0" />
+        </Grid>
+
+        <TextBlock Text="PROPERTIES" FontSize="10" FontWeight="Bold"
+                    Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,8,0,0" />
+        <StackPanel Spacing="2">
+          <TextBlock Text="Text" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBox Text="{Binding DisplayText}" Watermark="(no text property)" />
+        </StackPanel>
+      </StackPanel>
+    </Panel>
+  </DockPanel>
+
+</UserControl>

@@ -1,0 +1,83 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore Nyforge.sln
+
+      - name: Build
+        run: dotnet build Nyforge.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Nyforge.sln --no-build --configuration Release --verbosity normal
+
+      # Self-contained + single-file: the output is a real, standalone
+      # Nyforge.exe that runs on a Windows machine with no .NET runtime or
+      # NuGet packages installed separately — not a launcher, not a
+      # placeholder, the actual compiled app. This workflow exists
+      # specifically so nobody has to trust an unverified claim about
+      # whether the project builds — see NFM-000 §2.1.
+      #
+      # Note: PublishSingleFile bundles the managed assemblies into the
+      # .exe, but NOT loose content files — forge-home.nstudio (the
+      # bundled default Home screen, see Nyforge.Shell.csproj) is copied
+      # alongside the .exe, not into it. So the artifact/release below is
+      # the whole publish folder zipped up, not the bare .exe — shipping
+      # just the .exe would silently lose the default Home screen on
+      # first launch.
+      - name: Publish Windows executable
+        run: >
+          dotnet publish source/Nyforge.Shell/Nyforge.Shell.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          --output publish/win-x64
+
+      - name: Zip the full publish output
+        run: Compress-Archive -Path publish/win-x64/* -DestinationPath Nyforge-win-x64.zip
+        shell: pwsh
+
+      - name: Upload Nyforge-win-x64.zip as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nyforge-win-x64
+          path: Nyforge-win-x64.zip
+          if-no-files-found: error
+
+  release:
+    name: Attach Nyforge-win-x64.zip to a GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Nyforge-win-x64
+          path: publish
+
+      - name: Create release with Nyforge-win-x64.zip attached
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish/Nyforge-win-x64.zip
+          generate_release_notes: true

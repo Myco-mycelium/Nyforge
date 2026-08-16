@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Nyforge.Shell.ViewModels"
+        x:Class="Nyforge.Shell.Views.PreviewWindow"
+        x:DataType="vm:PreviewViewModel"
+        Title="Nyforge Preview (Forge renderer — not the real Nyrqis UI Runtime)"
+        Width="1100" Height="760"
+        Background="{DynamicResource Nyforge.Brush.Background}">
+
+  <Grid RowDefinitions="Auto,*,140">
+
+    <Border Grid.Row="0" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}" Padding="10,6">
+      <TextBlock Text="⚠ This is Forge's own Avalonia renderer standing in for the Nyrqis UI Runtime, which doesn't exist yet. Interactions here are simulated, not the real app."
+                 FontSize="11" TextWrapping="Wrap"
+                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+    </Border>
+
+    <Canvas Grid.Row="1" Background="{DynamicResource Nyforge.Brush.Surface}">
+      <ItemsControl ItemsSource="{Binding Elements}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <Canvas />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="vm:PreviewElementViewModel">
+            <ContentControl Width="{Binding Width}" Height="{Binding Height}"
+                             Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
+                             Content="{Binding}">
+              <ContentControl.ContentTemplate>
+                <DataTemplate DataType="vm:PreviewElementViewModel">
+                  <!-- Only the handful of types the v0.3 preview actually
+                       makes interactive get a real control; everything
+                       else renders as a clearly-labeled static placeholder,
+                       consistent with NFM-000 §2.1 (the canvas is truthful). -->
+                  <Panel>
+                    <Button Content="{Binding Text}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsButton}}"
+                            Click="OnButtonClicked" Tag="{Binding}" />
+
+                    <CheckBox Content="{Binding Text}" IsChecked="{Binding BoolValue}"
+                               IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsToggleLike}}"
+                               Checked="OnToggleChanged" Unchecked="OnToggleChanged" Tag="{Binding}" />
+
+                    <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
+                               IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsText}}" />
+
+                    <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                            BorderBrush="{DynamicResource Nyforge.Brush.Border}" BorderThickness="1"
+                            CornerRadius="3"
+                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
+                      <TextBlock Text="{Binding Type}" FontSize="10" Margin="6,4"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                    </Border>
+                  </Panel>
+                </DataTemplate>
+              </ContentControl.ContentTemplate>
+            </ContentControl>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Canvas>
+
+    <Border Grid.Row="2" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}" Padding="8">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="EVENT LOG" FontSize="10" FontWeight="Bold"
+                   Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,0,0,4" />
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding Log}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+  </Grid>
+
+</Window>

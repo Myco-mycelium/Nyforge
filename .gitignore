@@ -1,0 +1,18 @@
+## .NET / Avalonia
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Editor
+.idea/
+*.swp
+
+## Local-only project files a user might drop in the repo root while testing
+/*.nstudio
+!examples/**/*.nstudio

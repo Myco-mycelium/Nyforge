@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Nyforge.Shell.ViewModels"
+             x:Class="Nyforge.Shell.Views.DesignCanvas"
+             x:DataType="vm:MainWindowViewModel">
+
+  <Border Background="{DynamicResource Nyforge.Brush.Background}" ClipToBounds="True">
+    <!--
+      A checkerboard-free flat canvas at design-time canvas size. v0.1 does
+      not implement alignment guides or snap-to-grid (see
+      docs/00-platform/REPOSITORY_STATE.md) — plain free-form move/resize.
+    -->
+    <Canvas x:Name="RootCanvas"
+            Width="1024" Height="768"
+            Background="{DynamicResource Nyforge.Brush.Surface}"
+            PointerPressed="OnCanvasPointerPressed">
+
+      <ItemsControl ItemsSource="{Binding CanvasElements}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <Canvas />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="vm:CanvasElementViewModel">
+            <Border Name="ElementBorder"
+                    Width="{Binding Width}" Height="{Binding Height}"
+                    Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
+                    Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                    BorderBrush="{Binding IsSelected, Converter={x:Static vm:SelectionBrushConverter.Instance}}"
+                    BorderThickness="{Binding IsSelected, Converter={x:Static vm:SelectionThicknessConverter.Instance}}"
+                    CornerRadius="3"
+                    PointerPressed="OnElementPointerPressed"
+                    PointerMoved="OnElementPointerMoved"
+                    PointerReleased="OnElementPointerReleased"
+                    Cursor="SizeAll">
+              <Grid>
+                <TextBlock Text="{Binding DisplayText}"
+                           Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
+                           FontSize="12" Margin="8,0,8,0"
+                           VerticalAlignment="Center" HorizontalAlignment="Left"
+                           IsHitTestVisible="False" />
+                <TextBlock Text="{Binding Type}"
+                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                           FontSize="9" Margin="0,0,4,2"
+                           VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                           IsHitTestVisible="False" />
+                <!-- Resize handle, bottom-right corner -->
+                <Border Name="ResizeHandle" Width="10" Height="10"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                        Background="{DynamicResource Nyforge.Brush.Accent}"
+                        IsVisible="{Binding IsSelected}"
+                        Cursor="BottomRightCorner"
+                        PointerPressed="OnResizeHandlePointerPressed"
+                        PointerMoved="OnResizeHandlePointerMoved"
+                        PointerReleased="OnResizeHandlePointerReleased" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Canvas>
+  </Border>
+
+</UserControl>

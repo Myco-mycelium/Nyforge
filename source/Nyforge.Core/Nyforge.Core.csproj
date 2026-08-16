@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Nyforge.Core</RootNamespace>
+    <!--
+      NFC-001 §5.1: this project MUST NOT reference Avalonia or any other
+      UI-framework package. It is the part of Nyforge a future Nyrqis UI
+      Runtime could plausibly reuse directly.
+    -->
+  </PropertyGroup>
+
+</Project>

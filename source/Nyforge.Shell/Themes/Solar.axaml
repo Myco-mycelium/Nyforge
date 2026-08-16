@@ -1,0 +1,34 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Solar: the bright, warm Nyrqis theme. Same token keys as Eclipse.axaml. -->
+  <Styles.Resources>
+    <ResourceDictionary>
+      <Color x:Key="Nyforge.Color.Background">#FBF8F2</Color>
+      <Color x:Key="Nyforge.Color.Surface">#FFFFFF</Color>
+      <Color x:Key="Nyforge.Color.SurfaceElevated">#F3EEE2</Color>
+      <Color x:Key="Nyforge.Color.SurfaceOverlay">#EAE2D0</Color>
+      <Color x:Key="Nyforge.Color.TextPrimary">#211C12</Color>
+      <Color x:Key="Nyforge.Color.TextSecondary">#6B6355</Color>
+      <Color x:Key="Nyforge.Color.Accent">#D97B3F</Color>
+      <Color x:Key="Nyforge.Color.Border">#E2D9C4</Color>
+      <Color x:Key="Nyforge.Color.Shadow">#33000000</Color>
+      <Color x:Key="Nyforge.Color.Success">#3F9A64</Color>
+      <Color x:Key="Nyforge.Color.Warning">#C68A2E</Color>
+      <Color x:Key="Nyforge.Color.Error">#C24A45</Color>
+
+      <SolidColorBrush x:Key="Nyforge.Brush.Background" Color="{StaticResource Nyforge.Color.Background}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Surface" Color="{StaticResource Nyforge.Color.Surface}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.SurfaceElevated" Color="{StaticResource Nyforge.Color.SurfaceElevated}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.SurfaceOverlay" Color="{StaticResource Nyforge.Color.SurfaceOverlay}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.TextPrimary" Color="{StaticResource Nyforge.Color.TextPrimary}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.TextSecondary" Color="{StaticResource Nyforge.Color.TextSecondary}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Accent" Color="{StaticResource Nyforge.Color.Accent}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Border" Color="{StaticResource Nyforge.Color.Border}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Success" Color="{StaticResource Nyforge.Color.Success}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Warning" Color="{StaticResource Nyforge.Color.Warning}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Error" Color="{StaticResource Nyforge.Color.Error}" />
+    </ResourceDictionary>
+  </Styles.Resources>
+
+</Styles>

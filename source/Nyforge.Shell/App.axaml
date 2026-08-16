@@ -1,0 +1,15 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Nyforge.Shell.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Styles>
+    <FluentTheme />
+    <!--
+      Eclipse is the default theme; ThemeManager swaps this dictionary at
+      runtime. See docs/how-to/switching-themes.md.
+    -->
+    <StyleInclude Source="avares://Nyforge.Shell/Themes/Eclipse.axaml" />
+  </Application.Styles>
+
+</Application>
