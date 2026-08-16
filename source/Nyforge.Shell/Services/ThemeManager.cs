@@ -17,8 +17,10 @@ public sealed class ThemeManager
     public static readonly IReadOnlyDictionary<string, string> AvailableThemes =
         new Dictionary<string, string>
         {
-            ["Eclipse"] = "avares://Nyforge.Shell/Themes/Eclipse.axaml",
-            ["Solar"] = "avares://Nyforge.Shell/Themes/Solar.axaml",
+            // avares URIs must match the assembly's simple name (csproj
+            // <AssemblyName>Nyforge</AssemblyName>), not the project name.
+            ["Eclipse"] = "avares://Nyforge/Themes/Eclipse.axaml",
+            ["Solar"] = "avares://Nyforge/Themes/Solar.axaml",
         };
 
     private readonly Application _app;
@@ -50,7 +52,7 @@ public sealed class ThemeManager
             _app.Styles.Remove(_currentThemeStyle);
         }
 
-        var newStyle = new StyleInclude(new Uri("avares://Nyforge.Shell/"))
+        var newStyle = new StyleInclude(new Uri("avares://Nyforge/"))
         {
             Source = new Uri(uri)
         };

@@ -29,9 +29,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Explicit in case the Avalonia package's automatic **/*.axaml glob
-         doesn't pick these up in every SDK/tooling version. -->
-    <AvaloniaResource Include="**\*.axaml" />
+    <!--
+      NOTE: no explicit <AvaloniaResource Include="**\*.axaml" /> here — the
+      Avalonia SDK auto-includes every .axaml via its default AvaloniaXaml
+      glob. Listing them again as AvaloniaResource made App.axaml's
+      x:Class get compiled twice (AVLN2002 Duplicate x:Class directive).
+    -->
   </ItemGroup>
 
   <ItemGroup>

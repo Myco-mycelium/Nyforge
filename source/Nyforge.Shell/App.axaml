@@ -9,13 +9,13 @@
       Eclipse is the default theme; ThemeManager swaps this dictionary at
       runtime. See docs/how-to/switching-themes.md.
     -->
-    <StyleInclude Source="avares://Nyforge.Shell/Themes/Eclipse.axaml" />
+    <StyleInclude Source="avares://Nyforge/Themes/Eclipse.axaml" />
     <!--
       Shared class-based control styles (Controls.axaml) live OUTSIDE
       Themes/ so ThemeManager never swaps them: every color they use is a
       DynamicResource, so a theme switch re-skins them in place.
     -->
-    <StyleInclude Source="avares://Nyforge.Shell/Styles/Controls.axaml" />
+    <StyleInclude Source="avares://Nyforge/Styles/Controls.axaml" />
   </Application.Styles>
 
 </Application>
