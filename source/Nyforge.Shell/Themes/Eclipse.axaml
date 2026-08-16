@@ -6,9 +6,16 @@
     docs/reference/nui-schema/NUI-SCHEMA.md §6 exactly, prefixed with
     "Nyforge.Color." so Forge's own chrome and the design canvas draw from
     the same set a project's .nstudio theme section would reference.
+
+    Design tokens (docs/reference/design-system.md): every theme defines
+    the SAME keys — colors (NUI §6 + interaction states), spacing
+    (4px grid), radius, and type scale — so swapping themes at runtime
+    (ThemeManager) changes appearance only, never layout.
   -->
   <Styles.Resources>
     <ResourceDictionary>
+
+      <!-- NUI §6 semantic colors (the contract a .nstudio theme overrides). -->
       <Color x:Key="Nyforge.Color.Background">#0B0D10</Color>
       <Color x:Key="Nyforge.Color.Surface">#15181D</Color>
       <Color x:Key="Nyforge.Color.SurfaceElevated">#1D2128</Color>
@@ -22,6 +29,60 @@
       <Color x:Key="Nyforge.Color.Warning">#E5B567</Color>
       <Color x:Key="Nyforge.Color.Error">#E5686B</Color>
 
+      <!-- Interaction states (best-practice affordance: hover/pressed/
+           selection/focus/disabled are explicit, not implied). -->
+      <Color x:Key="Nyforge.Color.Hover">#232833</Color>
+      <Color x:Key="Nyforge.Color.Pressed">#2B3140</Color>
+      <Color x:Key="Nyforge.Color.Selection">#2E3A5C</Color>
+      <Color x:Key="Nyforge.Color.FocusRing">#8FA8FF</Color>
+      <Color x:Key="Nyforge.Color.ControlBorder">#333A47</Color>
+      <Color x:Key="Nyforge.Color.TextDisabled">#5C636E</Color>
+      <!-- Filled (primary) button surface: enough contrast for the
+           theme's own background text (AA normal text, WCAG 2.1). -->
+      <Color x:Key="Nyforge.Color.AccentStrong">#5E7EFF</Color>
+
+      <!-- Spacing scale — 4 px grid (docs/reference/design-system.md). -->
+      <Double x:Key="Nyforge.Space.1">4</Double>
+      <Double x:Key="Nyforge.Space.2">8</Double>
+      <Double x:Key="Nyforge.Space.3">12</Double>
+      <Double x:Key="Nyforge.Space.4">16</Double>
+      <Double x:Key="Nyforge.Space.5">24</Double>
+      <Double x:Key="Nyforge.Space.6">32</Double>
+
+      <!-- Corner radii. -->
+      <CornerRadius x:Key="Nyforge.Radius.Small">4</CornerRadius>
+      <CornerRadius x:Key="Nyforge.Radius.Medium">8</CornerRadius>
+      <CornerRadius x:Key="Nyforge.Radius.Large">12</CornerRadius>
+
+      <!-- Type scale (documented in docs/reference/design-system.md). -->
+      <Double x:Key="Nyforge.Type.Caption">11</Double>
+      <Double x:Key="Nyforge.Type.Body">13</Double>
+      <Double x:Key="Nyforge.Type.Title">15</Double>
+      <Double x:Key="Nyforge.Type.Display">20</Double>
+
+      <!-- Thickness (margin/padding) tokens: composite markup extensions
+           are not reliable in attribute values, so every padding/margin
+           that resolves to a Thickness is a named resource, never an
+           inline composition of spacing doubles. -->
+      <Thickness x:Key="Nyforge.Inset.Small">4</Thickness>
+      <Thickness x:Key="Nyforge.Inset.Medium">8</Thickness>
+      <Thickness x:Key="Nyforge.Margin.SectionHeader">12,12,12,4</Thickness>
+      <Thickness x:Key="Nyforge.Margin.SectionTop">0,8,0,0</Thickness>
+      <Thickness x:Key="Nyforge.Margin.Panel">12</Thickness>
+      <Thickness x:Key="Nyforge.Margin.Canvas">16</Thickness>
+      <Thickness x:Key="Nyforge.Margin.PaletteItem">4,4</Thickness>
+      <Thickness x:Key="Nyforge.Padding.PaletteItem">8,6</Thickness>
+      <Thickness x:Key="Nyforge.Margin.StatusButton">8,4</Thickness>
+      <Thickness x:Key="Nyforge.Margin.StatusButtonSide">0,4</Thickness>
+      <Thickness x:Key="Nyforge.Margin.StatusText">0,0,12,0</Thickness>
+      <Thickness x:Key="Nyforge.Margin.LabelRight">0,0,4,0</Thickness>
+      <Thickness x:Key="Nyforge.Margin.BehaviorsLeft">0,0,12,0</Thickness>
+      <Thickness x:Key="Nyforge.Margin.BehaviorCard">0,0,0,8</Thickness>
+      <Thickness x:Key="Nyforge.Margin.ConditionState">0,0,8,0</Thickness>
+      <Thickness x:Key="Nyforge.Padding.Card">8</Thickness>
+      <Thickness x:Key="Nyforge.Padding.Banner">8,4</Thickness>
+      <Thickness x:Key="Nyforge.Padding.LogBar">8</Thickness>
+
       <SolidColorBrush x:Key="Nyforge.Brush.Background" Color="{StaticResource Nyforge.Color.Background}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Surface" Color="{StaticResource Nyforge.Color.Surface}" />
       <SolidColorBrush x:Key="Nyforge.Brush.SurfaceElevated" Color="{StaticResource Nyforge.Color.SurfaceElevated}" />
@@ -29,7 +90,14 @@
       <SolidColorBrush x:Key="Nyforge.Brush.TextPrimary" Color="{StaticResource Nyforge.Color.TextPrimary}" />
       <SolidColorBrush x:Key="Nyforge.Brush.TextSecondary" Color="{StaticResource Nyforge.Color.TextSecondary}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Accent" Color="{StaticResource Nyforge.Color.Accent}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.AccentStrong" Color="{StaticResource Nyforge.Color.AccentStrong}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Border" Color="{StaticResource Nyforge.Color.Border}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.ControlBorder" Color="{StaticResource Nyforge.Color.ControlBorder}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Hover" Color="{StaticResource Nyforge.Color.Hover}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Pressed" Color="{StaticResource Nyforge.Color.Pressed}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Selection" Color="{StaticResource Nyforge.Color.Selection}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.FocusRing" Color="{StaticResource Nyforge.Color.FocusRing}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.TextDisabled" Color="{StaticResource Nyforge.Color.TextDisabled}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Success" Color="{StaticResource Nyforge.Color.Success}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Warning" Color="{StaticResource Nyforge.Color.Warning}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Error" Color="{StaticResource Nyforge.Color.Error}" />

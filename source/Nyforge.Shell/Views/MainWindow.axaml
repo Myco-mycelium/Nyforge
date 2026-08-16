@@ -36,17 +36,20 @@
       <MenuItem Header="_Export" />
     </Menu>
 
-    <!-- Bottom status / run bar -->
+    <!-- Bottom status / run bar (spacing on the 4px grid, primary action
+         emphasized — docs/reference/design-system.md) -->
     <Grid DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.Surface}"
           ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" Height="36">
-      <Button Grid.Column="0" Content="▶ Preview" Margin="8,4" Click="OnPreview" />
-      <Button Grid.Column="1" Content="▶ Run in Nyrqis" Margin="0,4" IsEnabled="False"
+      <Button Grid.Column="0" Content="▶ Preview" Classes="primary" Margin="{DynamicResource Nyforge.Margin.StatusButton}" Click="OnPreview" />
+      <Button Grid.Column="1" Content="▶ Run in Nyrqis" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}" IsEnabled="False"
               ToolTip.Tip="No Nyrqis runtime exists yet — see docs/00-platform/REPOSITORY_STATE.md" />
-      <Button Grid.Column="2" Content="Build" Margin="8,4" IsEnabled="False"
+      <Button Grid.Column="2" Content="Build" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButton}" IsEnabled="False"
               ToolTip.Tip="Code-gen exporters are v0.2+ scope" />
-      <Button Grid.Column="3" Content="Export NUI" Margin="0,4" Click="OnExportNui" />
+      <Button Grid.Column="3" Content="Export NUI" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}" Click="OnExportNui" />
       <TextBlock Grid.Column="5" Text="{Binding StatusMessage}" VerticalAlignment="Center"
-                 Margin="0,0,12,0" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" FontSize="11" />
+                 Margin="{DynamicResource Nyforge.Margin.StatusText}"
+                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                 FontSize="{DynamicResource Nyforge.Type.Caption}" />
     </Grid>
 
     <!-- Home (self-hosted, NFS-004) vs. Design (the editor itself) -->
@@ -62,7 +65,7 @@
           <views:ComponentPalette Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" />
 
           <ScrollViewer Grid.Column="1" Grid.Row="0">
-            <views:DesignCanvas Margin="16" />
+            <views:DesignCanvas Margin="{DynamicResource Nyforge.Margin.Canvas}" />
           </ScrollViewer>
 
           <views:InspectorPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" />

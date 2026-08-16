@@ -5,50 +5,52 @@
              x:DataType="vm:MainWindowViewModel">
 
   <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}">
-    <TextBlock DockPanel.Dock="Top" Text="INSPECTOR" FontSize="11" FontWeight="Bold"
-               Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
-               Margin="12,12,12,4" LetterSpacing="1" />
+    <TextBlock DockPanel.Dock="Top" Classes="section-header"
+               Text="INSPECTOR"
+               Margin="{DynamicResource Nyforge.Margin.SectionHeader}" />
 
     <Panel>
-      <StackPanel IsVisible="{Binding !HasSelection}" Margin="12" Spacing="4">
-        <TextBlock Text="Nothing selected." Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" FontSize="12" />
+      <StackPanel IsVisible="{Binding !HasSelection}" Margin="{DynamicResource Nyforge.Margin.Panel}" Spacing="{DynamicResource Nyforge.Space.1}">
+        <TextBlock Classes="field-label" Text="Nothing selected." />
       </StackPanel>
 
-      <StackPanel IsVisible="{Binding HasSelection}" Margin="12" Spacing="10"
+      <StackPanel IsVisible="{Binding HasSelection}" Margin="{DynamicResource Nyforge.Margin.Panel}" Spacing="{DynamicResource Nyforge.Space.2}"
                   DataContext="{Binding SelectedElement}"
                   x:DataType="vm:CanvasElementViewModel">
-        <StackPanel Spacing="2">
-          <TextBlock Text="Id" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-          <TextBlock Text="{Binding Id}" FontSize="12" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+        <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
+          <TextBlock Classes="field-label" Text="Id" />
+          <TextBlock Text="{Binding Id}" FontSize="{DynamicResource Nyforge.Type.Body}"
+                     Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
         </StackPanel>
 
-        <StackPanel Spacing="2">
-          <TextBlock Text="Type" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-          <TextBlock Text="{Binding Type}" FontSize="12" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+        <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
+          <TextBlock Classes="field-label" Text="Type" />
+          <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Body}"
+                     Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
         </StackPanel>
 
-        <TextBlock Text="POSITION" FontSize="10" FontWeight="Bold"
-                    Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,8,0,0" />
+        <TextBlock Classes="section-header" Text="POSITION"
+                   Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
         <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" >
-          <TextBlock Grid.Row="0" Grid.Column="0" Text="X" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-          <TextBlock Grid.Row="0" Grid.Column="1" Text="Y" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="X" />
+          <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Y" />
           <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding X}" Margin="0,2,4,0" />
           <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Y}" Margin="4,2,0,0" />
         </Grid>
 
-        <TextBlock Text="SIZE" FontSize="10" FontWeight="Bold"
-                    Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,8,0,0" />
+        <TextBlock Classes="section-header" Text="SIZE"
+                   Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
         <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-          <TextBlock Grid.Row="0" Grid.Column="0" Text="Width" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-          <TextBlock Grid.Row="0" Grid.Column="1" Text="Height" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+          <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="Width" />
+          <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Height" />
           <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding Width}" Margin="0,2,4,0" />
           <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Height}" Margin="4,2,0,0" />
         </Grid>
 
-        <TextBlock Text="PROPERTIES" FontSize="10" FontWeight="Bold"
-                    Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,8,0,0" />
-        <StackPanel Spacing="2">
-          <TextBlock Text="Text" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+        <TextBlock Classes="section-header" Text="PROPERTIES"
+                   Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
+        <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
+          <TextBlock Classes="field-label" Text="Text" />
           <TextBox Text="{Binding DisplayText}" Watermark="(no text property)" />
         </StackPanel>
       </StackPanel>

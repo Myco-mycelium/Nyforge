@@ -1,13 +1,13 @@
 ---
 title: Repository State
 document_id: NF-STATE
-version: 0.4.1
+version: 0.5.0
 status: Accepted
 classification: Informative
 owners:
   - Nyforge Architecture
 created: 2026-08-13
-updated: 2026-08-14
+updated: 2026-08-16
 ai_assisted: true
 review_cycle: PerRelease
 depends_on:
@@ -16,7 +16,34 @@ depends_on:
 
 # Repository State
 
-## Current Milestone: v0.4 — Self-Hosted Home Screen + $state: Substitution
+## Current Milestone: v0.5 — Design System + Cross-platform build
+
+A design system for Forge's own chrome (docs/reference/design-system.md):
+both themes now define the full token contract — NUI §6 colors,
+interaction states (Hover/Pressed/Selection/FocusRing/ControlBorder/
+TextDisabled/AccentStrong), a 4 px spacing grid, corner radii, and a type
+scale — and the chrome (palette, canvas, inspector, layers, home,
+behaviors, preview, status bar) draws from it through shared class-based
+control styles (`source/Nyforge.Shell/Styles/Controls.axaml`) instead of
+hardcoded margins/fonts/radii. Best-practice affordances: explicit hover
+and selection states, AA-contrast primary button, keyboard focus color.
+
+**Cross-platform:** Avalonia publishes both platform targets from the
+same codebase — `win-x64` (`Nyforge-win-x64.zip`) and **`linux-x64`
+(`Nyforge-linux-x64.zip`) for Nyrqis hosts** — self-contained and
+single-file, attached to tagged Releases (`.github/workflows/build.yml`).
+
+**New example:** `examples/vault-dashboard/vault-dashboard.nstudio` — a
+Vault Monitor dashboard designed to the system: 8 px layout grid,
+label/value card hierarchy, semantic status, a bound Toggle, and
+behaviors exercising both a conditional `IF` and `$state:` substitution.
+
+### What exists (cumulative)
+
+- The v0.4 milestone below (self-hosted Home + `$state:` substitution).
+- The design system + Linux build + vault-dashboard example above.
+
+## Previous Milestone: v0.4 — Self-Hosted Home Screen + $state: Substitution
 
 Two changes landed in this milestone: the self-hosted Home screen (NFS-004)
 and, on top of it, `$state:` expression-valued argument substitution

@@ -6,8 +6,9 @@
 
   <DockPanel Background="{DynamicResource Nyforge.Brush.Background}">
 
-    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}" Padding="8,4">
-      <TextBlock Text="{Binding SourceDescription}" FontSize="10"
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}"
+            Padding="{DynamicResource Nyforge.Padding.Banner}">
+      <TextBlock Text="{Binding SourceDescription}" FontSize="{DynamicResource Nyforge.Type.Caption}"
                  Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
     </Border>
 
@@ -45,9 +46,10 @@
 
                     <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
                             BorderBrush="{DynamicResource Nyforge.Brush.Border}" BorderThickness="1"
-                            CornerRadius="3"
+                            CornerRadius="{DynamicResource Nyforge.Radius.Small}"
                             IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
-                      <TextBlock Text="{Binding Type}" FontSize="10" Margin="6,4"
+                      <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                                 Margin="{DynamicResource Nyforge.Inset.Small}"
                                  Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
                     </Border>
                   </Panel>

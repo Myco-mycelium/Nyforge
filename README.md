@@ -66,6 +66,19 @@ milestone per `engineering/ROADMAP.md`:
   This is a first, honestly bounded slice of self-hosting (the Home tab
   only — palette/canvas/inspector/menu bar are still hardcoded), not a
   claim that all of Forge is re-skinnable yet.
+- **A design system for Forge's own chrome** — both themes define the
+  full token contract (NUI §6 colors + interaction states, a 4 px
+  spacing grid, radii, a type scale) and the chrome composes tokens via
+  shared class-based styles instead of hardcoded values — explicit
+  hover/selection affordances, an AA-contrast primary button, keyboard
+  focus color. See [`docs/reference/design-system.md`](docs/reference/design-system.md).
+- **Cross-platform builds in tandem** — the same Avalonia codebase
+  publishes **Windows** (`Nyforge-win-x64.zip`) **and Linux**
+  (`Nyforge-linux-x64.zip`, the Nyrqis-host target), both
+  self-contained single-file.
+- **A worked dashboard example** — [`examples/vault-dashboard/vault-dashboard.nstudio`](examples/vault-dashboard/vault-dashboard.nstudio)
+  is a Vault Monitor designed to the design system: card hierarchy,
+  bound state, a conditional behavior, and `$state:` substitution.
 
 ## What's still not there yet
 
@@ -100,14 +113,16 @@ Being upfront about this matters more than pretending otherwise:
 
 See [`engineering/ROADMAP.md`](engineering/ROADMAP.md) for the phase plan.
 
-## Getting Nyforge.exe
+## Getting a build (Windows or Linux)
 
 **You don't need to build this yourself.** Push this repo to GitHub and
-`.github/workflows/build.yml` will restore, build, test, and publish a
-real, self-contained `Nyforge.exe` automatically on every push to `main`
-— check the **Actions** tab for the build, or the **Releases** page if you
-push a `v*` tag (e.g. `git tag v0.4.0 && git push --tags`), which attaches
-the built `.exe` to a proper GitHub Release.
+`.github/workflows/build.yml` will restore, build, test, and publish
+**both** platform targets automatically on every push to `main`: a real,
+self-contained `Nyforge.exe` for Windows (`Nyforge-win-x64.zip`) and a
+self-contained Linux binary for Nyrqis hosts (`Nyforge-linux-x64.zip`)
+— check the **Actions** tab for the builds, or the **Releases** page if
+you push a `v*` tag (e.g. `git tag v0.5.0 && git push --tags`), which
+attaches both zips to a proper GitHub Release.
 
 This is also, finally, the actual verification of whether this compiles —
 see the next section for why that's been an open question until now.

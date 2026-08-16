@@ -16,10 +16,14 @@ both consume the same token keys.
 ## Adding a third theme
 
 1. Copy `source/Nyforge.Shell/Themes/Eclipse.axaml` to, say, `Nova.axaml`.
-2. Set a value for every token key listed in
-   `docs/reference/nui-schema/NUI-SCHEMA.md` §6 (`Nyforge.Color.Background`,
-   `Nyforge.Color.Surface`, etc. — the `.axaml` file uses the same names
-   prefixed with `Nyforge.Color.`).
+2. Set a value for **every** token key the theme files define — the NUI §6
+   semantic colors (`Nyforge.Color.Background`, `Nyforge.Color.Surface`,
+   ...), the interaction-state colors (`Hover`, `Pressed`, `Selection`,
+   `FocusRing`, `ControlBorder`, `TextDisabled`, `AccentStrong`), and the
+   structural tokens (`Nyforge.Space.*`, `Nyforge.Radius.*`,
+   `Nyforge.Type.*`). `ThemeManager` swaps the whole dictionary, so a
+   missing key breaks any `DynamicResource` that references it. The full
+   list is in `docs/reference/design-system.md`.
 3. Register it in `ThemeManager.AvailableThemes` (`Services/ThemeManager.cs`).
 4. Rebuild. Your theme now appears in **View → Theme** and can be selected
    per-project via the `themes` section of a `.nstudio` file.

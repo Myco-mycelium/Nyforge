@@ -26,6 +26,26 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       analyzer step, once the basic build/test pipeline above is confirmed
       green.
 
+## v0.5 — Design System + Cross-platform build (landed with v0.4, 2026-08-16)
+
+- [x] **Design system for Forge's own chrome** — both themes define the
+      full token contract (NUI §6 colors, interaction states, 4 px
+      spacing grid, radii, type scale) and the chrome composes tokens via
+      shared class-based styles instead of hardcoded values; documented
+      in `docs/reference/design-system.md`. Industry best practices:
+      explicit hover/pressed/selection/focus states, WCAG 2.1 AA
+      contrast by construction (primary button text = theme background
+      against `AccentStrong`), 4 px spacing grid, capped type scale.
+- [x] **Linux build in tandem with Windows** — CI now publishes both
+      `win-x64` and `linux-x64` self-contained single-file builds from
+      the same Avalonia codebase; the Linux zip is the Nyrqis-host
+      target (`Nyforge-linux-x64.zip`), attached to tagged Releases.
+- [x] **`examples/vault-dashboard/vault-dashboard.nstudio`** — a Vault
+      Monitor dashboard designed to the system, exercising bound state,
+      a conditional behavior, and `$state:` substitution.
+- [ ] Verify the tokenized chrome compiles clean on both platforms once
+      CI runs (the first compiler pass over the v0.5 XAML).
+
 ## v0.2 — Logic Editor & Live-ish Preview
 
 - [x] Stabilize the `Behaviors` section of the NUI schema — done (NFS-002,

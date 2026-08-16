@@ -6,12 +6,15 @@
 
   <ListBox ItemsSource="{Binding CanvasElements}"
            SelectedItem="{Binding SelectedElement}"
-           Background="Transparent">
+           Background="Transparent"
+           Padding="{DynamicResource Nyforge.Inset.Small}">
     <ListBox.ItemTemplate>
       <DataTemplate DataType="vm:CanvasElementViewModel">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="{Binding Type}" FontSize="12" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
-          <TextBlock Text="{Binding Id}" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Nyforge.Space.2}">
+          <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Body}"
+                     Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+          <TextBlock Text="{Binding Id}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                     Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
         </StackPanel>
       </DataTemplate>
     </ListBox.ItemTemplate>

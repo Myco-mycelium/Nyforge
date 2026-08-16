@@ -30,7 +30,7 @@
                     Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
                     BorderBrush="{Binding IsSelected, Converter={x:Static vm:SelectionBrushConverter.Instance}}"
                     BorderThickness="{Binding IsSelected, Converter={x:Static vm:SelectionThicknessConverter.Instance}}"
-                    CornerRadius="3"
+                    CornerRadius="{DynamicResource Nyforge.Radius.Small}"
                     PointerPressed="OnElementPointerPressed"
                     PointerMoved="OnElementPointerMoved"
                     PointerReleased="OnElementPointerReleased"

@@ -1,0 +1,84 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    Shared, class-based control styles for Forge's own chrome
+    (docs/reference/design-system.md). Kept OUTSIDE Themes/ on purpose:
+    ThemeManager swaps only the theme token dictionaries, so these styles
+    live once and pull every color through DynamicResource — a theme
+    switch changes appearance, never structure.
+
+    Apply with Classes="..." on the control (e.g. Classes="section-header").
+    Named on a 4px spacing grid and the theme's type scale, per
+    industry best practice: a handful of composable primitives instead
+    of per-panel hardcoded values.
+  -->
+
+  <!-- Section / panel headers: caption, tracked, muted. -->
+  <Style Selector="TextBlock.section-header">
+    <Setter Property="FontSize" Value="{DynamicResource Nyforge.Type.Caption}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="LetterSpacing" Value="1" />
+    <Setter Property="Foreground" Value="{DynamicResource Nyforge.Brush.TextSecondary}" />
+  </Style>
+
+  <!-- Small muted field/control labels (inspector rows, behavior editor). -->
+  <Style Selector="TextBlock.field-label">
+    <Setter Property="FontSize" Value="{DynamicResource Nyforge.Type.Caption}" />
+    <Setter Property="Foreground" Value="{DynamicResource Nyforge.Brush.TextSecondary}" />
+  </Style>
+
+  <!-- Raised card: elevated surface, hairline border, medium radius. -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.SurfaceElevated}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Nyforge.Brush.ControlBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{DynamicResource Nyforge.Radius.Medium}" />
+  </Style>
+
+  <!-- Palette item: hover affordance + selected emphasis. -->
+  <Style Selector="Border.palette-item">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.SurfaceElevated}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource Nyforge.Radius.Small}" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Border.palette-item:pointerover">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.Hover}" />
+  </Style>
+  <Style Selector="Border.palette-item.selected">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.Selection}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Nyforge.Brush.Accent}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- Primary action button: filled accent, theme-background text
+       (AA contrast by construction — see docs/reference/design-system.md). -->
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.AccentStrong}" />
+    <Setter Property="Foreground" Value="{DynamicResource Nyforge.Brush.Background}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource Nyforge.Radius.Medium}" />
+    <Setter Property="Padding" Value="12,6" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.Accent}" />
+  </Style>
+  <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.Pressed}" />
+  </Style>
+
+  <!-- Secondary toolbar button: flat surface, hairline border. -->
+  <Style Selector="Button.toolbar">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.Surface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Nyforge.Brush.ControlBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{DynamicResource Nyforge.Radius.Small}" />
+    <Setter Property="Padding" Value="10,5" />
+    <Setter Property="MinHeight" Value="32" />
+  </Style>
+  <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Nyforge.Brush.Hover}" />
+  </Style>
+
+</Styles>

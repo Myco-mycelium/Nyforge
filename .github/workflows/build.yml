@@ -64,20 +64,72 @@ jobs:
           path: Nyforge-win-x64.zip
           if-no-files-found: error
 
+  # Linux build — the tandem platform target (Avalonia is
+  # cross-platform, so the SAME codebase publishes a native Linux
+  # binary for Nyrqis hosts; see docs/reference/design-system.md and
+  # engineering/ROADMAP.md).
+  build-and-test-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore Nyforge.sln
+
+      - name: Build
+        run: dotnet build Nyforge.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Nyforge.sln --no-build --configuration Release --verbosity normal
+
+      - name: Publish Linux executable
+        run: >
+          dotnet publish source/Nyforge.Shell/Nyforge.Shell.csproj
+          --configuration Release
+          --runtime linux-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          --output publish/linux-x64
+
+      - name: Zip the full publish output
+        run: zip -r Nyforge-linux-x64.zip publish/linux-x64
+
+      - name: Upload Nyforge-linux-x64.zip as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nyforge-linux-x64
+          path: Nyforge-linux-x64.zip
+          if-no-files-found: error
+
   release:
-    name: Attach Nyforge-win-x64.zip to a GitHub Release
+    name: Attach build artifacts to a GitHub Release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build-and-test
+    needs: [build-and-test, build-and-test-linux]
     runs-on: ubuntu-latest
     steps:
-      - name: Download build artifact
+      - name: Download Windows build artifact
         uses: actions/download-artifact@v4
         with:
           name: Nyforge-win-x64
-          path: publish
+          path: win
 
-      - name: Create release with Nyforge-win-x64.zip attached
+      - name: Download Linux build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Nyforge-linux-x64
+          path: linux
+
+      - name: Create release with Nyforge-win-x64.zip + Nyforge-linux-x64.zip attached
         uses: softprops/action-gh-release@v2
         with:
-          files: publish/Nyforge-win-x64.zip
+          files: |
+            win/Nyforge-win-x64.zip
+            linux/Nyforge-linux-x64.zip
           generate_release_notes: true

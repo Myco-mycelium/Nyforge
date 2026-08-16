@@ -9,9 +9,10 @@
 
   <Grid RowDefinitions="Auto,*,140">
 
-    <Border Grid.Row="0" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}" Padding="10,6">
+    <Border Grid.Row="0" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}"
+            Padding="{DynamicResource Nyforge.Padding.Banner}">
       <TextBlock Text="⚠ This is Forge's own Avalonia renderer standing in for the Nyrqis UI Runtime, which doesn't exist yet. Interactions here are simulated, not the real app."
-                 FontSize="11" TextWrapping="Wrap"
+                 FontSize="{DynamicResource Nyforge.Type.Caption}" TextWrapping="Wrap"
                  Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
     </Border>
 
@@ -49,9 +50,10 @@
 
                     <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
                             BorderBrush="{DynamicResource Nyforge.Brush.Border}" BorderThickness="1"
-                            CornerRadius="3"
+                            CornerRadius="{DynamicResource Nyforge.Radius.Small}"
                             IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
-                      <TextBlock Text="{Binding Type}" FontSize="10" Margin="6,4"
+                      <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                                 Margin="{DynamicResource Nyforge.Inset.Small}"
                                  Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
                     </Border>
                   </Panel>
@@ -63,15 +65,17 @@
       </ItemsControl>
     </Canvas>
 
-    <Border Grid.Row="2" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}" Padding="8">
+    <Border Grid.Row="2" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}"
+            Padding="{DynamicResource Nyforge.Padding.LogBar}">
       <DockPanel>
-        <TextBlock DockPanel.Dock="Top" Text="EVENT LOG" FontSize="10" FontWeight="Bold"
-                   Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" Margin="0,0,0,4" />
+        <TextBlock DockPanel.Dock="Top" Classes="section-header" Text="EVENT LOG"
+                   Margin="0,0,0,{DynamicResource Nyforge.Space.1}" />
         <ScrollViewer>
           <ItemsControl ItemsSource="{Binding Log}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="x:String">
-                <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                <TextBlock Text="{Binding}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
