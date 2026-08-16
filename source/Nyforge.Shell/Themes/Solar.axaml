@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="using:System">
 
   <!-- Solar: the bright, warm Nyrqis theme. Same token keys as Eclipse.axaml. -->
   <Styles.Resources>
@@ -32,12 +33,12 @@
       <Color x:Key="Nyforge.Color.AccentStrong">#A94E17</Color>
 
       <!-- Spacing scale — 4 px grid (docs/reference/design-system.md). -->
-      <Double x:Key="Nyforge.Space.1">4</Double>
-      <Double x:Key="Nyforge.Space.2">8</Double>
-      <Double x:Key="Nyforge.Space.3">12</Double>
-      <Double x:Key="Nyforge.Space.4">16</Double>
-      <Double x:Key="Nyforge.Space.5">24</Double>
-      <Double x:Key="Nyforge.Space.6">32</Double>
+      <sys:Double x:Key="Nyforge.Space.1">4</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.2">8</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.3">12</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.4">16</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.5">24</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.6">32</sys:Double>
 
       <!-- Corner radii. -->
       <CornerRadius x:Key="Nyforge.Radius.Small">4</CornerRadius>
@@ -45,10 +46,10 @@
       <CornerRadius x:Key="Nyforge.Radius.Large">12</CornerRadius>
 
       <!-- Type scale (documented in docs/reference/design-system.md). -->
-      <Double x:Key="Nyforge.Type.Caption">11</Double>
-      <Double x:Key="Nyforge.Type.Body">13</Double>
-      <Double x:Key="Nyforge.Type.Title">15</Double>
-      <Double x:Key="Nyforge.Type.Display">20</Double>
+      <sys:Double x:Key="Nyforge.Type.Caption">11</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Body">13</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Title">15</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Display">20</sys:Double>
 
       <!-- Thickness (margin/padding) tokens: composite markup extensions
            are not reliable in attribute values, so every padding/margin
@@ -58,6 +59,7 @@
       <Thickness x:Key="Nyforge.Inset.Medium">8</Thickness>
       <Thickness x:Key="Nyforge.Margin.SectionHeader">12,12,12,4</Thickness>
       <Thickness x:Key="Nyforge.Margin.SectionTop">0,8,0,0</Thickness>
+      <Thickness x:Key="Nyforge.Margin.SectionBottom">0,0,0,4</Thickness>
       <Thickness x:Key="Nyforge.Margin.Panel">12</Thickness>
       <Thickness x:Key="Nyforge.Margin.Canvas">16</Thickness>
       <Thickness x:Key="Nyforge.Margin.PaletteItem">4,4</Thickness>

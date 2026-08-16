@@ -69,7 +69,7 @@
             Padding="{DynamicResource Nyforge.Padding.LogBar}">
       <DockPanel>
         <TextBlock DockPanel.Dock="Top" Classes="section-header" Text="EVENT LOG"
-                   Margin="0,0,0,{DynamicResource Nyforge.Space.1}" />
+                   Margin="{DynamicResource Nyforge.Margin.SectionBottom}" />
         <ScrollViewer>
           <ItemsControl ItemsSource="{Binding Log}">
             <ItemsControl.ItemTemplate>
