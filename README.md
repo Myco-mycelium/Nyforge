@@ -90,6 +90,13 @@ milestone per `engineering/ROADMAP.md`:
   tree; the **Layers** panel shows the real component hierarchy; Preview
   and the Home tab render nested trees at their absolute positions.
   Backed by `Nyforge.Core.Nui.ComponentTree` (fully unit-tested).
+- **Undo/redo** — every edit is a single command (add, delete, move,
+  resize, reparent, property, behavior) on a bounded history: a drag
+  commits one command on release, never a command per pointer-move, and
+  never whole-project snapshots. `Ctrl+Z` / `Ctrl+Y` (Edit menu too).
+  Delete also cleans up behaviors the deleted subtree alone referenced,
+  and undo restores them. Backed by `Nyforge.Core.Editing` (fully
+  unit-tested).
 - **A worked dashboard example** — [`examples/vault-dashboard/vault-dashboard.nstudio`](examples/vault-dashboard/vault-dashboard.nstudio)
   is a Vault Monitor designed to the design system: card hierarchy,
   bound state, a conditional behavior, and `$state:` substitution.

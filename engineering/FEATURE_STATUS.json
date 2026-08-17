@@ -37,11 +37,19 @@
     },
     {
       "id": "UndoRedo",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "CommandHistoryTests + EditorCommands (11 tests: undo/redo cycles, redo invalidation, limit trimming, orphaned-behavior restore, z-order restore)",
+      "readmePhrase": "undo/redo",
+      "roadmapPhrase": "Undo/redo"
+    },
+    {
+      "id": "UndoRedoDragReorder",
       "status": "not-started",
       "introduced": null,
-      "tests": "none — no command architecture exists yet",
+      "tests": "none — drag commits a single move/reparent command; intra-parent reorder is tracked under DragReorderWithinParent",
       "readmePhrase": null,
-      "roadmapPhrase": "Undo/redo"
+      "roadmapPhrase": null
     },
     {
       "id": "NestedTreeEditing",

@@ -47,6 +47,15 @@ surfaced:
   operations (find/remove/insert/reparent/absolute-position) — covered by
   12 new unit tests (suite 18 → 30). Follow-ons tracked in
   FEATURE_STATUS.json (`DragReorderWithinParent` and friends).
+- **Priority 1, second slice: command-based undo/redo.** New
+  `Nyforge.Core.Editing` — `IEditorCommand`, `CommandHistory` (bounded
+  undo/redo stacks, redo invalidated on new commands), and the document
+  commands (add/delete/move/resize/change-property/reparent/add-behavior/
+  delete-behavior). Every edit now flows through the history: a drag
+  commits one Move (or Reparent) command on release — never per-move,
+  never snapshots. Delete's command also removes behaviors only the
+  deleted subtree referenced and restores them on undo. `Ctrl+Z`/
+  `Ctrl+Y` and the Edit menu. 11 new unit tests (suite 30 → 41).
 - **Roadmap reconciled and extended.** Undo/redo (command-based) is now an
   explicit v0.2 item; the Nyrqis API Registry and the Nyrqis Desktop Shell
   are elevated to a first-class **v0.6** section (the shell is no longer a

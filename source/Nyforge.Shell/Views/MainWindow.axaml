@@ -23,6 +23,9 @@
                   ToolTip.Tip="Point Forge's own Home tab at any .nstudio file you design — see docs/how-to/redesigning-the-home-screen.md" />
       </MenuItem>
       <MenuItem Header="_Edit">
+        <MenuItem Header="Undo" Command="{Binding UndoCommand}" HotKey="Ctrl+Z" />
+        <MenuItem Header="Redo" Command="{Binding RedoCommand}" HotKey="Ctrl+Y" />
+        <Separator />
         <MenuItem Header="Delete Selected" Command="{Binding DeleteSelectedCommand}" />
       </MenuItem>
       <MenuItem Header="_View">

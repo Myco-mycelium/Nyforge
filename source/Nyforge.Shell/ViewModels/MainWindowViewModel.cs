@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Nyforge.Core.Editing;
 using Nyforge.Core.Nui;
 using Nyforge.Shell.Services;
 
@@ -11,6 +12,18 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly PreferencesService _preferences;
 
     public HomeViewModel Home { get; }
+
+    /// <summary>
+    /// Command-based undo/redo (v0.6, 2026-08-17 architecture review item
+    /// #5): one IEditorCommand per completed gesture — a drag commits a
+    /// single Move/Resize command on release, never a command per
+    /// pointer-move. Every document edit flows through this; the Changed
+    /// event refreshes the tree from the model.
+    /// </summary>
+    public CommandHistory History { get; } = new();
+
+    public RelayCommand UndoCommand { get; }
+    public RelayCommand RedoCommand { get; }
 
     /// <summary>
     /// Raised when the Home screen's "Open Project" or "Save Project"
@@ -122,6 +135,18 @@ public sealed class MainWindowViewModel : ViewModelBase
         SetThemeCommand = new RelayCommand<string>(name => { if (name is not null) _themeManager.SetTheme(name); });
         AddBehaviorForSelectedCommand = new RelayCommand<string>(AddBehaviorForSelected);
         RemoveBehaviorCommand = new RelayCommand<BehaviorViewModel>(RemoveBehavior);
+        UndoCommand = new RelayCommand(() => History.Undo(), () => History.CanUndo);
+        RedoCommand = new RelayCommand(() => History.Redo(), () => History.CanRedo);
+
+        // After any command (execute/undo/redo/clear) the model changed:
+        // rebuild the VM tree + render list + behaviors from the model,
+        // preserving selection by id, and re-evaluate undo/redo availability.
+        History.Changed += (_, _) =>
+        {
+            RefreshTree();
+            UndoCommand.RaiseCanExecuteChanged();
+            RedoCommand.RaiseCanExecuteChanged();
+        };
 
         Home = new HomeViewModel(new RelayCommand<string>(OnHomeCommand));
         ReloadHomeScreen();
@@ -164,28 +189,49 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     private void LoadFromProject()
     {
-        CanvasElements.Clear();
-        SelectedElement = null;
-        Behaviors.Clear();
-
         var project = _projectService.Current;
         ProjectName = project.Document.Project.Name;
 
-        var root = project.Document.Screens.FirstOrDefault()?.Root;
-        if (root is null) return;
-
-        foreach (var child in root.Children)
-        {
-            CanvasElements.Add(BuildTree(child, null));
-        }
-        RebuildRenderItems();
-
-        RebuildBehaviors(root);
+        // Undo never crosses a file boundary: loading (or new/open) resets
+        // both stacks. Clear raises Changed, which refreshes the tree.
+        History.Clear();
 
         if (TryResolveTheme(project.Document.Themes.Active, out var theme))
         {
             _themeManager.SetTheme(theme);
         }
+    }
+
+    /// <summary>
+    /// Rebuilds the VM tree, flat render list, and Behaviors list from the
+    /// current model — the single sync point for every model mutation that
+    /// flows through <see cref="History"/>. Selection survives by id.
+    /// </summary>
+    private void RefreshTree()
+    {
+        var selectedId = SelectedElement?.Id;
+        CanvasElements.Clear();
+        Behaviors.Clear();
+
+        var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
+        if (root is not null)
+        {
+            foreach (var child in root.Children)
+            {
+                CanvasElements.Add(BuildTree(child, null));
+            }
+            RebuildRenderItems();
+            RebuildBehaviors(root);
+        }
+        else
+        {
+            RebuildRenderItems();
+        }
+
+        SelectedElement = selectedId is null
+            ? null
+            : CanvasRenderItems.FirstOrDefault(vm => vm.Id == selectedId);
+        OnPropertyChanged(nameof(AvailableActionTargets));
     }
 
     /// <summary>
@@ -374,16 +420,17 @@ public sealed class MainWindowViewModel : ViewModelBase
         var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
         if (root is null) return false;
 
-        if (!ComponentTree.Reparent(root, element.Model, newParent?.Model ?? root)) return false;
+        // Capture the pre-move position before the command mutates anything.
+        var (oldParent, oldIndex) = ComponentTree.FindParentAndIndex(root, element.Model.Id);
+        if (oldParent is null) return false;
 
-        if (element.Parent is not null) element.Parent.Children.Remove(element);
-        else CanvasElements.Remove(element);
+        var target = newParent?.Model ?? root;
+        if (!ComponentTree.CanContainChildren(target.Type)) return false;
+        if (ComponentTree.Find(element.Model, target.Id) is not null) return false; // cycle
 
-        element.Parent = newParent;
-        if (newParent is not null) newParent.Children.Add(element);
-        else CanvasElements.Add(element);
-
-        RebuildRenderItems();
+        // One command per gesture: the move + position-preserving reparent,
+        // undoable back to the exact old parent and z-order.
+        History.Execute(new ReparentComponentCommand(root, element.Model, oldParent, oldIndex, target));
         _projectService.Current.MarkDirty();
         StatusMessage = newParent is null
             ? $"Moved {element.Id} to the root."
@@ -425,15 +472,10 @@ public sealed class MainWindowViewModel : ViewModelBase
             component.Properties["text"] = componentType;
         }
 
-        parentModel.Children.Add(component);
-        var vm = new CanvasElementViewModel(component, container);
-        if (container is not null) container.Children.Add(vm);
-        else CanvasElements.Add(vm);
-        RebuildRenderItems();
-        SelectedElement = vm;
+        History.Execute(new AddComponentCommand(parentModel, component));
+        SelectedElement = CanvasRenderItems.FirstOrDefault(vm => vm.Model == component);
         _projectService.Current.MarkDirty();
         StatusMessage = container is null ? $"Added {componentType}." : $"Added {componentType} into {container.Id}.";
-        OnPropertyChanged(nameof(AvailableActionTargets));
     }
 
     private static double DefaultWidthFor(string type) => type switch
@@ -459,40 +501,18 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
         if (root is null) return;
-        ComponentTree.Remove(root, SelectedElement.Model.Id);
-        if (SelectedElement.Parent is not null) SelectedElement.Parent.Children.Remove(SelectedElement);
-        else CanvasElements.Remove(SelectedElement);
 
-        // Clean up any behaviors reachable only from the deleted subtree
-        // (the element itself, plus any nested children it carried) — both
-        // the Logic Editor's display list AND the underlying saved
-        // document, so a saved .nstudio file never keeps a dangling
-        // Behaviors entry for an event on a component that no longer exists.
-        var deletedSubtree = CollectSubtree(SelectedElement.Model).ToHashSet();
-        var orphaned = Behaviors.Where(b => deletedSubtree.Contains(b.SourceComponent)).ToList();
-        foreach (var b in orphaned)
-        {
-            Behaviors.Remove(b);
-            _projectService.Current.Document.Behaviors.Remove(b.Model);
-        }
+        var (parent, index) = ComponentTree.FindParentAndIndex(root, SelectedElement.Model.Id);
+        if (parent is null) return;
 
-        SelectedElement = null;
-        RebuildRenderItems();
+        // The command also removes behaviors that only the deleted subtree
+        // referenced (document.Behaviors entries whose id appears in the
+        // subtree's Events maps) and restores them on undo — no dangling
+        // references in a saved .nstudio, ever.
+        History.Execute(new DeleteComponentCommand(
+            _projectService.Current.Document, parent, index, SelectedElement.Model));
         _projectService.Current.MarkDirty();
         StatusMessage = "Deleted element.";
-        OnPropertyChanged(nameof(AvailableActionTargets));
-    }
-
-    private static IEnumerable<NuiComponent> CollectSubtree(NuiComponent node)
-    {
-        yield return node;
-        foreach (var child in node.Children)
-        {
-            foreach (var descendant in CollectSubtree(child))
-            {
-                yield return descendant;
-            }
-        }
     }
 
     /// <summary>
@@ -509,15 +529,10 @@ public sealed class MainWindowViewModel : ViewModelBase
             Action = new NuiAction { Target = "System", Name = NuiSystemActions.All.First().Name }
         };
 
-        _projectService.Current.Document.Behaviors.Add(behavior);
-        SelectedElement.Model.Events[eventName] = behavior.Id;
-
-        var vm = new BehaviorViewModel(behavior, SelectedElement.Model, eventName, ResolveComponentType);
-        Behaviors.Add(vm);
+        History.Execute(new AddBehaviorCommand(
+            _projectService.Current.Document, SelectedElement.Model, eventName, behavior));
 
         _projectService.Current.MarkDirty();
-        OnPropertyChanged(nameof(AvailableEventsForSelection));
-        OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
         StatusMessage = $"Added behavior for {SelectedElement.Id}.{eventName}.";
     }
 
@@ -525,13 +540,10 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         if (behavior is null) return;
 
-        behavior.SourceComponent.Events[behavior.EventName] = null;
-        _projectService.Current.Document.Behaviors.Remove(behavior.Model);
-        Behaviors.Remove(behavior);
+        History.Execute(new DeleteBehaviorCommand(
+            _projectService.Current.Document, behavior.SourceComponent, behavior.EventName, behavior.Model));
 
         _projectService.Current.MarkDirty();
-        OnPropertyChanged(nameof(AvailableEventsForSelection));
-        OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
         StatusMessage = "Removed behavior.";
     }
 

@@ -67,10 +67,14 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       (12 unit tests). Follow-on: drag-to-reorder within a parent,
       insertion indicators.
 - [ ] Alignment guides, snap-to-grid, multi-select, copy/paste.
-- [ ] **Undo/redo** — command-based transactions (BeginTransaction on
-      pointer-down, Commit on pointer-up, one command per completed
-      gesture; never full-project snapshots per mouse move). See the
-      2026-08-17 architecture review.
+- [x] **Undo/redo** — command-based (v0.6): every edit is one
+      `IEditorCommand` (Add/Delete/Move/Resize/Reparent/ChangeProperty/
+      AddBehavior/DeleteBehavior) on a bounded history; a drag
+      commits a single Move (or Reparent) command on pointer-up, never a
+      command per pointer-move, and never full-project snapshots. Delete
+      also removes behaviors only the deleted subtree referenced and
+      restores them on undo. `Ctrl+Z` / `Ctrl+Y` + Edit menu. Backed by
+      `Nyforge.Core.Editing` (11 unit tests).
 - [ ] Component reuse/instancing (`components[]` — currently unused).
 
 ## v0.3 — Bindings & a Live-ish Preview

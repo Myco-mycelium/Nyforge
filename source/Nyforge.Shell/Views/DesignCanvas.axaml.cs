@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Nyforge.Core.Editing;
 using Nyforge.Shell.ViewModels;
 
 namespace Nyforge.Shell.Views;
@@ -95,7 +96,18 @@ public partial class DesignCanvas : UserControl
         {
             var current = e.GetPosition(RootCanvas);
             var target = Vm.ContainerAt(current.X, current.Y, element);
-            Vm.TryReparent(element, target);
+            var reparented = Vm.TryReparent(element, target);
+
+            // One gesture, one command (undo/redo architecture, item #5):
+            // if the drop didn't reparent — whose single command already
+            // captured the whole move — commit the drag as ONE
+            // MoveComponentCommand. The pointer moves themselves are never
+            // recorded individually.
+            if (!reparented && (element.X != _dragStartX || element.Y != _dragStartY))
+            {
+                Vm.History.Execute(new MoveComponentCommand(
+                    element.Model, _dragStartX, _dragStartY, element.X, element.Y));
+            }
         }
     }
 
@@ -131,6 +143,15 @@ public partial class DesignCanvas : UserControl
         if (_resizeTarget is not null)
         {
             e.Pointer.Capture(null);
+            if (Vm is not null &&
+                (_resizeTarget.Width != _resizeStartWidth || _resizeTarget.Height != _resizeStartHeight))
+            {
+                // One command per completed resize gesture (see the move
+                // handler's comment).
+                Vm.History.Execute(new ResizeComponentCommand(
+                    _resizeTarget.Model, _resizeStartWidth, _resizeStartHeight,
+                    _resizeTarget.Width, _resizeTarget.Height));
+            }
             _resizeTarget = null;
         }
     }

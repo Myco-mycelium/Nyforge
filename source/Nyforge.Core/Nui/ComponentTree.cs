@@ -117,13 +117,14 @@ public static class ComponentTree
     }
 
     /// <summary>
-    /// Moves <paramref name="node"/> under <paramref name="newParent"/>,
-    /// adjusting its relative Layout so its absolute canvas position is
-    /// unchanged. Returns false — without mutating anything — when the
-    /// move is impossible: same node, non-container target, target inside
-    /// the node's own subtree, or the node not present in the tree.
+    /// Moves <paramref name="node"/> under <paramref name="newParent"/> at
+    /// the given child index (-1 appends), adjusting its relative Layout so
+    /// its absolute canvas position is unchanged. Returns false — without
+    /// mutating anything — when the move is impossible: same node,
+    /// non-container target, target inside the node's own subtree, or the
+    /// node not present in the tree.
     /// </summary>
-    public static bool Reparent(NuiComponent root, NuiComponent node, NuiComponent newParent)
+    public static bool Reparent(NuiComponent root, NuiComponent node, NuiComponent newParent, int index = -1)
     {
         if (node == newParent) return false;
         if (!CanContainChildren(newParent.Type)) return false;
@@ -137,7 +138,6 @@ public static class ComponentTree
 
         node.Layout.X = absX - parX;
         node.Layout.Y = absY - parY;
-        Insert(newParent, node);
-        return true;
+        return Insert(newParent, node, index);
     }
 }
