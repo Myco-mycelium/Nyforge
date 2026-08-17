@@ -248,6 +248,14 @@ compiler-verified yet.**
   until save, and opening reports the chain that ran. Genuinely
   incompatible versions still fail the gate. Tracked as FEATURE_STATUS
   `SchemaMigrations` (implemented).
+- ~~Responsive layout constraints~~ — **partially resolved 2026-08-17.**
+  `NuiLayout` carries anchors, min/max bounds, and an aspect ratio;
+  `ResponsiveLayout.Compute` (and the Nyrqis floor's `resolve_layout`,
+  differential-tested) adapts one design to any container size, and
+  both Nyrqis import gates validate the constraint fields. The shell's
+  taskbar stretches and docks itself. Breakpoint-specific visibility
+  is the documented follow-on. Tracked as FEATURE_STATUS
+  `ResponsiveBreakpoints` (partial).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0

@@ -161,6 +161,7 @@ public static class NuiValidator
 
         ValidateComponentNode(node, parent, document, masterIds, issues, isMaster: false);
         CheckOverflow(node, parent, screenId, issues);
+        CheckLayoutConstraints(node, issues);
         CheckMissingImageSource(node, projectDirectory, issues);
 
         foreach (var child in node.Children)
@@ -400,6 +401,45 @@ public static class NuiValidator
                 $"Component '{node.Id}' overflows its parent: bottom edge " +
                 $"{c.Y + c.Height:0} > parent height {p.Height:0}.",
                 ComponentId: node.Id, ScreenId: screenId));
+        }
+    }
+
+    private static void CheckLayoutConstraints(NuiComponent node, List<NuiIssue> issues)
+    {
+        // Mirror the Nyrqis gate's layout-constraint rules (NUI-SCHEMA
+        // §4) at design time so a screen fails here before it would fail
+        // the runtime import gate.
+        var l = node.Layout;
+        foreach (var (name, value) in new[]
+        {
+            ("minWidth", l.MinWidth), ("maxWidth", l.MaxWidth),
+            ("minHeight", l.MinHeight), ("maxHeight", l.MaxHeight),
+        })
+        {
+            if (value is < 0)
+            {
+                issues.Add(new NuiIssue("ER-NUI-016", NuiIssueSeverity.Error,
+                    $"Component '{node.Id}' layout '{name}' must be non-negative.",
+                    ComponentId: node.Id));
+            }
+        }
+        if (l.MinWidth is { } minW && l.MaxWidth is { } maxW && minW > maxW)
+        {
+            issues.Add(new NuiIssue("ER-NUI-017", NuiIssueSeverity.Error,
+                $"Component '{node.Id}' layout 'minWidth' must be <= 'maxWidth'.",
+                ComponentId: node.Id));
+        }
+        if (l.MinHeight is { } minH && l.MaxHeight is { } maxH && minH > maxH)
+        {
+            issues.Add(new NuiIssue("ER-NUI-017", NuiIssueSeverity.Error,
+                $"Component '{node.Id}' layout 'minHeight' must be <= 'maxHeight'.",
+                ComponentId: node.Id));
+        }
+        if (l.AspectRatio is <= 0)
+        {
+            issues.Add(new NuiIssue("ER-NUI-018", NuiIssueSeverity.Error,
+                $"Component '{node.Id}' layout 'aspectRatio' must be a positive number.",
+                ComponentId: node.Id));
         }
     }
 

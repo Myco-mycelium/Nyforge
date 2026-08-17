@@ -62,6 +62,14 @@ milestone per `engineering/ROADMAP.md`:
   renderer standing in for the Nyrqis UI Runtime (which doesn't exist yet),
   and everything outside that small set of types renders as a marked
   placeholder rather than faking interactivity it doesn't have.
+- **Responsive layout constraints (anchors, min/max, aspect ratio)** —
+  one design adapts instead of one canvas per screen size: `NuiLayout`
+  carries anchors (both-horizontal = stretch, bottom-anchor = dock),
+  min/max bounds, and an aspect ratio, resolved by
+  `ResponsiveLayout.Compute` — mirrored by the Nyrqis runtime's own
+  `resolve_layout` (differential-tested) and enforced by both import
+  gates. The shell's taskbar stretches and docks itself; a
+  breakpoint-specific visibility layer is the documented follow-on.
 - **Schema migrations** — old `.nstudio` files keep opening: a
   versioned migration chain (`NuiSchemaMigrations`) moves a document
   forward to the current schema before parsing, in memory only — the

@@ -218,6 +218,22 @@ public class NuiValidatorTests
     }
 
     [Fact]
+    public void Invalid_layout_constraints_are_errors()
+    {
+        var doc = Blank();
+        var btn = Btn("btn_bad");
+        btn.Layout.MinWidth = 2000;
+        btn.Layout.MaxWidth = 1000; // min > max
+        btn.Layout.AspectRatio = -1;
+        doc.Screens[0].Root.Children.Add(btn);
+
+        var result = NuiValidator.Validate(doc);
+
+        Assert.Contains(result.Errors, i => i.Code == "ER-NUI-017"); // min > max
+        Assert.Contains(result.Errors, i => i.Code == "ER-NUI-018"); // bad aspect
+    }
+
+    [Fact]
     public void Component_action_not_in_contract_is_error()
     {
         var doc = Blank();

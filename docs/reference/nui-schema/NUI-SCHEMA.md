@@ -76,10 +76,47 @@ Component node:
 - `type` **MUST** match an entry in the component vocabulary (§4). Forge's
   Component Palette **MUST NOT** offer a type absent from this list (NFC-001
   §4.3).
+- `layout` may additionally carry **responsive constraints** (§4.1):
+  anchors, min/max bounds, and an aspect ratio. All anchors default
+  `false`, so a layout without constraints keeps its absolute authored
+  coordinates exactly.
 - `events` maps an event name to either `null` (unbound) or the `id` of a
   `Behaviors` entry (§7).
 - `children` allows nesting (Container, Stack, Grid, Split View, etc. hold
   child Component nodes).
+
+## 4.1 Responsive Layout Constraints
+
+The `layout` object may carry these optional fields. All anchors default
+`false` — a layout without constraints keeps its absolute authored
+coordinates exactly.
+
+- `anchorLeft` / `anchorRight` / `anchorTop` / `anchorBottom` (boolean).
+  `anchorLeft` fixes the left edge at `x`; `anchorRight` fixes the right
+  edge at `containerWidth - x` (`x` doubles as the right inset). **Both
+  horizontal anchors together** make the width stretch:
+  `width = containerWidth - 2*x`. Vertical is the mirror
+  (`anchorTop`/`anchorBottom` with `y`).
+- `minWidth` / `maxWidth` / `minHeight` / `maxHeight` (non-negative
+  integers; `min* <= max*` when both present). Clamp the computed or
+  authored size.
+- `aspectRatio` (positive number). Derives the non-stretched axis when
+  exactly one axis stretches; otherwise the authored size stands (the
+  designer chose it).
+
+Resolution rules are implemented identically in Nyforge
+(`ResponsiveLayout.Compute`) and the Nyrqis runtime floor
+(`resolve_layout`, differential-tested); both import gates validate the
+constraint fields. Example — a bottom-docked, full-width taskbar that
+stays usable on narrow windows:
+
+```json
+"layout": {
+  "x": 0, "y": 0, "width": 1440, "height": 80,
+  "anchorLeft": true, "anchorRight": true, "anchorBottom": true,
+  "minWidth": 1200, "maxWidth": 1600, "maxHeight": 96
+}
+```
 
 ## 4. Component Vocabulary (v0.1)
 
@@ -268,7 +305,10 @@ the Nyforge application version.
 
 ## 10. Non-Goals for v0.4
 
-- No responsive breakpoints (`size` is a single design-time canvas size).
+- No breakpoint-specific **visibility** (show/hide per size band) or
+  multi-canvas size authoring — the constraint system (§4.1) adapts one
+  design to any container size, but `size` is still a single
+  design-time canvas size.
 - No visual extraction of reusable instances from a selection (the
   `components[]` masters + `componentRef` instances are real and
   resolved by `ReusableComponentResolver`; the palette/layers UI for

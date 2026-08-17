@@ -109,10 +109,10 @@
     },
     {
       "id": "ResponsiveBreakpoints",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none",
-      "readmePhrase": null,
+      "status": "implemented",
+      "introduced": "0.7",
+      "tests": "ResponsiveLayoutTests (8) + Nyrqis TestResponsiveLayout (12) + conformance (4) — anchors/min/max/aspect constraints in NuiLayout, resolved by ResponsiveLayout.Compute (floor resolve_layout mirrored, differential); both Nyrqis import gates validate the constraint fields; desktop.nstudio taskbar anchors/stretches/docks; breakpoint-specific visibility still future",
+      "readmePhrase": "responsive layout constraints (anchors, min/max, aspect ratio)",
       "roadmapPhrase": "Responsive breakpoints"
     },
     {

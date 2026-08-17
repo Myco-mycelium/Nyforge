@@ -167,7 +167,14 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [ ] Extend self-hosting to more of Forge's chrome (status bar? a
       dashboard/dock layout?) using the same pattern established by
       NFS-004 — deliberately not attempted in one pass.
-- [ ] Responsive breakpoints / multiple screen sizes.
+- [x] **Responsive breakpoints / multiple screen sizes — constraint
+      engine landed (v0.7).** `NuiLayout` carries anchors, min/max
+      bounds, and an aspect ratio; `ResponsiveLayout.Compute` (and the
+      Nyrqis floor's `resolve_layout`, differential-tested) adapts one
+      design to any container size — the desktop shell's taskbar
+      stretches and docks itself. Still future: breakpoint-specific
+      *visibility* (show/hide per size band) and multi-canvas size
+      authoring.
 - [ ] Additional palette components not in the v0.1 vocabulary (see
       NUI-SCHEMA.md §4's "not yet implemented" list) — each addition is a
       schema change per NFC-001 §4.3.
