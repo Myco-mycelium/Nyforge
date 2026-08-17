@@ -284,6 +284,17 @@ compiler-verified yet.**
   `format()` argument. The node-graph Logic Editor UI is the
   documented follow-on. Tracked as FEATURE_STATUS
   `ExpressionLanguage` (implemented).
+- ~~Animation system~~ — **resolved 2026-08-17.** `NuiDocument.Animations`
+  (NUI-SCHEMA §8.3): declarative, timed property transitions — unique
+  ids, a target that must name an existing component, a non-empty
+  property, and timing validated identically by Nyforge (ER-NUI-022),
+  the reference floor, and the Rust crate (differential, byte-identical
+  messages). A behavior triggers one through the new
+  `Nyrqis.Animation.Play` registry system action (added to the Nyrqis
+  API Registry; contracts regenerated); its `animation` argument must
+  name a declared animation. The desktop shell's Start menu fade plays
+  on toggle. Multi-point keyframes are the documented follow-on.
+  Tracked as FEATURE_STATUS `Animations` (implemented).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0

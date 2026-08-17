@@ -387,6 +387,48 @@ A document may carry a `resources` section — the managed asset catalog:
 - The validator also warns when a declared resource's file does not
   exist relative to the project directory (WN-NUI-007).
 
+## 8.3 Animations
+
+A document may carry an `animations` section — declarative, timed
+property transitions:
+
+```json
+"animations": [
+  { "id": "start_menu_fade", "target": "start_menu", "property": "opacity",
+    "duration": 200, "delay": 0, "easing": "ease-out",
+    "repeat": 0, "direction": "forward" }
+]
+```
+
+- Every animation declares a document-unique `id`, a `target` that must
+  name an existing component (may be omitted — the behavior's triggering
+  component), and a non-empty `property` to animate (e.g. opacity,
+  position, scale, rotation, blur, color).
+- Timing: `duration` (ms, default 300), `delay` (ms, default 0), and
+  `repeat` (default 0) must be non-negative integers; `easing` is one of
+  linear / ease-in / ease-out / ease-in-out / steps (default
+  ease-in-out); `direction` is one of forward / reverse / alternate
+  (default forward).
+- Animations are **triggered by behaviors**, never hardcoded into a
+  component: a behavior whose action is the `Nyrqis.Animation.Play`
+  system action (added to the Nyrqis API Registry) plays the animation
+  named by its `animation` argument — the reference must name a declared
+  animation (validation error ER-NUI-022 at design time; hard import-gate
+  rejection, byte-identical, on both Nyrqis sides):
+
+```json
+{ "id": "behavior_start_toggle",
+  "action": { "target": "System", "name": "Nyrqis.Animation.Play",
+               "arguments": { "animation": "start_menu_fade" } } }
+```
+
+- One semantics, three implementations: `Nyforge.Core.Nui.NuiAnimation`
+  (design time), the reference floor's `animations` validation, and the
+  Rust crate — differential-tested byte-for-byte. Multi-point
+  **keyframes** (a list of time/value stops) and an animation timeline
+  editor are the documented follow-on; the section's shape is designed
+  to grow them without a breaking change.
+
 ## 9. Versioning and Compatibility
 
 Per NFC-001 §4.1–4.2: this schema uses semantic versioning independent of

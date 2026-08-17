@@ -53,7 +53,7 @@ milestone per `engineering/ROADMAP.md`:
   the palette uses, not free text you can typo into something nonexistent.
   Conditions can be a full **expression** (`state.volume > 50 && !state.dnd`)
   evaluated by the same expression language (NUI-SCHEMA §7.2) the runtime
-  uses.
+  uses, and actions can play **declarative animations (duration, easing, direction)** (NUI-SCHEMA §8.3) via the `Nyrqis.Animation.Play` system action — a behavior fires `WHEN StartMenu.Opened DO animation StartMenu.Open` as a timed, eased property transition.
   This is what makes `.nstudio` files "code" in the fuller sense: a Save
   button's `clicked` event pointing at `Nyrqis.Settings.Commit` is a real,
   inspectable, re-openable statement about what the app does — see

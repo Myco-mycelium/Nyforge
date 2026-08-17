@@ -116,6 +116,14 @@
       "roadmapPhrase": "Responsive breakpoints"
     },
     {
+      "id": "Animations",
+      "status": "implemented",
+      "introduced": "0.4",
+      "tests": "AnimationTests (10) + Nyrqis TestAnimations (10) + 4 conformance — the document's animations section (NUI-SCHEMA §8.3): unique ids, targets that name components, non-empty properties, timing (duration/delay/repeat non-negative, easing linear|ease-in|ease-out|ease-in-out|steps, direction forward|reverse|alternate) validated by both Nyrqis import gates (differential) and Nyforge (ER-NUI-022); Nyrqis.Animation.Play (new registry system action) references must name a declared animation; desktop.nstudio start-menu fade wired to behavior_start_toggle; keyframes are the documented follow-on",
+      "readmePhrase": "declarative animations (duration, easing, direction)",
+      "roadmapPhrase": "Animation system"
+    },
+    {
       "id": "ApiRegistry",
       "status": "implemented",
       "introduced": "0.6",

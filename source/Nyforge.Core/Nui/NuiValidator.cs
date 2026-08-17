@@ -92,12 +92,69 @@ public static class NuiValidator
                  issues, projectDirectory);
         }
 
+        // ---- animations (NUI-SCHEMA §8.3) ------------------------------------
+        // Validated before behaviors so Nyrqis.Animation.Play references
+        // can be checked against the declared ids.
+        var animationIds = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var animation in document.Animations)
+        {
+            if (string.IsNullOrWhiteSpace(animation.Id))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    "Animation has an empty id."));
+                continue;
+            }
+            if (!animationIds.Add(animation.Id))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    $"Duplicate animation id '{animation.Id}'."));
+            }
+            if (string.IsNullOrWhiteSpace(animation.Property))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    $"Animation '{animation.Id}' must declare a property."));
+            }
+            if (!string.IsNullOrEmpty(animation.Target) &&
+                !allIds.Contains(animation.Target))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    $"Animation '{animation.Id}' targets component " +
+                    $"'{animation.Target}' which does not exist."));
+            }
+            foreach (var (name, value) in new[]
+            {
+                ("duration", animation.Duration),
+                ("delay", animation.Delay),
+                ("repeat", animation.Repeat),
+            })
+            {
+                if (value < 0)
+                {
+                    issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                        $"Animation '{animation.Id}' '{name}' must be non-negative."));
+                }
+            }
+            if (animation.Easing is not ("linear" or "ease-in" or "ease-out"
+                or "ease-in-out" or "steps"))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    $"Animation '{animation.Id}' easing '{animation.Easing}' is not " +
+                    "one of linear / ease-in / ease-out / ease-in-out / steps."));
+            }
+            if (animation.Direction is not ("forward" or "reverse" or "alternate"))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    $"Animation '{animation.Id}' direction '{animation.Direction}' is " +
+                    "not one of forward / reverse / alternate."));
+            }
+        }
+
         // ---- behavior / binding / action references -------------------------
         var behaviorIds = new HashSet<string>(
             document.Behaviors.Select(b => b.Id), StringComparer.Ordinal);
         foreach (var behavior in document.Behaviors)
         {
-            ValidateBehavior(behavior, document, allIds, behaviorIds, issues);
+            ValidateBehavior(behavior, document, allIds, behaviorIds, animationIds, issues);
         }
 
         foreach (var binding in document.Bindings)
@@ -332,6 +389,7 @@ public static class NuiValidator
         NuiDocument document,
         HashSet<string> allIds,
         HashSet<string> behaviorIds,
+        HashSet<string> animationIds,
         List<NuiIssue> issues)
     {
         if (string.IsNullOrWhiteSpace(behavior.Id))
@@ -391,6 +449,23 @@ public static class NuiValidator
         {
             CheckLocalize(value, document, issues, $"behavior '{behavior.Id}' argument");
             CheckExprRef(value, document, issues, $"behavior '{behavior.Id}' argument");
+        }
+        // Animations (NUI-SCHEMA §8.3): the reference must name a
+        // declared animation — fail-closed like the Nyrqis import gate.
+        if (action.Name == "Nyrqis.Animation.Play")
+        {
+            var animationId = action.Arguments.TryGetValue("animation", out var raw)
+                ? raw?.ToString()
+                : null;
+            if (string.IsNullOrEmpty(animationId) ||
+                !animationIds.Contains(animationId))
+            {
+                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                    $"Behavior '{behavior.Id}' plays animation " +
+                    $"'{animationId}' which is not declared in the " +
+                    "animations section.",
+                    BehaviorId: behavior.Id));
+            }
         }
             }
         }

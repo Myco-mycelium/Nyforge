@@ -132,6 +132,16 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       underlying model.
 - [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
       stand-in.
+- [x] **Animation system** — `NuiDocument.Animations` (NUI-SCHEMA §8.3)
+      carries the document's declarative animations: a target component,
+      one property, and timing (duration/delay/repeat non-negative,
+      easing linear|ease-in|ease-out|ease-in-out|steps, direction
+      forward|reverse|alternate). A behavior triggers one via the new
+      `Nyrqis.Animation.Play` registry system action, whose `animation`
+      argument must name a declared animation (validator ER-NUI-022,
+      mirroring both Nyrqis import gates byte-for-byte). The desktop
+      shell's Start menu fade plays on toggle. Multi-point keyframes are
+      the follow-on.
 - [x] **Asset system** — `NuiDocument.Resources` carries the managed
       asset catalog (unique ids, kinds, paths, optional sha256 content
       hashes). `$asset:id` references in component properties and

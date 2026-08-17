@@ -15,12 +15,13 @@ public static class NuiSystemActions
 
     public static readonly IReadOnlyList<SystemActionContract> All = new[]
     {
-        new SystemActionContract("Nyrqis.Theme.Set", new[] { "theme" }),
-        new SystemActionContract("Nyrqis.Settings.Commit", Array.Empty<string>()),
-        new SystemActionContract("Nyrqis.Window.Close", new[] { "windowId" }),
-        new SystemActionContract("Nyrqis.Dialog.Open", new[] { "dialogId" }),
+        new SystemActionContract("Nyrqis.Animation.Play", new[] { "animation" }),
         new SystemActionContract("Nyrqis.Dialog.Close", new[] { "dialogId" }),
+        new SystemActionContract("Nyrqis.Dialog.Open", new[] { "dialogId" }),
         new SystemActionContract("Nyrqis.Notification.Show", new[] { "title", "message", "severity" }),
+        new SystemActionContract("Nyrqis.Settings.Commit", Array.Empty<string>()),
+        new SystemActionContract("Nyrqis.Theme.Set", new[] { "theme" }),
+        new SystemActionContract("Nyrqis.Window.Close", new[] { "windowId" }),
     };
 
     private static readonly Dictionary<string, SystemActionContract> ByName =

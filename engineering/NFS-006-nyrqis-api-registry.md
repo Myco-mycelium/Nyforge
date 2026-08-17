@@ -228,3 +228,12 @@ messages. One deterministic semantics across three implementations —
 validates and evaluates in Nyforge does exactly the same thing on the
 runtime side. The node-graph Logic Editor over that semantics is the
 follow-on.
+
+Declarative animations (NUI-SCHEMA §8.3) are **no longer future work**:
+the registry now carries the `Nyrqis.Animation.Play` system action (its
+`animation` argument), `NuiDocument.Animations` holds the document's
+animations (target component, property, duration/delay/easing/repeat/
+direction), and a behavior referencing the action must name a declared
+animation — enforced identically by the validator (ER-NUI-022) and both
+Nyrqis import gates. The desktop shell's Start menu fade plays on
+toggle. Keyframes are the documented follow-on.

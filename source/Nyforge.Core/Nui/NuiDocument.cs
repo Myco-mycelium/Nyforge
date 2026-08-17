@@ -47,6 +47,16 @@ public sealed class NuiDocument
     public NuiResourcesSection Resources { get; set; } = new();
 
     /// <summary>
+    /// Animations (NUI-SCHEMA §8.3): the document's declarative
+    /// animations. A behavior whose action is <c>Nyrqis.Animation.Play</c>
+    /// references one by id (the system action's <c>animation</c>
+    /// argument); the runtime plays the timed property transition on the
+    /// animation's target component.
+    /// </summary>
+    [JsonPropertyName("animations")]
+    public List<NuiAnimation> Animations { get; set; } = new();
+
+    /// <summary>
     /// v0.2: WHEN/IF/DO rules. A component's Events dict maps an event
     /// name to one of these by Id. See NuiBehavior and NUI-SCHEMA.md §7.
     /// </summary>
@@ -138,6 +148,41 @@ public sealed class NuiResourcesSection
 {
     [JsonPropertyName("assets")]
     public List<NuiAsset> Assets { get; set; } = new();
+}
+
+/// <summary>
+/// One declarative animation (NUI-SCHEMA §8.3): a timed transition of
+/// one of a target component's properties, triggered by a behavior's
+/// <c>Nyrqis.Animation.Play</c> action. <see cref="Easing"/> is one of
+/// linear / ease-in / ease-out / ease-in-out / steps; <see cref="Direction"/>
+/// is one of forward / reverse / alternate. Keyframes (multi-point
+/// transitions) are the documented follow-on.
+/// </summary>
+public sealed class NuiAnimation
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    [JsonPropertyName("target")]
+    public string Target { get; set; } = string.Empty;
+
+    [JsonPropertyName("property")]
+    public string Property { get; set; } = string.Empty;
+
+    [JsonPropertyName("duration")]
+    public int Duration { get; set; } = 300; // milliseconds
+
+    [JsonPropertyName("delay")]
+    public int Delay { get; set; }
+
+    [JsonPropertyName("easing")]
+    public string Easing { get; set; } = "ease-in-out";
+
+    [JsonPropertyName("repeat")]
+    public int Repeat { get; set; }
+
+    [JsonPropertyName("direction")]
+    public string Direction { get; set; } = "forward";
 }
 
 public sealed class NuiCanvasSize
