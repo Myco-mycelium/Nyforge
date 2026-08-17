@@ -2,7 +2,7 @@
 title: The Nyrqis API Registry — one machine-readable platform contract (v0.6)
 document_id: NFS-006
 version: 0.1.0
-status: Proposed
+status: Implemented
 classification: Normative
 owners:
   - Nyforge Architecture
@@ -159,5 +159,16 @@ actually supports, with nothing hand-maintained to drift.
 
 ## Disposition
 
-Proposed 2026-08-17. Awaiting review; implementation scheduled as
-Priority 2 after the Priority 1 editor-structural milestone.
+Proposed and **implemented 2026-08-17** (Priority 2). The registry
+(`engineering/registry/nui-api-v1.json`, vendored from the Nyrqis repo's
+`ui/contracts/nui-api-v1.json`) is live as the single source of truth:
+
+- Nyforge C# tables are regenerated from it by `tools/generate_contracts.py`,
+  enforced by `tools/check_contracts_synced.py` in CI (both platform jobs).
+- The Nyrqis Python floor (`ui/nstudio.py`) and Rust crate (`rust/nyui`)
+  read/embed the same file; the conformance gate passes unchanged.
+
+Open follow-ons (reserved in this proposal, not yet populated): the
+richer per-property metadata (`min`/`max`/`enumValues`/`units`/`editor`)
+for a generated Inspector, and the desktop-shell component vocabulary —
+both land with Priority 3 / the shell work.

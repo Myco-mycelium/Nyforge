@@ -219,7 +219,12 @@ compiler-verified yet.**
   action chaining; "advanced code mode."
 - A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own stand-in.
 - Code-generation exporters beyond the NUI document itself.
-- Nyrqis API Registry integration.
+- ~~Nyrqis API Registry integration~~ — **resolved 2026-08-17.**
+  `ComponentContracts`/`NuiSystemActions` are regenerated from the
+  vendored registry (`engineering/registry/nui-api-v1.json`) by
+  `tools/generate_contracts.py`; `tools/check_contracts_synced.py` is a
+  CI gate (both platform jobs). The Nyrqis side reads the same registry
+  (its `ui/contracts/nui-api-v1.json`). See `engineering/NFS-006`.
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0
@@ -229,7 +234,9 @@ compiler-verified yet.**
 ### Immediate next steps
 
 See `engineering/ROADMAP.md`. Short version: Priority 1 editor-structural
-work (nested-tree editing, undo/redo, snapping — tracked in
-`engineering/FEATURE_STATUS.json`), then Priority 2 (Nyrqis API Registry,
-`engineering/NFS-006`), then Priority 3 (NUI production-grade) and
-Priority 4 (the Nyrqis Desktop Shell as a reference application).
+work (nested-tree editing, undo/redo, snapping, copy/paste, drag-to-reorder
+— all done and tracked in `engineering/FEATURE_STATUS.json`), then
+Priority 2 (Nyrqis API Registry, `engineering/NFS-006` — **done**, the
+C# tables now derive from the registry), then Priority 3 (NUI
+production-grade) and Priority 4 (the Nyrqis Desktop Shell as a
+reference application).
