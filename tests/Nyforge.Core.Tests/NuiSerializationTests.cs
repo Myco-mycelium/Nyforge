@@ -298,4 +298,33 @@ public class NuiSerializationTests
 
         Assert.Equal("$state:choice", arguments["theme"]);
     }
+
+    [Fact]
+    public void Desktop_shell_example_opens_in_Forge()
+    {
+        // The flagship reference application: the real desktop shell
+        // design (examples/nyrqis-shell/desktop.nstudio, authored with
+        // the Shell vocabulary — Taskbar, StartMenu, DesktopSurface,
+        // CommandPalette, LockScreen, …) must open in Nyforge itself.
+        // This is the editor-side half of the ADR-0025 conformance story:
+        // the Nyrqis import gate (floor + Rust crate) accepts the same
+        // file byte-for-byte.
+        var path = Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "examples", "nyrqis-shell", "desktop.nstudio");
+        path = Path.GetFullPath(path);
+        Assert.True(File.Exists(path), $"fixture missing: {path}");
+
+        var doc = ProjectSerializer.LoadFromFile(path);
+
+        Assert.Equal("0.4.0", doc.Version);
+        Assert.Equal(2, doc.Screens.Count);
+        Assert.Equal("desktop", doc.Screens[0].Id);
+        Assert.Equal("lock", doc.Screens[1].Id);
+        // The shell vocabulary is real: the taskbar resolves through the
+        // registry-backed contract tables.
+        Assert.True(ComponentContracts.TryGet("Taskbar", out var taskbar));
+        Assert.Equal("Shell", taskbar!.Category);
+        Assert.Contains("pinnedApps", taskbar.Properties);
+    }
 }
