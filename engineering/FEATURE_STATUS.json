@@ -117,9 +117,9 @@
     },
     {
       "id": "ApiRegistry",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — ComponentContracts.cs/NuiSystemActions.cs remain hand-maintained static tables (NFS-006 proposed)",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "generate_contracts.py + check_contracts_synced.py + CI gate — ComponentContracts.cs/NuiSystemActions.cs are regenerated from the vendored Nyrqis API Registry (engineering/registry/nui-api-v1.json)",
       "readmePhrase": null,
       "roadmapPhrase": "API Registry integration"
     },

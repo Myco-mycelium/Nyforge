@@ -16,3 +16,4 @@ Thumbs.db
 ## Local-only project files a user might drop in the repo root while testing
 /*.nstudio
 !examples/**/*.nstudio
+*.pyc

@@ -2,11 +2,9 @@ namespace Nyforge.Core.Nui;
 
 /// <summary>
 /// An action not scoped to a specific component instance — the
-/// "Nyrqis.*" calls from the original design doc (Nyrqis.Theme.Set,
-/// Nyrqis.Settings.Commit, etc). Like ComponentContracts, this is a static
-/// stand-in for the future Nyrqis API Registry (NUI-SCHEMA.md §5) and
-/// NuiAction.Target == "System" actions must come from this table per
-/// NFC-001 §4.3's anti-drift rule, extended to system actions.
+/// "Nyrqis.*" calls from the original design doc.  Auto-generated from
+/// the Nyrqis API Registry (engineering/registry/nui-api-v1.json) by
+/// tools/generate_contracts.py — never edit by hand.
 /// </summary>
 public sealed record SystemActionContract(
     string Name,
@@ -14,6 +12,7 @@ public sealed record SystemActionContract(
 
 public static class NuiSystemActions
 {
+
     public static readonly IReadOnlyList<SystemActionContract> All = new[]
     {
         new SystemActionContract("Nyrqis.Theme.Set", new[] { "theme" }),

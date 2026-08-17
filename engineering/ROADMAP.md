@@ -163,12 +163,11 @@ source of truth for the operating system API, and the shell is now a
 first-class target built with Forge, not a separate later project. Tracked
 in `engineering/FEATURE_STATUS.json` like every other feature.
 
-- [ ] **Nyrqis API Registry integration** — replace the hand-maintained
-      `ComponentContracts`/`NuiSystemActions` static tables with a
-      versioned, machine-readable platform contract owned by the Nyrqis
-      repo and consumed by Forge (palette, Inspector, Behaviors dropdowns)
-      and by the Nyrqis NUI import gate — one source of truth, enforced by
-      conformance tests on both sides. See `engineering/NFS-006`.
+- [x] **Nyrqis API Registry integration** — `ComponentContracts`/`NuiSystemActions`
+      are now regenerated from the vendored Nyrqis API Registry
+      (`engineering/registry/nui-api-v1.json`) by `tools/generate_contracts.py`;
+      `tools/check_contracts_synced.py` enforces drift-freedom in CI.
+      See `engineering/NFS-006`. (completed 2026-08-17)
 - [ ] **Nyrqis Desktop Shell reference application** — build the shell's
       screens in Forge as a real end-to-end test (three draft workspaces
       already exist under `examples/nyrqis-shell/`), driving the editor's

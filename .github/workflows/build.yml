@@ -20,6 +20,12 @@ jobs:
       - name: Validate feature status vs docs
         run: python tools/check_feature_status.py
 
+      # Nyrqis API Registry is the single source of truth for the NUI
+      # component vocabulary; this fails the build if the generated C#
+      # contract tables drift from the registry.
+      - name: Validate contract tables vs Nyrqis API Registry
+        run: python tools/check_contracts_synced.py
+
       - name: Set up .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
@@ -81,6 +87,9 @@ jobs:
 
       - name: Validate feature status vs docs
         run: python3 tools/check_feature_status.py
+
+      - name: Validate contract tables vs Nyrqis API Registry
+        run: python3 tools/check_contracts_synced.py
 
       - name: Set up .NET 8 SDK
         uses: actions/setup-dotnet@v4

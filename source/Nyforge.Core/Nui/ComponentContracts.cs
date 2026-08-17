@@ -3,9 +3,8 @@ namespace Nyforge.Core.Nui;
 /// <summary>
 /// A single component's declared API contract: what properties it has,
 /// what events it can raise, and (eventually) what Nyrqis actions it can
-/// invoke. This is a static stand-in for the future Nyrqis API Registry
-/// described in the original design document — see
-/// docs/reference/nui-schema/NUI-SCHEMA.md §5.
+/// invoke.  Regenerated from the Nyrqis API Registry by
+/// tools/generate_contracts.py — never edit by hand.
 /// </summary>
 public sealed record ComponentContract(
     string Type,
@@ -19,12 +18,15 @@ public sealed record ComponentContract(
 }
 
 /// <summary>
-/// The v0.1 component vocabulary. Anything the Component Palette shows in
-/// Nyforge.Shell must come from here (NFC-001 §4.3) — this is the single
-/// source of truth Forge is not allowed to drift from.
+/// The NUI component vocabulary — auto-generated from the Nyrqis API
+/// Registry (engineering/registry/nui-api-v1.json).  Anything the
+/// Component Palette shows in Nyforge.Shell must come from here
+/// (NFC-001 §4.3).  To add or change a component, edit the registry
+/// and re-run:  python tools/generate_contracts.py
 /// </summary>
 public static class ComponentContracts
 {
+
     public static readonly IReadOnlyList<ComponentContract> All = new[]
     {
         // Basic
@@ -40,7 +42,6 @@ public static class ComponentContracts
         new ComponentContract("Toggle", "Basic", new[] { "value", "label", "enabled" }, new[] { "changed" }),
         new ComponentContract("Slider", "Basic", new[] { "value", "min", "max", "enabled" }, new[] { "changed" }),
         new ComponentContract("ProgressBar", "Basic", new[] { "value", "min", "max" }, Array.Empty<string>()),
-
         // Layout
         new ComponentContract("Container", "Layout", new[] { "padding", "background" }, Array.Empty<string>()),
         new ComponentContract("Stack", "Layout", new[] { "orientation", "spacing" }, Array.Empty<string>()),
@@ -52,12 +53,10 @@ public static class ComponentContracts
         new ComponentContract("Panel", "Layout", new[] { "background", "padding" }, Array.Empty<string>()),
         new ComponentContract("Toolbar", "Layout", new[] { "background" }, Array.Empty<string>()),
         new ComponentContract("StatusBar", "Layout", new[] { "background" }, Array.Empty<string>()),
-
         // System
         new ComponentContract("Window", "System", new[] { "title", "resizable", "width", "height" }, new[] { "opened", "closed" }, Actions: new[] { "Close" }),
         new ComponentContract("Dialog", "System", new[] { "title", "modal" }, new[] { "opened", "closed" }, Actions: new[] { "Open", "Close" }),
         new ComponentContract("Notification", "System", new[] { "title", "message", "severity" }, new[] { "dismissed" }, Actions: new[] { "Dismiss" }),
-
         // Navigation
         new ComponentContract("Sidebar", "Navigation", new[] { "width", "collapsible" }, Array.Empty<string>(), Actions: new[] { "Toggle" }),
         new ComponentContract("NavigationRail", "Navigation", new[] { "collapsible" }, Array.Empty<string>(), Actions: new[] { "Toggle" }),
