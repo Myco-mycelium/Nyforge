@@ -789,9 +789,27 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// theme) but never writes back to it — see PreviewViewModel's own
     /// doc comment.
     /// </summary>
-    public PreviewViewModel CreatePreview()
+    /// <summary>
+    /// Check-before-Preview (the NUI validator): a document with errors
+    /// cannot preview — it would fail the Nyrqis import gate too. The
+    /// caller already treats a null return as "don't open the window".
+    /// </summary>
+    public PreviewViewModel? CreatePreview()
     {
         _projectService.Current.Document.Themes.Active = _themeManager.CurrentTheme;
+        var validation = NuiValidator.Validate(_projectService.Current.Document);
+        if (validation.HasErrors)
+        {
+            var first = validation.Errors.First();
+            StatusMessage = $"Preview blocked: {validation.Errors.Count()} error(s) " +
+                            $"({first.Code}) {first.Message}";
+            return null;
+        }
+        if (validation.HasWarnings)
+        {
+            StatusMessage = $"Preview: {validation.Warnings.Count()} warning(s) — " +
+                            $"{validation.Warnings.First().Message}";
+        }
         return new PreviewViewModel(_projectService.Current, _themeManager);
     }
 }

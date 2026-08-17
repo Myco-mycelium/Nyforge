@@ -233,6 +233,14 @@ compiler-verified yet.**
   import gates (floor + crate, differential). The `desktop.nstudio`
   shell example builds its taskbar from one `TaskbarButton` master.
   Tracked as FEATURE_STATUS `ComponentReuse` (implemented).
+- ~~Validation/linting~~ — **resolved 2026-08-17.** `NuiValidator`
+  (Nyforge.Core) runs check-before-Preview: errors mirror the Nyrqis
+  import gate at design time and block the preview window; warnings
+  (duplicate/empty ids, child overflow, missing image source, unused
+  behavior) and infos (reusable-instance candidate) are surfaced
+  without blocking. Every example fixture must validate with zero
+  errors in CI (`NuiValidatorTests`). Tracked as FEATURE_STATUS
+  `NuiValidator` (implemented).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0

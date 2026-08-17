@@ -195,3 +195,12 @@ materializes an instance as the master's clone plus overrides and
 instance children, so editing the master updates every instance; the
 `desktop.nstudio` shell example builds its taskbar from one
 `TaskbarButton` master with two instances, verified by floor + crate.
+
+Design-time validation is **no longer future work**: `NuiValidator`
+(Nyforge.Core) runs check-before-Preview, mirroring the import gate's
+hard rules as errors (unknown type/property/event, dangling
+behavior/binding/componentRef, unknown action, instance-with-type,
+override outside a master's contract) plus the design-only warnings and
+infos (duplicate ids, overflow, missing image source, unused behavior,
+reusable-instance candidate). Every example fixture must validate with
+zero errors in CI.

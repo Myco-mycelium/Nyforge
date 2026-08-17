@@ -136,6 +136,14 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [ ] "Advanced code mode" as an alternate way to author the same behaviors
       — both compile to the same `Behaviors` schema section, per the
       original design doc's "two development approaches, one API" model.
+- [x] **Validation/linting** — `NuiValidator` (Nyforge.Core): check-before-
+      Preview. Errors mirror the Nyrqis import gate at design time
+      (unknown type/property/event, dangling behavior/binding/ref, unknown
+      action, instance-with-type, override outside contract) and block
+      Preview; warnings (duplicate/empty ids, child overflow, missing
+      image source, unused behavior) and infos (reusable-instance
+      candidate) are surfaced without blocking. Runs in CI over every
+      example fixture (zero-error gate). See FEATURE_STATUS `NuiValidator`.
 
 ## v0.4 — Self-hosted theming, first slice
 

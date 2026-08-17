@@ -132,6 +132,14 @@
       "roadmapPhrase": "metadata-driven Inspector"
     },
     {
+      "id": "NuiValidator",
+      "status": "implemented",
+      "introduced": "0.7",
+      "tests": "NuiValidatorTests (29 tests: 17 unit cases pinning each finding code + every example .nstudio validates with zero errors) — check-before-Preview blocks on errors; duplicate ids/overflow/missing image source are warnings; duplicate structure flags as reusable-instance candidate",
+      "readmePhrase": "check-before-Preview validator",
+      "roadmapPhrase": "validation/linting"
+    },
+    {
       "id": "NyrqisDesktopShell",
       "status": "partial",
       "introduced": "0.6",

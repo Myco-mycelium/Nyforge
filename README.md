@@ -62,6 +62,14 @@ milestone per `engineering/ROADMAP.md`:
   renderer standing in for the Nyrqis UI Runtime (which doesn't exist yet),
   and everything outside that small set of types renders as a marked
   placeholder rather than faking interactivity it doesn't have.
+- **A check-before-Preview validator** — `NuiValidator` runs every time
+  you hit Preview: errors mirror the Nyrqis import gate at design time
+  (unknown type/property/event, dangling behavior/binding/reusable ref,
+  unknown action, instance-with-type, override outside a master's
+  contract) and block the preview window; warnings (duplicate ids, child
+  overflow, missing image source, unused behavior) and infos
+  (reusable-instance candidates) are surfaced without blocking. CI
+  enforces zero errors across every example design.
 - **Reusable component masters (components[]) with componentRef instances and overrides**:
   define a component once (e.g. a `TaskbarButton`) and place instances
   anywhere — `ReusableComponentResolver` materializes the instance from
