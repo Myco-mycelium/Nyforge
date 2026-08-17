@@ -93,10 +93,10 @@
     },
     {
       "id": "ExpressionLanguage",
-      "status": "partial",
+      "status": "implemented",
       "introduced": "0.4",
-      "tests": "ActionArgumentResolver tests (tests/Nyforge.Core.Tests) — $state: substitution only, no conditionals/computation",
-      "readmePhrase": null,
+      "tests": "ExpressionTests (28) + Nyrqis TestExpressions (13) + 5 conformance — NExpr (NUI-SCHEMA §7.2): deterministic tokenizer/parser/evaluator mirroring ui/nexpr.py and the rust/nyui crate (differential, byte-identical error messages); $expr: values in properties/overrides/action arguments and condition expression fields validated fail-closed (ER-NUI-021) and evaluated identically in NyForge/floor/crate; desktop.nstudio DND condition + clockTime format argument",
+      "readmePhrase": "expression language",
       "roadmapPhrase": "A real expression language"
     },
     {

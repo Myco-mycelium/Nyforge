@@ -31,7 +31,14 @@ public sealed class NuiBehavior
     };
 }
 
-/// <summary>Simple equality condition against a named document state value.</summary>
+/// <summary>
+/// A condition. Either the legacy simple equality form (a named
+/// document state value, <see cref="State"/>/<see cref="Operator"/>/<see cref="Value"/>) or — when
+/// <see cref="Expression"/> is set — a full NUI expression (NUI-SCHEMA
+/// §7.2), which supersedes the equality form. The same expression
+/// string evaluates identically in NyForge, the reference floor, and
+/// the Rust crate.
+/// </summary>
 public sealed class NuiCondition
 {
     [JsonPropertyName("state")]
@@ -43,7 +50,20 @@ public sealed class NuiCondition
     [JsonPropertyName("value")]
     public object? Value { get; set; }
 
-    public NuiCondition Clone() => new() { State = State, Operator = Operator, Value = Value };
+    /// <summary>
+    /// NUI expression (NUI-SCHEMA §7.2), e.g. <c>state.volume &gt; 50 &amp;&amp; !state.dnd</c>.
+    /// When set, it supersedes the legacy equality fields.
+    /// </summary>
+    [JsonPropertyName("expression")]
+    public string? Expression { get; set; }
+
+    public NuiCondition Clone() => new()
+    {
+        State = State,
+        Operator = Operator,
+        Value = Value,
+        Expression = Expression
+    };
 }
 
 /// <summary>

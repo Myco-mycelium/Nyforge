@@ -217,3 +217,14 @@ sha256 content hashes); `$asset:id` references in properties and
 overrides are validated against it (ER-NUI-020), `AssetCatalog`
 hashes files for deduplication, and the validator flags missing
 resource files — mirroring the Nyrqis import gate.
+
+The NUI expression language (NUI-SCHEMA §7.2) is **no longer future
+work**: `$expr:` values (properties, overrides, action arguments) and
+condition `expression` fields are validated fail-closed before Preview
+(ER-NUI-021) and at both Nyrqis import gates with byte-identical
+messages. One deterministic semantics across three implementations —
+`Nyforge.Core.Nui.NExpr` (design time), the floor's `ui/nexpr.py`, and
+`rust/nyui/src/nexpr.rs` (the shipped crate) — so a screen that
+validates and evaluates in Nyforge does exactly the same thing on the
+runtime side. The node-graph Logic Editor over that semantics is the
+follow-on.

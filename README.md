@@ -51,6 +51,9 @@ milestone per `engineering/ROADMAP.md`:
   `WHEN [event] IF [optional condition] DO [action]` rule — the action
   target and name are dropdown-validated against the same contract tables
   the palette uses, not free text you can typo into something nonexistent.
+  Conditions can be a full **expression** (`state.volume > 50 && !state.dnd`)
+  evaluated by the same expression language (NUI-SCHEMA §7.2) the runtime
+  uses.
   This is what makes `.nstudio` files "code" in the fuller sense: a Save
   button's `clicked` event pointing at `Nyrqis.Settings.Commit` is a real,
   inspectable, re-openable statement about what the app does — see
@@ -201,12 +204,14 @@ Being upfront about this matters more than pretending otherwise:
   one optional equality condition and one action per behavior — no
   AND/OR chains, no action-triggers-action chaining. Deliberately deferred;
   see `engineering/NFS-002-behaviors-schema.md` for why.
-- **Action arguments support `$state:` substitution, not full expressions.**
-  An action can say `"theme": "$state:choice"` to use a state's current
-  value directly (NFS-005), but not compute one — a boolean Toggle still
-  can't map itself to one of two theme name strings, since that needs a
-  real conditional. `examples/settings-app/settings-app.nstudio` still
-  uses two static buttons for that reason.
+- **Action arguments support `$state:` substitution and `$expr:`
+  expressions.** `$state:key` substitutes a state's current value
+  directly (NFS-005); the NUI expression language (NUI-SCHEMA §7.2) —
+  `state.name` references, comparisons, `&&`/`||`/`!`, and
+  `if`/`min`/`max`/`contains`/`format` — computes values and conditionals
+  in properties, overrides, and action arguments, evaluated identically
+  in Nyforge, the reference floor, and the Rust crate. The node-graph
+  Logic Editor UI is the follow-on.
 - **No "advanced code mode"** as an alternate way to author the same
   behaviors yet (the original design doc's two-modes-one-API idea).
 - **No live Nyrqis runtime to preview against**, because that runtime

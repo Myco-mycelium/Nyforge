@@ -1,3 +1,5 @@
+using Nyforge.Core.Nui;
+
 namespace Nyforge.Core.Runtime;
 
 /// <summary>
@@ -17,6 +19,7 @@ namespace Nyforge.Core.Runtime;
 public static class ActionArgumentResolver
 {
     private const string StatePrefix = "$state:";
+    private const string ExprPrefix = "$expr:";
 
     /// <summary>
     /// Returns a new dictionary with every "$state:key" string value
@@ -40,7 +43,22 @@ public static class ActionArgumentResolver
 
     private static object? ResolveValue(object? value, IReadOnlyDictionary<string, object?> states)
     {
-        if (value is not string text || !text.StartsWith(StatePrefix, StringComparison.Ordinal))
+        if (value is not string text)
+        {
+            return value;
+        }
+
+        // NUI expression (NUI-SCHEMA §7.2): whole-string `$expr:` values
+        // are evaluated against the current state by the expression
+        // language — identical semantics in NyForge, the reference
+        // floor, and the Rust crate.
+        if (text.StartsWith(ExprPrefix, StringComparison.Ordinal))
+        {
+            var expression = text[ExprPrefix.Length..];
+            return NExpr.Evaluate(expression, states);
+        }
+
+        if (!text.StartsWith(StatePrefix, StringComparison.Ordinal))
         {
             return value; // not a placeholder — a literal, unchanged
         }

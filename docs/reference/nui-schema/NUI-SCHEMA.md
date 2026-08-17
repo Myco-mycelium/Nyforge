@@ -248,6 +248,61 @@ being used as a literal:
   (pure, framework-free, called by `Nyforge.Shell`'s `BehaviorDispatcher`
   before dispatching — see NFS-005).
 
+### 7.2. The NUI expression language (v0.4)
+
+A whole-string value starting with `$expr:` — in component properties,
+reusable-component overrides, and action arguments — is an **expression**
+evaluated against the current document state, rather than a literal:
+
+```json
+{
+  "action": {
+    "target": "System",
+    "name": "Nyrqis.Notification.Show",
+    "arguments": { "title": "$expr:format(state.clockTime, \"{0}\")" }
+  }
+}
+```
+
+A condition may also use an `expression` field instead of the legacy
+`state`/`operator`/`value` equality form (when both are present, the
+expression wins):
+
+```json
+{
+  "id": "behavior_dnd_on",
+  "condition": { "expression": "state.doNotDisturb == true" },
+  "action": { "target": "System", "name": "Nyrqis.Notification.Show", "arguments": {} }
+}
+```
+
+**The language is deliberately small and deterministic** — designed for
+NUI, not a general-purpose scripting language. One semantics, three
+implementations that must agree byte-for-byte:
+
+- `Nyforge.Core.Nui.NExpr` (design time, C#)
+- `source/nyhal-linux-backend/ui/nexpr.py` (the reference floor, Python)
+- `source/nyhal-linux-backend/rust/nyui/src/nexpr.rs` (the shipped crate)
+
+Grammar (lowest to highest precedence): `||`, `&&`, comparisons
+(`==` `!=` `<` `<=` `>` `>=`), `+`/`-`, `*`/`/`/`%`, unary `!`/`-`, then
+primaries: numbers, `"strings"` (with `\" \\ \n \t \r \0` escapes),
+`true`/`false`, `state.<name>` references (bare `state` is the empty
+reference), parenthesized groups, and calls.
+
+Functions (arity-checked at every gate): `if(cond, a, b)`,
+`min(a, ...)`/`max(a, ...)` (numeric), `contains(haystack, needle)`, and
+`format(value, "{0}" | "{0:.Nf}" | "{0:.Ne}", ...)` (Python-style numeric
+specs, translated to .NET's `F`/`E` types in the C# mirror).
+
+**Fail-closed at every gate**: an expression that doesn't parse, names an
+unknown function, passes the wrong number of arguments, or references an
+undeclared state is rejected by Nyforge's validator (`ER-NUI-021`, before
+Preview) and by both Nyrqis import gates with byte-identical messages
+(differential-tested). At resolution time a missing state reads as an
+empty string (the gate already rejected the document, so this only
+matters for hand-edited state).
+
 ## 8. Bindings (v0.3)
 
 A `Bindings` entry ties a component's property to a document-level `states`
@@ -367,11 +422,12 @@ the Nyforge application version.
   `components[]` masters + `componentRef` instances are real and
   resolved by `ReusableComponentResolver`; the palette/layers UI for
   creating a master from a selection is the follow-on).
-- No multi-condition boolean logic or action chaining in `Behaviors` (§7).
-- No real expression language for action arguments — `$state:key` (§7.1)
-  is plain substitution only, not ternaries, concatenation, or computed
-  values. A boolean Toggle still can't drive a two-way string choice (e.g.
-  theme name) on its own.
+- No multi-condition boolean logic or action chaining in `Behaviors` (§7)
+  — the expression language (§7.2) covers computed values and
+  conditionals inside a single condition or argument, but a behavior is
+  still one condition → one action.
+- No node-graph Logic Editor UI — the expression language (§7.2) is the
+  underlying semantics; the visual graph editor over it is the follow-on.
 - No computed/derived bindings — a binding is a direct property/state
   mirror, not an expression over other state.
 

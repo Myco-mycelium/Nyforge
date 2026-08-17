@@ -212,11 +212,10 @@ compiler-verified yet.**
 - Self-hosting beyond the Home tab — palette, canvas, inspector, and menu
   bar are still hardcoded Avalonia. NFS-004 is explicit that this was a
   deliberately bounded first slice, not a claim of full self-hosting.
-- A real expression language for action arguments — `$state:` (NFS-005) is
-  substitution only, not conditionals/computation. A boolean Toggle still
-  can't drive a two-way theme choice on its own.
 - A node-graph visual representation of behaviors; multi-condition logic;
-  action chaining; "advanced code mode."
+  action chaining; "advanced code mode" — the expression language
+  (NUI-SCHEMA §7.2) is the underlying semantics; the visual graph
+  editor over it is the follow-on.
 - A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own stand-in.
 - Code-generation exporters beyond the NUI document itself.
 - ~~Nyrqis API Registry integration~~ — **resolved 2026-08-17.**
@@ -264,14 +263,27 @@ compiler-verified yet.**
   messages, differential-tested). The shell fixture's search label and
   DND message are localized (en/af). Tracked as FEATURE_STATUS
   `Localization` (implemented).
-- ~~Responsive layout constraints~~ — **partially resolved 2026-08-17.**
+- ~~Responsive layout constraints~~ — **resolved 2026-08-17.**
   `NuiLayout` carries anchors, min/max bounds, and an aspect ratio;
   `ResponsiveLayout.Compute` (and the Nyrqis floor's `resolve_layout`,
   differential-tested) adapts one design to any container size, and
   both Nyrqis import gates validate the constraint fields. The shell's
   taskbar stretches and docks itself. Breakpoint-specific visibility
   is the documented follow-on. Tracked as FEATURE_STATUS
-  `ResponsiveBreakpoints` (partial).
+  `ResponsiveBreakpoints` (implemented).
+- ~~Expression language~~ — **resolved 2026-08-17.** The deterministic NUI
+  expression language (NUI-SCHEMA §7.2): `state.name` references,
+  comparisons, `&&`/`||`/`!`, and `if`/`min`/`max`/`contains`/`format`.
+  `$expr:` values (properties, overrides, action arguments) and
+  condition `expression` fields are validated fail-closed before
+  Preview (ER-NUI-021) and at both Nyrqis import gates with
+  byte-identical messages — one semantics across three implementations
+  (`Nyforge.Core.Nui.NExpr`, the floor's `ui/nexpr.py`, and the Rust
+  crate's `nexpr` module, differential-tested). The desktop shell's
+  DND condition is now an expression and its notification title is a
+  `format()` argument. The node-graph Logic Editor UI is the
+  documented follow-on. Tracked as FEATURE_STATUS
+  `ExpressionLanguage` (implemented).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0

@@ -260,6 +260,7 @@ public static class NuiValidator
                 {
                     CheckLocalize(value, document, issues, $"{where} override");
                     CheckAssetRef(value, document, issues, $"{where} override");
+                    CheckExprRef(value, document, issues, $"{where} override");
                 }
                 ValidateEvents(node, masterContract, master.Type, document, issues,
                     isMaster ? "master" : "instance", isMaster);
@@ -288,6 +289,7 @@ public static class NuiValidator
         {
             CheckLocalize(value, document, issues, $"{where} property");
             CheckAssetRef(value, document, issues, $"{where} property");
+            CheckExprRef(value, document, issues, $"{where} property");
         }
 
         ValidateEvents(node, contract, node.Type, document, issues,
@@ -338,13 +340,29 @@ public static class NuiValidator
                 "Behavior has an empty id.", BehaviorId: behavior.Id));
         }
 
-        if (behavior.Condition is { } condition &&
-            !document.States.ContainsKey(condition.State))
+        if (behavior.Condition is { } condition)
         {
-            issues.Add(new NuiIssue("ER-NUI-005", NuiIssueSeverity.Error,
-                $"Behavior '{behavior.Id}' condition references state " +
-                $"'{condition.State}' which no longer exists.",
-                BehaviorId: behavior.Id));
+            if (!string.IsNullOrEmpty(condition.Expression))
+            {
+                // Expression conditions (NUI-SCHEMA §7.2) supersede the
+                // legacy equality form and must pass the same checks as
+                // the Nyrqis import gate.
+                var states = new HashSet<string>(document.States.Keys, StringComparer.Ordinal);
+                var problem = NExpr.TryValidate(condition.Expression, states);
+                if (problem is not null)
+                {
+                    issues.Add(new NuiIssue("ER-NUI-021", NuiIssueSeverity.Error,
+                        $"Behavior '{behavior.Id}' condition expression: {problem}.",
+                        BehaviorId: behavior.Id));
+                }
+            }
+            else if (!document.States.ContainsKey(condition.State))
+            {
+                issues.Add(new NuiIssue("ER-NUI-005", NuiIssueSeverity.Error,
+                    $"Behavior '{behavior.Id}' condition references state " +
+                    $"'{condition.State}' which no longer exists.",
+                    BehaviorId: behavior.Id));
+            }
         }
 
         var action = behavior.Action;
@@ -370,7 +388,10 @@ public static class NuiValidator
             }
         }
         foreach (var (_, value) in action.Arguments)
+        {
             CheckLocalize(value, document, issues, $"behavior '{behavior.Id}' argument");
+            CheckExprRef(value, document, issues, $"behavior '{behavior.Id}' argument");
+        }
             }
         }
         else if (action.Target != "System")
@@ -521,6 +542,27 @@ public static class NuiValidator
                 issues.Add(new NuiIssue("ER-NUI-019", NuiIssueSeverity.Error,
                     $"{where}: localize key '{key}' not in locale '{active}'."));
             }
+        }
+    }
+
+    private static void CheckExprRef(object? value, NuiDocument document,
+        List<NuiIssue> issues, string where)
+    {
+        // Whole-string `$expr:` values (NUI-SCHEMA §7.2) must parse, use
+        // only known functions with correct arity, and reference only
+        // declared states — mirroring the Nyrqis import gate fail-closed.
+        if (value is not string text ||
+            !text.StartsWith("$expr:", StringComparison.Ordinal))
+        {
+            return; // ordinary value — a literal, $state:, $localize:, ...
+        }
+        var expression = text["$expr:".Length..];
+        var states = new HashSet<string>(document.States.Keys, StringComparer.Ordinal);
+        var problem = NExpr.TryValidate(expression, states);
+        if (problem is not null)
+        {
+            issues.Add(new NuiIssue("ER-NUI-021", NuiIssueSeverity.Error,
+                $"{where}: {problem}."));
         }
     }
 

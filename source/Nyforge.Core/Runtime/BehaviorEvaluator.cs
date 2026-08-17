@@ -21,6 +21,15 @@ public static class BehaviorEvaluator
     {
         if (condition is null) return true; // no condition => always runs
 
+        // Expression conditions (NUI-SCHEMA §7.2) supersede the legacy
+        // equality form — the same expression string evaluates
+        // identically in NyForge, the reference floor, and the Rust
+        // crate (NExpr mirrors them byte-for-byte).
+        if (!string.IsNullOrEmpty(condition.Expression))
+        {
+            return NExpr.Evaluate(condition.Expression, states) is true;
+        }
+
         var hasValue = states.TryGetValue(condition.State, out var actual);
         var actualText = hasValue ? actual?.ToString() : null;
         var expectedText = condition.Value?.ToString();

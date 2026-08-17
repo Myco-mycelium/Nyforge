@@ -116,19 +116,20 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       `Behaviors`, once a node-graph UI (rather than the current flat list)
       makes that navigable — see NFS-002 for why this was deliberately
       deferred.
-- [x] **Expression-valued action arguments — partially closed (v0.4).**
-      `$state:key` substitution (NFS-005) lets an action reference a
-      state's *current value* directly. What's still missing: computing a
-      value *from* state (e.g. a boolean Toggle mapping to one of two
-      theme name strings) — that needs a real conditional expression, not
-      substitution. `examples/settings-app/settings-app.nstudio` still
-      uses two static buttons for exactly that reason; see NFS-005 for why
-      a full expression language wasn't attempted in the same pass.
-- [ ] A real expression language (conditionals at minimum) for action
-      arguments, once there's a concrete design for how a node-graph Logic
-      Editor would represent it too — see NFM-000 §2.3 on why the visual
-      and code paths need to stay trivially equivalent, which is what
-      makes rushing this risky.
+- [x] **Expression-valued arguments — `$state:key` substitution (v0.4,
+      NFS-005)** lets an action reference a state's *current value*
+      directly (plain substitution, missing keys left as the literal).
+- [x] **A real expression language (v0.4, NUI-SCHEMA §7.2)** — the
+      deterministic NUI expression language: `state.name` references,
+      comparisons, `&&`/`||`/`!`, and `if`/`min`/`max`/`contains`/`format`
+      functions. `$expr:` values (properties, overrides, action
+      arguments) and condition `expression` fields are validated
+      fail-closed (Nyforge ER-NUI-021; both Nyrqis import gates
+      byte-identical) and evaluated identically in Nyforge, the
+      reference floor (`ui/nexpr.py`), and the Rust crate — the visual
+      and code paths share one semantics (NFM-000 §2.3). The node-graph
+      Logic Editor UI is still the follow-on; the expression is its
+      underlying model.
 - [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
       stand-in.
 - [x] **Asset system** — `NuiDocument.Resources` carries the managed
