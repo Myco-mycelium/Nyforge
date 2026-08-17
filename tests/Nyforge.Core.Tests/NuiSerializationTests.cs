@@ -327,4 +327,32 @@ public class NuiSerializationTests
         Assert.Equal("Shell", taskbar!.Category);
         Assert.Contains("pinnedApps", taskbar.Properties);
     }
+
+    [Fact]
+    public void Windows_shell_example_opens_in_Forge()
+    {
+        // The window-system + power-UI shell screens
+        // (examples/nyrqis-shell/windows.nstudio): WindowFrame +
+        // WindowControls driving component-targeted actions, and a
+        // PowerMenu with a bound open state — the second reference shell
+        // design must open in Nyforge itself.
+        var path = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "examples", "nyrqis-shell", "windows.nstudio"));
+        Assert.True(File.Exists(path), $"fixture missing: {path}");
+
+        var doc = ProjectSerializer.LoadFromFile(path);
+
+        Assert.Equal("0.4.0", doc.Version);
+        Assert.Equal(2, doc.Screens.Count);
+        Assert.Equal("windows", doc.Screens[0].Id);
+        Assert.Equal("power", doc.Screens[1].Id);
+        // The window-system vocabulary resolves through the contract
+        // tables.
+        Assert.True(ComponentContracts.TryGet("WindowFrame", out var frame));
+        Assert.Equal("Shell", frame!.Category);
+        Assert.Contains("Minimize", frame.Actions);
+        Assert.Contains("Maximize", frame.Actions);
+        Assert.Contains("Close", frame.Actions);
+    }
 }

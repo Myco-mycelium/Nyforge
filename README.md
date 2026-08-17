@@ -121,6 +121,12 @@ milestone per `engineering/ROADMAP.md`:
   switching) plus a lock screen (LockScreen) — 30 components, 8
   behaviors, 6 bindings; it opens in Forge and passes the Nyrqis
   import gate (floor + Rust crate).
+- **The Nyrqis window system + power UI** — [`examples/nyrqis-shell/windows.nstudio`](examples/nyrqis-shell/windows.nstudio)
+  is the second reference shell screen: WindowFrame + WindowControls
+  drive component-targeted actions (Minimize/Maximize/Close), stacked
+  Vault-behind-Files windows with a toolbar and lists, and a PowerMenu
+  with Sleep/Restart/Shutdown — 21 components, 8 behaviors, 1 binding;
+  it opens in Forge and passes the Nyrqis import gate.
 - **The Nyrqis shell UI draft** — [`examples/nyrqis-shell/nyrqis-shell.nstudio`](examples/nyrqis-shell/nyrqis-shell.nstudio)
   is the original first draft of the shell: a 1440×900 workspace with
   StatusBar, NavigationRail, Sidebar, Toolbar, stat cards, an event
