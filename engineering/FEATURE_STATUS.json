@@ -5,17 +5,17 @@
   "features": [
     {
       "id": "CanvasMultiSelect",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — the canvas keeps a single _selectedElement (MainWindowViewModel)",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "manual (shell) + CompositeCommand tests — Ctrl/Cmd-click toggles; drag moves topmost-selected elements as one composite command; delete removes all",
       "readmePhrase": "multi-select",
       "roadmapPhrase": "multi-select"
     },
     {
       "id": "SnapToGrid",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "manual (shell) — drags and resizes snap to the 4 px design-system grid",
       "readmePhrase": "snap-to-grid",
       "roadmapPhrase": "snap-to-grid"
     },

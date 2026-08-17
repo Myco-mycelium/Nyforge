@@ -29,9 +29,9 @@ milestone per `engineering/ROADMAP.md`:
 - A working Avalonia desktop shell (`source/Nyforge.Shell`) with a **Component
   Palette**, an interactive **Design Canvas** (drag from palette, select,
   move, resize, delete), an **Inspector** (position, size, common
-  properties), and a **Layers** panel. Canvas power-editing (selecting
-  multiple components at once, snapping, alignment, clipboard operations,
-  undo/redo) is not implemented yet — see
+  properties), and a **Layers** panel. Canvas power-editing (alignment,
+  clipboard operations, drag-to-reorder within a parent) is not
+  implemented yet — see
   [`engineering/FEATURE_STATUS.json`](engineering/FEATURE_STATUS.json),
   the machine-readable feature-status source the docs are validated
   against.
@@ -97,6 +97,11 @@ milestone per `engineering/ROADMAP.md`:
   Delete also cleans up behaviors the deleted subtree alone referenced,
   and undo restores them. Backed by `Nyforge.Core.Editing` (fully
   unit-tested).
+- **Multi-select and snap-to-grid** — Ctrl/Cmd-click toggles membership;
+  dragging moves every selected element as one gesture (a single composite
+  undo command; children of a selected container ride along), and delete
+  removes them all. Drags and resizes snap to the design system's 4 px
+  grid, so canvas work stays grid-clean by construction.
 - **A worked dashboard example** — [`examples/vault-dashboard/vault-dashboard.nstudio`](examples/vault-dashboard/vault-dashboard.nstudio)
   is a Vault Monitor designed to the design system: card hierarchy,
   bound state, a conditional behavior, and `$state:` substitution.

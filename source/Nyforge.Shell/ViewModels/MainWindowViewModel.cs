@@ -54,22 +54,83 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// <summary>The v0.1 palette, sourced from the same contract table the schema doc references.</summary>
     public IReadOnlyList<ComponentContract> PaletteItems => ComponentContracts.All;
 
-    private CanvasElementViewModel? _selectedElement;
+    private readonly ObservableCollection<CanvasElementViewModel> _selectedElements = new();
+
+    /// <summary>All currently selected elements, in selection order (last = primary).</summary>
+    public IReadOnlyList<CanvasElementViewModel> SelectedElements => _selectedElements;
+
+    /// <summary>
+    /// The primary selection — the most recently clicked element. Drives
+    /// the Inspector and the single-selection Layers tree. The setter
+    /// (bound from Layers, and used for programmatic single selects)
+    /// replaces the whole selection; canvas multi-select goes through
+    /// <see cref="SelectForInteraction"/>.
+    /// </summary>
     public CanvasElementViewModel? SelectedElement
     {
-        get => _selectedElement;
+        get => _selectedElements.Count > 0 ? _selectedElements[^1] : null;
         set
         {
-            if (_selectedElement is not null) _selectedElement.IsSelected = false;
-            SetField(ref _selectedElement, value);
-            if (_selectedElement is not null) _selectedElement.IsSelected = true;
-            OnPropertyChanged(nameof(HasSelection));
-            OnPropertyChanged(nameof(AvailableEventsForSelection));
-            OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
+            SetSelection(value is null ? Array.Empty<CanvasElementViewModel>() : new[] { value });
+            OnSelectionChanged();
         }
     }
 
-    public bool HasSelection => SelectedElement is not null;
+    public bool HasSelection => _selectedElements.Count > 0;
+    public bool HasSingleSelection => _selectedElements.Count == 1;
+
+    /// <summary>
+    /// Canvas entry point for selection: additive (Ctrl/Cmd-click) toggles
+    /// membership; non-additive replaces the selection with the element.
+    /// </summary>
+    public void SelectForInteraction(CanvasElementViewModel element, bool additive)
+    {
+        if (additive)
+        {
+            if (!_selectedElements.Remove(element)) _selectedElements.Add(element);
+        }
+        else
+        {
+            SetSelection(new[] { element });
+        }
+        OnSelectionChanged();
+    }
+
+    /// <summary>
+    /// The selected elements with no selected ancestor — moving these by a
+    /// delta moves the whole selection exactly once (children of a selected
+    /// container ride along via the parent's own move).
+    /// </summary>
+    public IReadOnlyList<CanvasElementViewModel> TopmostSelected()
+    {
+        var selected = _selectedElements.ToList();
+        return selected
+            .Where(vm => !selected.Any(other => other != vm && IsDescendant(other, vm)))
+            .ToList();
+    }
+
+    private void SetSelection(IEnumerable<CanvasElementViewModel> elements)
+    {
+        var newSet = elements.Distinct().ToList();
+        foreach (var vm in _selectedElements) vm.IsSelected = false;
+        _selectedElements.Clear();
+        foreach (var vm in newSet)
+        {
+            _selectedElements.Add(vm);
+            vm.IsSelected = true;
+        }
+    }
+
+    private void OnSelectionChanged()
+    {
+        OnPropertyChanged(nameof(SelectedElement));
+        OnPropertyChanged(nameof(SelectedElements));
+        OnPropertyChanged(nameof(HasSelection));
+        OnPropertyChanged(nameof(HasSingleSelection));
+        OnPropertyChanged(nameof(AvailableEventsForSelection));
+        OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
+        DeleteSelectedCommand.RaiseCanExecuteChanged();
+    }
 
     private string _projectName = "Untitled Project";
     public string ProjectName
@@ -94,12 +155,12 @@ public sealed class MainWindowViewModel : ViewModelBase
     public RelayCommand<string> AddBehaviorForSelectedCommand { get; }
     public RelayCommand<BehaviorViewModel> RemoveBehaviorCommand { get; }
 
-    /// <summary>Unbound events on the currently selected element — what AddBehaviorForSelectedCommand can attach to.</summary>
+    /// <summary>Unbound events on the currently selected element — what AddBehaviorForSelectedCommand can attach to. Empty unless exactly one element is selected.</summary>
     public IReadOnlyList<string> AvailableEventsForSelection
     {
         get
         {
-            if (SelectedElement is null) return Array.Empty<string>();
+            if (!HasSingleSelection || SelectedElement is null) return Array.Empty<string>();
             if (!ComponentContracts.TryGet(SelectedElement.Type, out var contract)) return Array.Empty<string>();
 
             return contract!.Events
@@ -119,8 +180,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    /// <summary>True once an element is selected but has nothing left to wire up — drives the BehaviorsPanel empty state.</summary>
-    public bool NoUnboundEventsOnSelection => HasSelection && AvailableEventsForSelection.Count == 0;
+    /// <summary>True once a single element is selected but has nothing left to wire up — drives the BehaviorsPanel empty state.</summary>
+    public bool NoUnboundEventsOnSelection => HasSingleSelection && AvailableEventsForSelection.Count == 0;
 
     public MainWindowViewModel(ProjectService projectService, ThemeManager themeManager, PreferencesService preferences)
     {
@@ -209,7 +270,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// </summary>
     private void RefreshTree()
     {
-        var selectedId = SelectedElement?.Id;
+        var selectedIds = _selectedElements.Select(vm => vm.Id).ToHashSet();
         CanvasElements.Clear();
         Behaviors.Clear();
 
@@ -228,9 +289,10 @@ public sealed class MainWindowViewModel : ViewModelBase
             RebuildRenderItems();
         }
 
-        SelectedElement = selectedId is null
-            ? null
-            : CanvasRenderItems.FirstOrDefault(vm => vm.Id == selectedId);
+        // Selection survives by id — including multi-selections.
+        var matches = CanvasRenderItems.Where(vm => selectedIds.Contains(vm.Id)).ToList();
+        SetSelection(matches);
+        OnSelectionChanged();
         OnPropertyChanged(nameof(AvailableActionTargets));
     }
 
@@ -497,22 +559,36 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public void DeleteSelected()
     {
-        if (SelectedElement is null) return;
+        if (!HasSelection) return;
 
         var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
         if (root is null) return;
 
-        var (parent, index) = ComponentTree.FindParentAndIndex(root, SelectedElement.Model.Id);
-        if (parent is null) return;
+        // One composite command for the whole multi-delete: each element's
+        // parent/index is captured before anything moves. Nested selections
+        // (a container + a child) delete cleanly because the child's
+        // command removes from the detached container's own Children list.
+        var commands = new List<IEditorCommand>();
+        foreach (var vm in _selectedElements.ToList())
+        {
+            var (parent, index) = ComponentTree.FindParentAndIndex(root, vm.Model.Id);
+            if (parent is not null)
+            {
+                commands.Add(new DeleteComponentCommand(
+                    _projectService.Current.Document, parent, index, vm.Model));
+            }
+        }
 
-        // The command also removes behaviors that only the deleted subtree
-        // referenced (document.Behaviors entries whose id appears in the
-        // subtree's Events maps) and restores them on undo — no dangling
-        // references in a saved .nstudio, ever.
-        History.Execute(new DeleteComponentCommand(
-            _projectService.Current.Document, parent, index, SelectedElement.Model));
+        if (commands.Count == 1)
+        {
+            History.Execute(commands[0]);
+        }
+        else if (commands.Count > 1)
+        {
+            History.Execute(new CompositeCommand(commands));
+        }
         _projectService.Current.MarkDirty();
-        StatusMessage = "Deleted element.";
+        StatusMessage = commands.Count > 1 ? $"Deleted {commands.Count} elements." : "Deleted element.";
     }
 
     /// <summary>
@@ -521,7 +597,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// </summary>
     public void AddBehaviorForSelected(string? eventName)
     {
-        if (string.IsNullOrEmpty(eventName) || SelectedElement is null) return;
+        if (string.IsNullOrEmpty(eventName) || !HasSingleSelection || SelectedElement is null) return;
 
         var behavior = new NuiBehavior
         {

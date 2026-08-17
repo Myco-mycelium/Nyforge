@@ -66,7 +66,14 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       tab render nested trees. Backed by `Nyforge.Core.Nui.ComponentTree`
       (12 unit tests). Follow-on: drag-to-reorder within a parent,
       insertion indicators.
-- [ ] Alignment guides, snap-to-grid, multi-select, copy/paste.
+- [x] **Multi-select** — Ctrl/Cmd-click toggles membership; dragging
+      moves all selected elements as one gesture (a single composite
+      undo command; children of a selected container ride along with it);
+      delete removes all selected.
+- [x] **Snap-to-grid** — drags and resizes snap to the design system's
+      4 px grid.
+- [ ] Alignment guides.
+- [ ] Copy/paste.
 - [x] **Undo/redo** — command-based (v0.6): every edit is one
       `IEditorCommand` (Add/Delete/Move/Resize/Reparent/ChangeProperty/
       AddBehavior/DeleteBehavior) on a bounded history; a drag

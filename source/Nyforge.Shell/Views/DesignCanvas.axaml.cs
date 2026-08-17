@@ -13,6 +13,11 @@ public partial class DesignCanvas : UserControl
     private double _dragStartX, _dragStartY;
     private CanvasElementViewModel? _dropTargetHighlight;
 
+    // Multi-select drag state: all topmost selected elements and their
+    // start positions. Children of a selected container ride along with it.
+    private bool _multiDrag;
+    private Dictionary<CanvasElementViewModel, (double X, double Y)>? _multiDragStarts;
+
     private CanvasElementViewModel? _resizeTarget;
     private Point _resizeStartPointerPosition;
     private double _resizeStartWidth, _resizeStartHeight;
@@ -36,18 +41,43 @@ public partial class DesignCanvas : UserControl
     private static CanvasElementViewModel? ElementFromSender(object? sender) =>
         (sender as Control)?.DataContext as CanvasElementViewModel;
 
-    // --- Move ---
+    /// <summary>Snap to the design system's 4 px grid (docs/reference/design-system.md).</summary>
+    private static double Snap(double v) => Math.Round(v / 4.0) * 4.0;
+
+    // --- Selection + Move ---
 
     private void OnElementPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         var element = ElementFromSender(sender);
         if (element is null || Vm is null) return;
 
-        Vm.SelectedElement = element;
+        // Ctrl/Cmd-click toggles membership — a toggle never starts a drag.
+        var additive = e.KeyModifiers.HasFlag(KeyModifiers.Control) ||
+                       e.KeyModifiers.HasFlag(KeyModifiers.Meta);
+        if (additive)
+        {
+            Vm.SelectForInteraction(element, additive: true);
+            e.Handled = true;
+            return;
+        }
+
+        if (Vm.SelectedElements.Contains(element) && Vm.SelectedElements.Count > 1)
+        {
+            // Press on a member of a multi-selection: keep the selection and
+            // drag them all; collapse to a single selection on a click that
+            // doesn't move (standard design-tool behavior).
+            _multiDrag = true;
+        }
+        else
+        {
+            Vm.SelectForInteraction(element, additive: false);
+        }
+
         _dragTarget = element;
         _dragStartPointerPosition = e.GetPosition(RootCanvas);
         _dragStartX = element.X;
         _dragStartY = element.Y;
+        _multiDragStarts = Vm.TopmostSelected().ToDictionary(vm => vm, vm => (vm.X, vm.Y));
         e.Pointer.Capture(sender as Control);
         e.Handled = true;
     }
@@ -60,19 +90,31 @@ public partial class DesignCanvas : UserControl
         var deltaX = current.X - _dragStartPointerPosition.X;
         var deltaY = current.Y - _dragStartPointerPosition.Y;
 
-        // Relative model position (clamped inside the parent), then the
-        // absolute render position follows via the parent chain.
-        _dragTarget.X = Math.Max(0, _dragStartX + deltaX);
-        _dragTarget.Y = Math.Max(0, _dragStartY + deltaY);
+        if (_multiDrag && _multiDragStarts is not null)
+        {
+            foreach (var (vm, start) in _multiDragStarts)
+            {
+                vm.X = Snap(Math.Max(0, start.X + deltaX));
+                vm.Y = Snap(Math.Max(0, start.Y + deltaY));
+            }
+        }
+        else
+        {
+            _dragTarget.X = Snap(Math.Max(0, _dragStartX + deltaX));
+            _dragTarget.Y = Snap(Math.Max(0, _dragStartY + deltaY));
+        }
         Vm.RefreshRenderPositions();
 
-        // v0.6 drop affordance: highlight the container we'd reparent into.
-        var hover = Vm.ContainerAt(current.X, current.Y, _dragTarget);
-        if (hover != _dropTargetHighlight)
+        // Drop affordance only for single drags — multi-drags don't reparent.
+        if (!_multiDrag)
         {
-            if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = false;
-            _dropTargetHighlight = hover;
-            if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = true;
+            var hover = Vm.ContainerAt(current.X, current.Y, _dragTarget);
+            if (hover != _dropTargetHighlight)
+            {
+                if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = false;
+                _dropTargetHighlight = hover;
+                if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = true;
+            }
         }
     }
 
@@ -90,24 +132,58 @@ public partial class DesignCanvas : UserControl
             _dropTargetHighlight = null;
         }
 
-        // v0.6: dropping on a container reparents into it; dropping on
-        // empty canvas pops the element out to the screen root.
-        if (Vm is not null)
-        {
-            var current = e.GetPosition(RootCanvas);
-            var target = Vm.ContainerAt(current.X, current.Y, element);
-            var reparented = Vm.TryReparent(element, target);
+        if (Vm is null) return;
+        var current = e.GetPosition(RootCanvas);
 
-            // One gesture, one command (undo/redo architecture, item #5):
-            // if the drop didn't reparent — whose single command already
-            // captured the whole move — commit the drag as ONE
-            // MoveComponentCommand. The pointer moves themselves are never
-            // recorded individually.
-            if (!reparented && (element.X != _dragStartX || element.Y != _dragStartY))
+        if (_multiDrag)
+        {
+            var starts = _multiDragStarts!;
+            _multiDrag = false;
+            _multiDragStarts = null;
+
+            var moved = starts
+                .Where(kv => kv.Key.X != kv.Value.X || kv.Key.Y != kv.Value.Y)
+                .ToList();
+
+            if (moved.Count == 0)
             {
-                Vm.History.Execute(new MoveComponentCommand(
-                    element.Model, _dragStartX, _dragStartY, element.X, element.Y));
+                // Click without drag on a multi-selection collapses to the
+                // pressed element.
+                if (Vm.SelectedElements.Count > 1)
+                {
+                    Vm.SelectForInteraction(element, additive: false);
+                }
             }
+            else
+            {
+                // One gesture, one (composite) command — see item #5.
+                var commands = moved
+                    .Select(kv => (IEditorCommand)new MoveComponentCommand(
+                        kv.Key.Model, kv.Value.X, kv.Value.Y, kv.Key.X, kv.Key.Y))
+                    .ToList();
+                if (commands.Count == 1)
+                {
+                    Vm.History.Execute(commands[0]);
+                }
+                else
+                {
+                    Vm.History.Execute(new CompositeCommand(commands));
+                }
+                Vm.StatusMessage = $"Moved {commands.Count} element{(commands.Count == 1 ? "" : "s")}.";
+            }
+            return;
+        }
+
+        // Single drag: dropping on a container reparents into it; dropping
+        // on empty canvas pops the element out to the screen root.
+        var target = Vm.ContainerAt(current.X, current.Y, element);
+        var reparented = Vm.TryReparent(element, target);
+        if (!reparented && (element.X != _dragStartX || element.Y != _dragStartY))
+        {
+            // One gesture, one command (item #5): the drag itself is never
+            // recorded per pointer-move.
+            Vm.History.Execute(new MoveComponentCommand(
+                element.Model, _dragStartX, _dragStartY, element.X, element.Y));
         }
     }
 
@@ -134,8 +210,8 @@ public partial class DesignCanvas : UserControl
         var deltaX = current.X - _resizeStartPointerPosition.X;
         var deltaY = current.Y - _resizeStartPointerPosition.Y;
 
-        _resizeTarget.Width = _resizeStartWidth + deltaX;
-        _resizeTarget.Height = _resizeStartHeight + deltaY;
+        _resizeTarget.Width = Snap(Math.Max(8, _resizeStartWidth + deltaX));
+        _resizeTarget.Height = Snap(Math.Max(8, _resizeStartHeight + deltaY));
     }
 
     private void OnResizeHandlePointerReleased(object? sender, PointerReleasedEventArgs e)

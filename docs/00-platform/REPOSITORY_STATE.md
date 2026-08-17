@@ -56,6 +56,16 @@ surfaced:
   never snapshots. Delete's command also removes behaviors only the
   deleted subtree referenced and restores them on undo. `Ctrl+Z`/
   `Ctrl+Y` and the Edit menu. 11 new unit tests (suite 30 → 41).
+- **Priority 1, third slice: multi-select + snap-to-grid.** The canvas
+  now supports real multi-selection — Ctrl/Cmd-click toggles membership,
+  dragging moves every selected element as one gesture committed as a
+  single composite undo command (children of a selected container ride
+  along via `TopmostSelected`), and delete removes all selected in one
+  undoable step. Drags and resizes snap to the design system's 4 px grid
+  (the 4 px grid also gives pointer clicks a natural dead-zone, so a
+  click on a multi-selection collapses to that element without
+  accidentally moving anything). `CompositeCommand` — 3 new unit tests
+  (suite 41 → 44).
 - **Roadmap reconciled and extended.** Undo/redo (command-based) is now an
   explicit v0.2 item; the Nyrqis API Registry and the Nyrqis Desktop Shell
   are elevated to a first-class **v0.6** section (the shell is no longer a
