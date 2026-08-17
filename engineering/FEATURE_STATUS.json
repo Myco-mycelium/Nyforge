@@ -116,6 +116,14 @@
       "roadmapPhrase": "Responsive breakpoints"
     },
     {
+      "id": "StateScopes",
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "StateScopeTests (14) + Nyrqis TestStateScopes (13) + 2 conformance — the stateScopes section (NUI-SCHEMA §8.4): global/screen/component/session/persistent tables referenced as dotted scope.key names in expressions, conditions, bindings, and $expr: arguments; validated by both Nyrqis import gates (differential, byte-identical) and Nyforge (ER-NUI-023, scope-aware expression/condition/binding checks); FlattenedStates/IsStateKnown mirror the floor's resolve_states/_state_known; desktop.nstudio persistent.theme + session.clockTime wired to the theme toggle and DND title",
+      "readmePhrase": "state scopes (global, session, persistent)",
+      "roadmapPhrase": "State scopes"
+    },
+    {
       "id": "Animations",
       "status": "implemented",
       "introduced": "0.4",

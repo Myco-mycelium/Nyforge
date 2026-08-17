@@ -29,6 +29,62 @@ public sealed class NuiDocument
     public Dictionary<string, object?> States { get; set; } = new();
 
     /// <summary>
+    /// State scopes (NUI-SCHEMA §8.4): named state tables
+    /// (<c>global</c>, <c>screen</c>, <c>component</c>, <c>session</c>,
+    /// <c>persistent</c>) referenced by dotted names like
+    /// <c>persistent.theme</c> in expressions, conditions, bindings, and
+    /// arguments. <c>global</c> is the named form of the flat
+    /// <c>states</c> section — a bare reference resolves against the flat
+    /// section first, then <c>global</c>.
+    /// </summary>
+    [JsonPropertyName("stateScopes")]
+    public Dictionary<string, Dictionary<string, object?>> StateScopes { get; set; } = new();
+
+    /// <summary>
+    /// The flattened state view the runtime evaluates expressions and
+    /// resolves references against: flat <c>States</c> keys merged with
+    /// every scope's entries under their dotted names
+    /// (<c>persistent.theme</c> etc.), so <c>state.persistent.theme</c>
+    /// resolves and bare references keep working. Flat keys win on
+    /// collision — mirrors the reference floor's <c>resolve_states</c>.
+    /// </summary>
+    public Dictionary<string, object?> FlattenedStates()
+    {
+        var merged = new Dictionary<string, object?>(States);
+        foreach (var (scope, table) in StateScopes)
+        {
+            if (table is null) continue;
+            foreach (var (key, value) in table)
+            {
+                merged.TryAdd($"{scope}.{key}", value);
+            }
+        }
+        return merged;
+    }
+
+    /// <summary>
+    /// True when a state reference exists: a dotted
+    /// <c>scope.key</c> into a declared scope, or a bare key in the flat
+    /// <c>states</c> section or the <c>global</c> scope — mirrors the
+    /// reference floor's <c>_state_known</c>.
+    /// </summary>
+    public bool IsStateKnown(string? stateKey)
+    {
+        if (string.IsNullOrEmpty(stateKey)) return false;
+        if (stateKey.Contains('.'))
+        {
+            var dot = stateKey.IndexOf('.');
+            var scope = stateKey[..dot];
+            var rest = stateKey[(dot + 1)..];
+            return StateScopes.TryGetValue(scope, out var table) &&
+                   table is not null && table.ContainsKey(rest);
+        }
+        if (States.ContainsKey(stateKey)) return true;
+        return StateScopes.TryGetValue("global", out var global) &&
+               global is not null && global.ContainsKey(stateKey);
+    }
+
+    /// <summary>
     /// Localization (NUI-SCHEMA §8.1): the active locale plus per-locale
     /// string tables. A component property (or behavior argument) whose
     /// value is <c>$localize:key</c> resolves through the active locale's

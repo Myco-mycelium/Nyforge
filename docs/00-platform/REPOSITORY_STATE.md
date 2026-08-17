@@ -295,6 +295,17 @@ compiler-verified yet.**
   name a declared animation. The desktop shell's Start menu fade plays
   on toggle. Multi-point keyframes are the documented follow-on.
   Tracked as FEATURE_STATUS `Animations` (implemented).
+- ~~State scopes~~ — **resolved 2026-08-17.** `NuiDocument.StateScopes`
+  (NUI-SCHEMA §8.4): the five named state tables (global/screen/
+  component/session/persistent) referenced as dotted `scope.key` names
+  in expressions, conditions, bindings, and `$expr:` arguments. The
+  runtime evaluates against the flattened view (`FlattenedStates`,
+  mirroring the floor's `resolve_states`); validation is fail-closed at
+  Nyforge (ER-NUI-023 + scope-aware expression/condition/binding
+  checks) and at both Nyrqis import gates with byte-identical messages.
+  The shell's persistent theme and session clock are scoped states.
+  Scope lifecycle (what persists) is the runtime's follow-on. Tracked
+  as FEATURE_STATUS `StateScopes` (implemented).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0

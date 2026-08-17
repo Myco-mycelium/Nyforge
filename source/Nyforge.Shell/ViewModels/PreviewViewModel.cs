@@ -73,7 +73,11 @@ public sealed class PreviewViewModel : ViewModelBase
     public PreviewViewModel(NyforgeProject project, ThemeManager themeManager)
     {
         _project = project;
-        _runtimeStates = new Dictionary<string, object?>(project.Document.States);
+        // Runtime state is the document's flattened view: flat states
+        // merged with every declared scope under its dotted names
+        // (NUI-SCHEMA §8.4), so `state.persistent.theme` and bare
+        // references resolve identically to the reference floor.
+        _runtimeStates = project.Document.FlattenedStates();
 
         _dispatcher = new BehaviorDispatcher(
             themeManager,

@@ -233,8 +233,10 @@ public class ExpressionTests
             .First(b => b.Id == "behavior_dnd_on");
         Assert.Equal("state.doNotDisturb == true", behavior.Condition?.Expression);
 
-        var states = document.States.ToDictionary(
-            kv => kv.Key, kv => kv.Value);
+        // The runtime state view is the flattened document (flat states
+        // + every scope under its dotted names, NUI-SCHEMA §8.4) — the
+        // clock lives in the session scope on this fixture.
+        var states = document.FlattenedStates();
         Assert.False(BehaviorEvaluator.Evaluate(behavior.Condition, states));
 
         var args = ActionArgumentResolver.Resolve(

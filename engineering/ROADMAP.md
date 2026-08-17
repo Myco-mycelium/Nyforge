@@ -142,6 +142,19 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       mirroring both Nyrqis import gates byte-for-byte). The desktop
       shell's Start menu fade plays on toggle. Multi-point keyframes are
       the follow-on.
+- [x] **State scopes** — `NuiDocument.StateScopes` (NUI-SCHEMA §8.4)
+      carries the five named state tables (global/screen/component/
+      session/persistent) referenced as dotted `scope.key` names in
+      expressions, conditions, bindings, and `$expr:` arguments.
+      `global` is the named form of the flat `states` section; the
+      runtime evaluates against the flattened view
+      (`FlattenedStates`, mirroring the floor's `resolve_states`) and
+      the validator is scope-aware (ER-NUI-023 for the section,
+      unknown scoped states rejected in expressions/conditions/
+      bindings — mirroring both Nyrqis import gates byte-for-byte).
+      The shell's persistent theme and session clock are scoped
+      states. Per-scope lifecycle (session vs persistent persistence)
+      is the follow-on.
 - [x] **Asset system** — `NuiDocument.Resources` carries the managed
       asset catalog (unique ids, kinds, paths, optional sha256 content
       hashes). `$asset:id` references in component properties and

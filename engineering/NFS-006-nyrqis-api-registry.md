@@ -237,3 +237,16 @@ direction), and a behavior referencing the action must name a declared
 animation — enforced identically by the validator (ER-NUI-022) and both
 Nyrqis import gates. The desktop shell's Start menu fade plays on
 toggle. Keyframes are the documented follow-on.
+
+State scopes (NUI-SCHEMA §8.4) are **no longer future work**:
+`NuiDocument.StateScopes` carries the five named state tables (global/
+screen/component/session/persistent) referenced as dotted
+`scope.key` names in expressions, conditions, bindings, and `$expr:`
+arguments — `global` being the named form of the flat `states`
+section. The runtime evaluates against the flattened view
+(`FlattenedStates` mirroring the floor's `resolve_states`), and
+validation is fail-closed at Nyforge (ER-NUI-023 and scope-aware
+expression/condition/binding checks) and at both Nyrqis import gates
+with byte-identical messages. The shell's persistent theme and session
+clock are scoped states; scope lifecycle (what actually persists) is
+the runtime's follow-on.

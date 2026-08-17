@@ -429,6 +429,46 @@ property transitions:
   editor are the documented follow-on; the section's shape is designed
   to grow them without a breaking change.
 
+## 8.4 State Scopes
+
+A document may carry a `stateScopes` section — named state tables that
+scope where a state lives, so real applications (and the desktop shell)
+can separate concerns instead of flattening everything into `states`:
+
+```json
+"stateScopes": {
+  "global":      { "volume": 60 },                  // named form of `states`
+  "session":     { "clockTime": "14:32" },          // this run
+  "persistent":  { "theme": "Eclipse" }             // survives restart
+}
+```
+
+- The five scope kinds are `global`, `screen`, `component`, `session`,
+  and `persistent`; each maps to an object table of state keys and
+  values. Any other scope name is rejected by every gate.
+- `global` is the **named form of the flat `states` section**: a bare
+  reference (`state.volume`) resolves against `states` first, then
+  `global`. References inside a scope are dot-qualified:
+  `state.session.clockTime`, `state.persistent.theme`,
+  `state.component.<id>.<key>`.
+- Scoped references work **everywhere a state reference works** —
+  expression conditions (`state.persistent.theme == "Eclipse"`),
+  legacy equality conditions, bindings, `$state:` arguments, and
+  `$expr:` expressions. The runtime evaluates against the **flattened
+  view** (flat keys plus every scope's entries under their dotted
+  names; flat keys win on collision) — `FlattenedStates` in Nyforge
+  mirrors the floor's `resolve_states`, and both resolve identically.
+- Validation is fail-closed on every gate: unknown scope names and
+  non-object tables are rejected (ER-NUI-023 at design time; hard
+  import-gate rejection, byte-identical, on both Nyrqis sides), and a
+  dotted reference to an undeclared scoped key is an unknown-state
+  error in expressions, conditions, and bindings.
+- Scope **lifecycle** — what persists `persistent` across restarts vs.
+  `session` per run, and how `screen`/`component` tables attach — is
+  the runtime's concern (the schema declares the data); the follow-on
+  is a state-scope lifecycle spec once the real Nyrqis UI Runtime
+  exists.
+
 ## 9. Versioning and Compatibility
 
 Per NFC-001 §4.1–4.2: this schema uses semantic versioning independent of

@@ -162,6 +162,24 @@ public static class NuiValidator
             ValidateBinding(binding, document, allIds, issues);
         }
 
+        // ---- stateScopes (NUI-SCHEMA §8.4) ----------------------------------
+        // Scopes must be one of the five named scope kinds and each must
+        // be an object table — mirroring the Nyrqis import gate fail-closed.
+        foreach (var (scope, table) in document.StateScopes)
+        {
+            if (scope is not ("global" or "screen" or "component"
+                or "session" or "persistent"))
+            {
+                issues.Add(new NuiIssue("ER-NUI-023", NuiIssueSeverity.Error,
+                    $"stateScopes: unknown scope '{scope}'."));
+            }
+            if (table is null)
+            {
+                issues.Add(new NuiIssue("ER-NUI-023", NuiIssueSeverity.Error,
+                    $"stateScopes: scope '{scope}' must be an object."));
+            }
+        }
+
         // ---- resources (NUI-SCHEMA §8.2) ------------------------------------
         var assetIds = new HashSet<string>(StringComparer.Ordinal);
         foreach (var asset in document.Resources.Assets)
@@ -404,8 +422,9 @@ public static class NuiValidator
             {
                 // Expression conditions (NUI-SCHEMA §7.2) supersede the
                 // legacy equality form and must pass the same checks as
-                // the Nyrqis import gate.
-                var states = new HashSet<string>(document.States.Keys, StringComparer.Ordinal);
+                // the Nyrqis import gate. State references resolve against
+                // the flat section AND every declared scope (NUI-SCHEMA §8.4).
+                var states = ScopedStateKeys(document);
                 var problem = NExpr.TryValidate(condition.Expression, states);
                 if (problem is not null)
                 {
@@ -414,7 +433,7 @@ public static class NuiValidator
                         BehaviorId: behavior.Id));
                 }
             }
-            else if (!document.States.ContainsKey(condition.State))
+            else if (!document.IsStateKnown(condition.State))
             {
                 issues.Add(new NuiIssue("ER-NUI-005", NuiIssueSeverity.Error,
                     $"Behavior '{behavior.Id}' condition references state " +
@@ -506,7 +525,7 @@ public static class NuiValidator
             issues.Add(new NuiIssue("ER-NUI-009", NuiIssueSeverity.Error,
                 $"Binding references component '{binding.ComponentId}' which does not exist."));
         }
-        if (!document.States.ContainsKey(binding.State))
+        if (!document.IsStateKnown(binding.State))
         {
             issues.Add(new NuiIssue("ER-NUI-010", NuiIssueSeverity.Error,
                 $"Binding on '{binding.ComponentId}' references state " +
@@ -620,6 +639,24 @@ public static class NuiValidator
         }
     }
 
+    private static HashSet<string> ScopedStateKeys(NuiDocument document)
+    {
+        // Every state reference the expression language may use: flat
+        // keys plus each declared scope's entries under their dotted
+        // names (NUI-SCHEMA §8.4) — mirrors the floor's
+        // `_scoped_state_keys(doc) | set(doc.states)`.
+        var keys = new HashSet<string>(document.States.Keys, StringComparer.Ordinal);
+        foreach (var (scope, table) in document.StateScopes)
+        {
+            if (table is null) continue;
+            foreach (var key in table.Keys)
+            {
+                keys.Add($"{scope}.{key}");
+            }
+        }
+        return keys;
+    }
+
     private static void CheckExprRef(object? value, NuiDocument document,
         List<NuiIssue> issues, string where)
     {
@@ -632,7 +669,7 @@ public static class NuiValidator
             return; // ordinary value — a literal, $state:, $localize:, ...
         }
         var expression = text["$expr:".Length..];
-        var states = new HashSet<string>(document.States.Keys, StringComparer.Ordinal);
+        var states = ScopedStateKeys(document);
         var problem = NExpr.TryValidate(expression, states);
         if (problem is not null)
         {
