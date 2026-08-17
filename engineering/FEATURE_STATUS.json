@@ -61,9 +61,17 @@
     },
     {
       "id": "DragReorderWithinParent",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — reparenting appends to the end of the target; drag-to-reorder is follow-on",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "ReorderCommandTests (5 tests: before/after placement, undo restores exact order, serialization round-trip)",
+      "readmePhrase": "drag-to-reorder",
+      "roadmapPhrase": "Drag-to-reorder within a parent"
+    },
+    {
+      "id": "KeyboardNudgingAndAspectResize",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "manual (shell) — arrow keys nudge the selection 4 px (Shift 20 px); Shift while resizing locks aspect ratio",
       "readmePhrase": null,
       "roadmapPhrase": null
     },

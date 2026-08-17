@@ -64,8 +64,7 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       goes into the selected container, delete works from anywhere in the
       tree, the Layers panel is a real hierarchy, and Preview + the Home
       tab render nested trees. Backed by `Nyforge.Core.Nui.ComponentTree`
-      (12 unit tests). Follow-on: drag-to-reorder within a parent,
-      insertion indicators.
+      (12 unit tests). Follow-on: insertion indicators.
 - [x] **Multi-select** — Ctrl/Cmd-click toggles membership; dragging
       moves all selected elements as one gesture (a single composite
       undo command; children of a selected container ride along with it);
@@ -73,6 +72,11 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [x] **Snap-to-grid** — drags and resizes snap to the design system's
       4 px grid.
 - [ ] Alignment guides.
+- [x] **Drag-to-reorder within a parent** — drop a component onto a
+      sibling to change stacking order (one undoable command, exact index
+      restored on undo). Alongside: arrow keys nudge the selection (4 px,
+      Shift = 20 px) and Shift while resizing locks the aspect ratio. 5
+      new unit tests (suite 49 → 54).
 - [x] **Copy/paste** — `Ctrl+C`/`Ctrl+V` via the OS clipboard
       (`Nyforge.Core.Project.ComponentClipboard`): pasted subtrees get
       fresh ids and arrive unbound (behaviors are document-scoped), go

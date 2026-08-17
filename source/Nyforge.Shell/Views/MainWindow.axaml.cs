@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Nyforge.Core.Project;
 using Nyforge.Shell.Services;
@@ -28,6 +29,24 @@ public partial class MainWindow : Window
                 Vm.PasteRequested += OnPasteRequested;
             }
         };
+    }
+
+    // --- Arrow-key nudging (4 px grid step; Shift = 5x) ---
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (Vm is null) return;
+        // Don't hijack arrows while the user is typing (Inspector, etc.).
+        if (FocusManager?.GetFocusedElement() is TextBox) return;
+
+        var step = e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? 20.0 : 4.0;
+        switch (e.Key)
+        {
+            case Key.Left: Vm.Nudge(-step, 0); e.Handled = true; break;
+            case Key.Right: Vm.Nudge(step, 0); e.Handled = true; break;
+            case Key.Up: Vm.Nudge(0, -step); e.Handled = true; break;
+            case Key.Down: Vm.Nudge(0, step); e.Handled = true; break;
+        }
     }
 
     // --- Clipboard (OS clipboard IO lives here, not the ViewModel) ---

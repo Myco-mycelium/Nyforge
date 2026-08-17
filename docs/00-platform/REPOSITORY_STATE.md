@@ -76,6 +76,14 @@ surfaced:
   undoable command (composite for multi-copy); the pasted elements are
   selected. Clipboard IO lives in MainWindow's code-behind; the ViewModel
   stays pure. 5 new unit tests (suite 44 → 49).
+- **Priority 1, fifth slice: drag-to-reorder + keyboard precision.**
+  Dropping a component onto a sibling reorders it immediately before that
+  sibling (z-order) as one undoable command — `ReorderComponentCommand`
+  restores the exact original index on undo (5 new unit tests, suite
+  49 → 54). Arrow keys nudge the selection (4 px grid step, Shift = 20
+  px) with one command per press; Shift while resizing locks the aspect
+  ratio. With this, every item in the review's Priority 1 list is
+  implemented except alignment guides (which need their own design).
 - **Roadmap reconciled and extended.** Undo/redo (command-based) is now an
   explicit v0.2 item; the Nyrqis API Registry and the Nyrqis Desktop Shell
   are elevated to a first-class **v0.6** section (the shell is no longer a

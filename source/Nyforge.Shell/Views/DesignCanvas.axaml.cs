@@ -105,10 +105,13 @@ public partial class DesignCanvas : UserControl
         }
         Vm.RefreshRenderPositions();
 
-        // Drop affordance only for single drags — multi-drags don't reparent.
+        // Drop affordance only for single drags — multi-drags don't
+        // reparent or reorder. A sibling is a reorder target; a container
+        // is a reparent target.
         if (!_multiDrag)
         {
-            var hover = Vm.ContainerAt(current.X, current.Y, _dragTarget);
+            var hover = Vm.SiblingAt(current.X, current.Y, _dragTarget)
+                        ?? Vm.ContainerAt(current.X, current.Y, _dragTarget);
             if (hover != _dropTargetHighlight)
             {
                 if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = false;
@@ -174,16 +177,25 @@ public partial class DesignCanvas : UserControl
             return;
         }
 
-        // Single drag: dropping on a container reparents into it; dropping
-        // on empty canvas pops the element out to the screen root.
-        var target = Vm.ContainerAt(current.X, current.Y, element);
-        var reparented = Vm.TryReparent(element, target);
-        if (!reparented && (element.X != _dragStartX || element.Y != _dragStartY))
+        // Single drag: dropping on a sibling reorders (z-order); dropping
+        // on a container reparents into it; dropping on empty canvas pops
+        // the element out to the screen root.
+        var sibling = Vm.SiblingAt(current.X, current.Y, element);
+        if (sibling is not null)
         {
-            // One gesture, one command (item #5): the drag itself is never
-            // recorded per pointer-move.
-            Vm.History.Execute(new MoveComponentCommand(
-                element.Model, _dragStartX, _dragStartY, element.X, element.Y));
+            Vm.TryReorder(element, sibling);
+        }
+        else
+        {
+            var target = Vm.ContainerAt(current.X, current.Y, element);
+            var reparented = Vm.TryReparent(element, target);
+            if (!reparented && (element.X != _dragStartX || element.Y != _dragStartY))
+            {
+                // One gesture, one command (item #5): the drag itself is
+                // never recorded per pointer-move.
+                Vm.History.Execute(new MoveComponentCommand(
+                    element.Model, _dragStartX, _dragStartY, element.X, element.Y));
+            }
         }
     }
 
@@ -210,8 +222,20 @@ public partial class DesignCanvas : UserControl
         var deltaX = current.X - _resizeStartPointerPosition.X;
         var deltaY = current.Y - _resizeStartPointerPosition.Y;
 
-        _resizeTarget.Width = Snap(Math.Max(8, _resizeStartWidth + deltaX));
-        _resizeTarget.Height = Snap(Math.Max(8, _resizeStartHeight + deltaY));
+        var w = Snap(Math.Max(8, _resizeStartWidth + deltaX));
+        var h = Snap(Math.Max(8, _resizeStartHeight + deltaY));
+
+        // Shift locks the aspect ratio: derive the secondary dimension
+        // from whichever axis moved more.
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift) && _resizeStartHeight > 0)
+        {
+            var ratio = _resizeStartWidth / _resizeStartHeight;
+            if (Math.Abs(deltaX) >= Math.Abs(deltaY)) h = Snap(Math.Max(8, w / ratio));
+            else w = Snap(Math.Max(8, h * ratio));
+        }
+
+        _resizeTarget.Width = w;
+        _resizeTarget.Height = h;
     }
 
     private void OnResizeHandlePointerReleased(object? sender, PointerReleasedEventArgs e)

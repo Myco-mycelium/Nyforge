@@ -6,7 +6,8 @@
         x:DataType="vm:MainWindowViewModel"
         Title="Nyrqis Forge"
         Width="1280" Height="820"
-        Background="{DynamicResource Nyforge.Brush.Background}">
+        Background="{DynamicResource Nyforge.Brush.Background}"
+        KeyDown="OnKeyDown">
 
   <DockPanel>
 

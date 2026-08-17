@@ -29,8 +29,8 @@ milestone per `engineering/ROADMAP.md`:
 - A working Avalonia desktop shell (`source/Nyforge.Shell`) with a **Component
   Palette**, an interactive **Design Canvas** (drag from palette, select,
   move, resize, delete), an **Inspector** (position, size, common
-  properties), and a **Layers** panel. Canvas power-editing (alignment,
-  drag-to-reorder within a parent) is not implemented yet — see
+  properties), and a **Layers** panel. Canvas power-editing (alignment) is
+  not implemented yet — see
   [`engineering/FEATURE_STATUS.json`](engineering/FEATURE_STATUS.json),
   the machine-readable feature-status source the docs are validated
   against.
@@ -106,6 +106,10 @@ milestone per `engineering/ROADMAP.md`:
   document-scoped), into the selected container or the root, cascading
   8 px per paste so repeats stay visible — and each paste is one
   undoable command.
+- **Drag-to-reorder, nudging, aspect-locked resize** — drop a component
+  onto a sibling to change stacking order (one undoable command); arrow
+  keys nudge the selection (4 px, Shift = 20 px); Shift while resizing
+  locks the aspect ratio.
 - **A worked dashboard example** — [`examples/vault-dashboard/vault-dashboard.nstudio`](examples/vault-dashboard/vault-dashboard.nstudio)
   is a Vault Monitor designed to the design system: card hierarchy,
   bound state, a conditional behavior, and `$state:` substitution.

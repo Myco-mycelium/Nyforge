@@ -485,6 +485,71 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// The topmost non-container sibling of the dragged element under the
+    /// given canvas point — the drop target for reordering (z-order).
+    /// Containers are reparent targets instead; the element itself and its
+    /// own subtree are excluded.
+    /// </summary>
+    public CanvasElementViewModel? SiblingAt(double x, double y, CanvasElementViewModel? exclude)
+    {
+        for (var i = CanvasRenderItems.Count - 1; i >= 0; i--) // topmost first
+        {
+            var vm = CanvasRenderItems[i];
+            if (vm == exclude) continue;
+            if (vm.CanContainChildren) continue; // containers are reparent targets
+            if (vm.Parent != exclude?.Parent) continue; // must share the same parent
+            if (exclude is not null && IsDescendant(exclude, vm)) continue;
+            if (x >= vm.RenderX && x <= vm.RenderX + vm.Width &&
+                y >= vm.RenderY && y <= vm.RenderY + vm.Height)
+            {
+                return vm;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// v0.6 drag-to-reorder: moves an element immediately before a sibling
+    /// in the shared parent's Children list (z-order), as one undoable
+    /// command. Returns false for non-siblings or no-ops.
+    /// </summary>
+    public bool TryReorder(CanvasElementViewModel element, CanvasElementViewModel target)
+    {
+        if (element == target || element.Parent != target.Parent) return false;
+
+        var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
+        if (root is null) return false;
+
+        var (parent, oldIndex) = ComponentTree.FindParentAndIndex(root, element.Model.Id);
+        if (parent is null) return false;
+        var targetIndex = parent.Children.IndexOf(target.Model);
+        if (targetIndex < 0 || targetIndex == oldIndex) return false;
+
+        History.Execute(new ReorderComponentCommand(parent, element.Model, oldIndex, targetIndex));
+        _projectService.Current.MarkDirty();
+        StatusMessage = $"Reordered {element.Id} before {target.Id}.";
+        return true;
+    }
+
+    /// <summary>
+    /// Arrow-key nudging: moves the whole selection by (dx, dy) as one
+    /// undoable command per key press (4 px step, Shift for larger).
+    /// </summary>
+    public void Nudge(double dx, double dy)
+    {
+        if (!HasSelection) return;
+
+        var commands = TopmostSelected()
+            .Select(vm => (IEditorCommand)new MoveComponentCommand(
+                vm.Model, vm.X, vm.Y, Math.Max(0, vm.X + dx), Math.Max(0, vm.Y + dy)))
+            .ToList();
+        if (commands.Count == 0) return;
+        if (commands.Count == 1) History.Execute(commands[0]);
+        else History.Execute(new CompositeCommand(commands));
+        _projectService.Current.MarkDirty();
+    }
+
+    /// <summary>
     /// v0.6: move a component to a new parent (a container VM, or null for
     /// the screen root), preserving its absolute canvas position. Pure no-op
     /// when the target is the current parent or the move is impossible.

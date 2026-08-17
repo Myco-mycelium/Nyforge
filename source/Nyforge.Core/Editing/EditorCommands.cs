@@ -175,6 +175,43 @@ public sealed class ChangePropertyCommand : IEditorCommand
 }
 
 /// <summary>
+/// Reorders a component within its parent's Children list (z-order): the
+/// component ends up immediately before the sibling at the original
+/// <paramref name="targetIndex"/>. Undo restores the exact old index.
+/// </summary>
+public sealed class ReorderComponentCommand : IEditorCommand
+{
+    private readonly NuiComponent _parent;
+    private readonly NuiComponent _component;
+    private readonly int _oldIndex;
+    private readonly int _insertIndex;
+
+    public ReorderComponentCommand(NuiComponent parent, NuiComponent component, int oldIndex, int targetIndex)
+    {
+        _parent = parent;
+        _component = component;
+        _oldIndex = oldIndex;
+        // Insert before the target sibling; after removal the target's
+        // index shifts down by one when it sat after the component.
+        _insertIndex = targetIndex > oldIndex ? targetIndex - 1 : targetIndex;
+    }
+
+    public string Description => $"Reorder {_component.Type} '{_component.Id}'";
+
+    public void Execute()
+    {
+        _parent.Children.Remove(_component);
+        _parent.Children.Insert(Math.Min(_insertIndex, _parent.Children.Count), _component);
+    }
+
+    public void Undo()
+    {
+        _parent.Children.Remove(_component);
+        _parent.Children.Insert(Math.Min(_oldIndex, _parent.Children.Count), _component);
+    }
+}
+
+/// <summary>
 /// Moves a component to a new parent, preserving its absolute canvas
 /// position (ComponentTree.Reparent) and restoring the exact old parent
 /// and z-order on undo.
