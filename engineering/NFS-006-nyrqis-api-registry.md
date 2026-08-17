@@ -210,3 +210,10 @@ Localization is **no longer future work**: `NuiDocument.Locales`
 references in component properties, reusable overrides, and behavior
 arguments; missing keys are rejected before Preview (ER-NUI-019),
 mirroring the Nyrqis import gate with byte-identical messages.
+
+The managed asset catalog is **no longer future work**:
+`NuiDocument.Resources` declares assets (unique ids, kinds, paths,
+sha256 content hashes); `$asset:id` references in properties and
+overrides are validated against it (ER-NUI-020), `AssetCatalog`
+hashes files for deduplication, and the validator flags missing
+resource files — mirroring the Nyrqis import gate.

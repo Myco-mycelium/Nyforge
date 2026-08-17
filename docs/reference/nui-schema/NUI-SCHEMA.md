@@ -306,6 +306,32 @@ per-locale string tables:
 - `$localize:` is plain substitution, deliberately in the same family as
   `$state:` (§7.1) — no pluralization/formatting rules yet.
 
+## 8.2 Resources
+
+A document may carry a `resources` section — the managed asset catalog:
+
+```json
+"resources": {
+  "assets": [
+    { "id": "wallpaper", "kind": "image", "path": "assets/wallpaper.png",
+      "sha256": "3b0a…(64 hex chars)" }
+  ]
+}
+```
+
+- Every asset declares a document-unique `id`, a `kind` from
+  image/svg/icon/font/audio/video/material/animation, and a non-empty
+  `path` relative to the project directory. `sha256` is optional but
+  must be a 64-char hex string; `AssetCatalog` computes it from the
+  file so duplicate content can be coalesced (and the validator warns
+  on duplicate content).
+- Any string property (or reusable override) may reference an asset via
+  `$asset:id`; the reference must name a declared resource — a
+  validation error (ER-NUI-020) at design time and a hard import-gate
+  rejection on the Nyrqis side, like every other dangling reference.
+- The validator also warns when a declared resource's file does not
+  exist relative to the project directory (WN-NUI-007).
+
 ## 9. Versioning and Compatibility
 
 Per NFC-001 §4.1–4.2: this schema uses semantic versioning independent of

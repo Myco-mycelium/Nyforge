@@ -248,6 +248,14 @@ compiler-verified yet.**
   until save, and opening reports the chain that ran. Genuinely
   incompatible versions still fail the gate. Tracked as FEATURE_STATUS
   `SchemaMigrations` (implemented).
+- ~~Asset system~~ — **resolved 2026-08-17.** `NuiDocument.Resources`
+  carries the managed asset catalog (unique ids, kinds, paths, optional
+  sha256 hashes); `$asset:id` references in properties and overrides
+  are validated against it (ER-NUI-020), `AssetCatalog` computes
+  content hashes for dedup (WN-NUI-008), and missing resource files
+  warn (WN-NUI-007) — all mirroring the Nyrqis import gate. The shell's
+  wallpaper is a declared asset. Tracked as FEATURE_STATUS `Assets`
+  (implemented).
 - ~~Localization~~ — **resolved 2026-08-17.** `NuiDocument.Locales`
   (active locale + per-locale string tables) resolves `$localize:key`
   references in component properties, reusable overrides, and behavior

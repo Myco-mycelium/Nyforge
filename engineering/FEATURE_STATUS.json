@@ -140,6 +140,14 @@
       "roadmapPhrase": "Schema migrations"
     },
     {
+      "id": "Assets",
+      "status": "implemented",
+      "introduced": "0.7",
+      "tests": "AssetCatalogTests (8) + Nyrqis TestResources (8) + 4 conformance — resources section (unique ids, kinds, paths, 64-hex sha256) on NuiDocument; AssetCatalog computes sha256 + flags duplicate content; validator rejects undeclared $asset: refs (ER-NUI-020) and warns on missing resource files (WN-NUI-007) and duplicate content (WN-NUI-008); desktop.nstudio wallpaper is a declared asset",
+      "readmePhrase": "managed asset catalog ($asset: references with content hashing)",
+      "roadmapPhrase": "Asset system"
+    },
+    {
       "id": "Localization",
       "status": "implemented",
       "introduced": "0.7",

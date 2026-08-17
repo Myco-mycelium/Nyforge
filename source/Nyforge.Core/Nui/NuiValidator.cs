@@ -105,6 +105,41 @@ public static class NuiValidator
             ValidateBinding(binding, document, allIds, issues);
         }
 
+        // ---- resources (NUI-SCHEMA §8.2) ------------------------------------
+        var assetIds = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var asset in document.Resources.Assets)
+        {
+            if (string.IsNullOrWhiteSpace(asset.Id))
+            {
+                issues.Add(new NuiIssue("ER-NUI-020", NuiIssueSeverity.Error,
+                    "Resource has an empty id."));
+                continue;
+            }
+            if (!assetIds.Add(asset.Id))
+            {
+                issues.Add(new NuiIssue("ER-NUI-020", NuiIssueSeverity.Error,
+                    $"Duplicate resource id '{asset.Id}'."));
+            }
+            if (projectDirectory is not null && !string.IsNullOrEmpty(asset.Path) &&
+                !File.Exists(Path.Combine(projectDirectory, asset.Path)))
+            {
+                issues.Add(new NuiIssue("WN-NUI-007", NuiIssueSeverity.Warning,
+                    $"Resource '{asset.Id}' references '{asset.Path}' which does " +
+                    "not exist relative to the project directory."));
+            }
+        }
+        var seenHashes = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var asset in document.Resources.Assets)
+        {
+            if (asset.Sha256 is null) continue;
+            if (!seenHashes.Add(asset.Sha256))
+            {
+                issues.Add(new NuiIssue("WN-NUI-008", NuiIssueSeverity.Warning,
+                    $"Resource '{asset.Id}' has the same content hash as another " +
+                    "resource — consider deduplicating."));
+            }
+        }
+
         // ---- reusable masters -------------------------------------------------
         foreach (var master in document.ReusableComponents)
         {
@@ -222,7 +257,10 @@ public static class NuiValidator
                     }
                 }
                 foreach (var (_, value) in node.Overrides)
+                {
                     CheckLocalize(value, document, issues, $"{where} override");
+                    CheckAssetRef(value, document, issues, $"{where} override");
+                }
                 ValidateEvents(node, masterContract, master.Type, document, issues,
                     isMaster ? "master" : "instance", isMaster);
             }
@@ -247,7 +285,10 @@ public static class NuiValidator
             }
         }
         foreach (var (_, value) in node.Properties)
+        {
             CheckLocalize(value, document, issues, $"{where} property");
+            CheckAssetRef(value, document, issues, $"{where} property");
+        }
 
         ValidateEvents(node, contract, node.Type, document, issues,
             "component", isMaster);
@@ -410,6 +451,47 @@ public static class NuiValidator
         }
     }
 
+    private static void CheckAssetRef(object? value, NuiDocument document,
+        List<NuiIssue> issues, string where)
+    {
+        // $asset:id references must name a declared resource (fail-closed,
+        // mirroring the Nyrqis import gate).
+        if (value is not string text || !text.Contains("$asset:", StringComparison.Ordinal))
+            return;
+        var assets = document.Resources.Assets;
+        if (assets.Count == 0)
+        {
+            issues.Add(new NuiIssue("ER-NUI-020", NuiIssueSeverity.Error,
+                $"{where}: a '$asset:' reference requires a 'resources' " +
+                "section with an 'assets' list."));
+            return;
+        }
+        var ids = new HashSet<string>(assets.Select(a => a.Id), StringComparer.Ordinal);
+        foreach (var key in AssetReferences(text))
+        {
+            if (!ids.Contains(key))
+            {
+                issues.Add(new NuiIssue("ER-NUI-020", NuiIssueSeverity.Error,
+                    $"{where}: asset '{key}' is not declared in resources."));
+            }
+        }
+    }
+
+    private static IEnumerable<string> AssetReferences(string text)
+    {
+        const string prefix = "$asset:";
+        var rest = text;
+        while (true)
+        {
+            var pos = rest.IndexOf(prefix, StringComparison.Ordinal);
+            if (pos < 0) yield break;
+            rest = rest[(pos + prefix.Length)..];
+            var key = new string(rest.TakeWhile(c =>
+                char.IsAsciiLetterOrDigit(c) || c is '_' or '.' or '-').ToArray());
+            if (key.Length > 0) yield return key;
+        }
+    }
+
     private static void CheckLocalize(object? value, NuiDocument document,
         List<NuiIssue> issues, string where)
     {
@@ -499,6 +581,7 @@ public static class NuiValidator
             !source.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
             !source.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
             !source.StartsWith("$localize:", StringComparison.Ordinal) &&
+            !source.StartsWith("$asset:", StringComparison.Ordinal) &&
             !File.Exists(Path.Combine(projectDirectory, source)))
         {
             issues.Add(new NuiIssue("WN-NUI-005", NuiIssueSeverity.Warning,

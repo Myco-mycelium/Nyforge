@@ -62,6 +62,13 @@ milestone per `engineering/ROADMAP.md`:
   renderer standing in for the Nyrqis UI Runtime (which doesn't exist yet),
   and everything outside that small set of types renders as a marked
   placeholder rather than faking interactivity it doesn't have.
+- **Managed asset catalog ($asset: references with content hashing)** —
+  a project's `resources` section declares assets (unique ids, kinds,
+  paths, sha256 content hashes); `$asset:id` references in component
+  properties and reusable overrides are validated against it before
+  Preview. `AssetCatalog` hashes files for deduplication, and the
+  validator flags missing resource files and duplicate content. The
+  shell's wallpaper is a declared asset.
 - **Localization ($localize: keys with locale tables)** — a project's
   `locales` section (active locale + per-locale string tables) resolves
   `$localize:key` references in component properties, reusable

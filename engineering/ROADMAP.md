@@ -131,6 +131,15 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       makes rushing this risky.
 - [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
       stand-in.
+- [x] **Asset system** — `NuiDocument.Resources` carries the managed
+      asset catalog (unique ids, kinds, paths, optional sha256 content
+      hashes). `$asset:id` references in component properties and
+      reusable overrides must name a declared resource (validator
+      ER-NUI-020, mirroring the Nyrqis import gate); `AssetCatalog`
+      computes content hashes for deduplication (WN-NUI-008) and the
+      validator flags missing resource files (WN-NUI-007). The shell's
+      wallpaper is a declared asset referenced via `$asset:wallpaper`.
+      Asset *import/preview UI* is the follow-on.
 - [x] **Localization** — `NuiDocument.Locales` carries an active locale
       plus per-locale string tables; `$localize:key` references in
       component properties, reusable overrides, and behavior arguments

@@ -38,6 +38,15 @@ public sealed class NuiDocument
     public NuiLocalesSection Locales { get; set; } = new();
 
     /// <summary>
+    /// Resources (NUI-SCHEMA §8.2): the project's managed asset catalog.
+    /// A component property value like <c>$asset:wallpaper</c> names an
+    /// asset by id; <see cref="AssetCatalog"/> computes the sha256
+    /// content hash for deduplication and packaging.
+    /// </summary>
+    [JsonPropertyName("resources")]
+    public NuiResourcesSection Resources { get; set; } = new();
+
+    /// <summary>
     /// v0.2: WHEN/IF/DO rules. A component's Events dict maps an event
     /// name to one of these by Id. See NuiBehavior and NUI-SCHEMA.md §7.
     /// </summary>
@@ -89,6 +98,46 @@ public sealed class NuiLocalesSection
 
     [JsonPropertyName("tables")]
     public Dictionary<string, Dictionary<string, string>> Tables { get; set; } = new();
+}
+
+/// <summary>Asset kinds (NUI-SCHEMA §8.2).</summary>
+public enum NuiAssetKind
+{
+    Image,
+    Svg,
+    Icon,
+    Font,
+    Audio,
+    Video,
+    Material,
+    Animation,
+}
+
+/// <summary>One managed resource: a stable id, a kind, its path relative
+/// to the project, and the sha256 content hash (computed by
+/// <see cref="AssetCatalog"/>, used for deduplication).</summary>
+public sealed class NuiAsset
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    [JsonPropertyName("kind")]
+    public string Kind { get; set; } = "image";
+
+    [JsonPropertyName("path")]
+    public string Path { get; set; } = string.Empty;
+
+    [JsonPropertyName("sha256")]
+    public string? Sha256 { get; set; }
+}
+
+/// <summary>The resources section (NUI-SCHEMA §8.2): the ordered asset
+/// catalog. Ids are document-unique; <c>$asset:id</c> references resolve
+/// against them.</summary>
+public sealed class NuiResourcesSection
+{
+    [JsonPropertyName("assets")]
+    public List<NuiAsset> Assets { get; set; } = new();
 }
 
 public sealed class NuiCanvasSize
