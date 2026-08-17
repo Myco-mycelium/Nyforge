@@ -80,6 +80,9 @@ public static class ComponentContracts
         new ComponentContract("PowerMenu", "Shell", new[] { "open" }, new[] { "opened", "closed", "actionSelected" }, Actions: new[] { "Open", "Close" }),
         new ComponentContract("LockScreen", "Shell", new[] { "open", "clockFormat", "wallpaper" }, new[] { "opened", "closed", "unlocked" }, Actions: new[] { "Open", "Close", "Lock" }),
         new ComponentContract("Application", "Shell", new[] { "appId", "title", "icon", "running", "focused" }, new[] { "activated", "deactivated" }, Actions: new[] { "Launch", "Close", "Focus" }),
+        new ComponentContract("WidgetHost", "Shell", new[] { "widgets", "layout", "visible" }, new[] { "widgetClicked" }, Actions: new[] { "AddWidget", "RemoveWidget" }),
+        new ComponentContract("OSD", "Shell", new[] { "open", "message", "timeout", "icon" }, new[] { "opened", "closed" }, Actions: new[] { "Open", "Close", "Dismiss" }),
+        new ComponentContract("Login", "Shell", new[] { "open", "username", "avatar", "hint" }, new[] { "submitted", "canceled" }, Actions: new[] { "Submit", "Cancel" }),
         // Data
         new ComponentContract("List", "Data", new[] { "items", "selectedIndex", "multiple" }, new[] { "selectionChanged", "itemActivated" }, Actions: new[] { "SetSelectedIndex" }),
         new ComponentContract("ListItem", "Data", new[] { "label", "icon", "selected", "enabled" }, new[] { "clicked", "activated" }),

@@ -127,6 +127,12 @@ milestone per `engineering/ROADMAP.md`:
   Vault-behind-Files windows with a toolbar and lists, and a PowerMenu
   with Sleep/Restart/Shutdown — 21 components, 8 behaviors, 1 binding;
   it opens in Forge and passes the Nyrqis import gate.
+- **The Nyrqis widgets + OSD + login** — [`examples/nyrqis-shell/widgets.nstudio`](examples/nyrqis-shell/widgets.nstudio)
+  is the third reference shell screen: a WidgetHost holding Clock and
+  System Monitor cards, a volume OSD with `$state:`-substituted
+  message, and a Login form with submit/cancel — 19 components, 5
+  behaviors, 2 bindings; it opens in Forge and passes the Nyrqis
+  import gate.
 - **The Nyrqis shell UI draft** — [`examples/nyrqis-shell/nyrqis-shell.nstudio`](examples/nyrqis-shell/nyrqis-shell.nstudio)
   is the original first draft of the shell: a 1440×900 workspace with
   StatusBar, NavigationRail, Sidebar, Toolbar, stat cards, an event

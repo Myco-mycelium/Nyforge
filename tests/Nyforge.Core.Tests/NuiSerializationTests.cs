@@ -355,4 +355,27 @@ public class NuiSerializationTests
         Assert.Contains("Maximize", frame.Actions);
         Assert.Contains("Close", frame.Actions);
     }
+
+    [Fact]
+    public void Widgets_osd_login_example_opens_in_Forge()
+    {
+        // The widgets + OSD + login shell screens
+        // (examples/nyrqis-shell/widgets.nstudio) — the third reference
+        // shell design, using the WidgetHost/OSD/Login vocabulary.
+        var path = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "examples", "nyrqis-shell", "widgets.nstudio"));
+        Assert.True(File.Exists(path), $"fixture missing: {path}");
+
+        var doc = ProjectSerializer.LoadFromFile(path);
+
+        Assert.Equal("0.4.0", doc.Version);
+        Assert.Equal(3, doc.Screens.Count);
+        Assert.Equal("widgets", doc.Screens[0].Id);
+        Assert.Equal("osd", doc.Screens[1].Id);
+        Assert.Equal("login", doc.Screens[2].Id);
+        Assert.True(ComponentContracts.TryGet("WidgetHost", out var host));
+        Assert.Equal("Shell", host!.Category);
+        Assert.Contains("AddWidget", host.Actions);
+    }
 }
