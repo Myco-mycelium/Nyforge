@@ -250,11 +250,16 @@ the Nyforge application version.
   while the schema is in `Draft` status. The bump from `0.1.0` to `0.2.0`
   (adding `Behaviors`), `0.2.0` to `0.3.0` (adding `Bindings`), and `0.3.0`
   to `0.4.0` (adding `$state:` argument substitution, §7.1) are each such a
-  break: an older `.nstudio` file will not load in a build that only
-  understands a newer schema version — see `ProjectSerializer.IsCompatible`
-  in `Nyforge.Core`. Every `.nstudio` file records the schema version it
-  was written against so this fails loudly (`NuiVersionMismatchException`)
-  instead of silently misinterpreting the file.
+  break — which is exactly what the **migration chain** is for
+  (`NuiSchemaMigrations` in `Nyforge.Core`): an older `.nstudio` file is
+  moved forward one step at a time to the current schema before parsing
+  (0.2.0 → 0.3.0 adds the `bindings` section, 0.3.0 → 0.4.0 adds
+  `states`), **in memory only** — the file on disk is untouched until a
+  save, and opening reports the chain that ran rather than migrating
+  silently. Every `.nstudio` file still records the schema version it was
+  written against, so a genuinely future or unknown version fails loudly
+  (`NuiVersionMismatchException`) instead of being silently
+  misinterpreted.
 - Moving to `Accepted`/**1.0.0** is gated on the logic model maturing
   (multi-condition behaviors, action chaining, a real expression language
   beyond plain substitution — see §10 and `engineering/ROADMAP.md`), not on
@@ -264,8 +269,10 @@ the Nyforge application version.
 ## 10. Non-Goals for v0.4
 
 - No responsive breakpoints (`size` is a single design-time canvas size).
-- No component reuse/instancing (`components[]` exists in the shape but
-  Forge's UI doesn't yet let you extract a selection into one).
+- No visual extraction of reusable instances from a selection (the
+  `components[]` masters + `componentRef` instances are real and
+  resolved by `ReusableComponentResolver`; the palette/layers UI for
+  creating a master from a selection is the follow-on).
 - No multi-condition boolean logic or action chaining in `Behaviors` (§7).
 - No real expression language for action arguments — `$state:key` (§7.1)
   is plain substitution only, not ternaries, concatenation, or computed

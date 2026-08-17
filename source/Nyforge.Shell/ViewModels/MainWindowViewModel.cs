@@ -395,7 +395,14 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         _projectService.Open(path);
         LoadFromProject();
-        StatusMessage = $"Opened {Path.GetFileName(path)}.";
+        // Never migrate silently: if the schema chain moved this file
+        // forward, say so. The file itself isn't touched until a save.
+        var migrated = NuiSchemaMigrations.MigrateIfNeeded(File.ReadAllText(path));
+        StatusMessage = migrated is null
+            ? $"Opened {Path.GetFileName(path)}."
+            : $"Opened {Path.GetFileName(path)} — migrated schema " +
+              $"{migrated.FromVersion} → {migrated.ToVersion} " +
+              $"({string.Join(", ", migrated.Applied)}).";
     }
 
     public void SaveToPath(string? path = null)

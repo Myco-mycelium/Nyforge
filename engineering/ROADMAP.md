@@ -131,6 +131,14 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       makes rushing this risky.
 - [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
       stand-in.
+- [x] **Schema migrations** — `NuiSchemaMigrations` (Nyforge.Core): a
+      versioned migration chain moves old .nstudio files forward to the
+      current schema before parsing, in memory only (the file on disk is
+      untouched until save; opening reports what migrated, never
+      silently). A v0.2.0 document now opens in a v0.4.0 build where it
+      previously threw `NuiVersionMismatchException`. Genuinely
+      incompatible versions still fail the gate. See FEATURE_STATUS
+      `SchemaMigrations`.
 - [ ] Move NUI schema to `1.0.0` / `Accepted` once the above are solid, per
       NFC-001 §4.1.
 - [ ] "Advanced code mode" as an alternate way to author the same behaviors

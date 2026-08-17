@@ -33,6 +33,22 @@ public static class ProjectSerializer
 
     public static NuiDocument Deserialize(string json)
     {
+        return DeserializeWithMigration(json).Document;
+    }
+
+    /// <summary>
+    /// Deserialize and report any schema migration that ran — old
+    /// .nstudio files are moved forward through the migration chain
+    /// (NuiSchemaMigrations) before parsing, so a v0.2 file opens in a
+    /// v0.4 build instead of failing the version gate. The caller can
+    /// surface <see cref="NuiDeserializedDocument.Migration"/> to the
+    /// user; the file on disk is never touched until a save.
+    /// </summary>
+    public static NuiDeserializedDocument DeserializeWithMigration(string json)
+    {
+        var migrated = NuiSchemaMigrations.MigrateIfNeeded(json);
+        if (migrated is not null) json = migrated.MigratedJson;
+
         var document = JsonSerializer.Deserialize<NuiDocument>(json, Options)
             ?? throw new InvalidDataException("File did not contain a valid NUI document.");
 
@@ -41,13 +57,18 @@ public static class ProjectSerializer
             throw new NuiVersionMismatchException(document.Version, NuiSchemaVersion.Current);
         }
 
-        return document;
+        return new NuiDeserializedDocument(document, migrated);
     }
 
     public static NuiDocument LoadFromFile(string path)
     {
-        var json = File.ReadAllText(path);
-        return Deserialize(json);
+        return LoadFromFileWithMigration(path).Document;
+    }
+
+    /// <summary>See <see cref="DeserializeWithMigration"/>.</summary>
+    public static NuiDeserializedDocument LoadFromFileWithMigration(string path)
+    {
+        return DeserializeWithMigration(File.ReadAllText(path));
     }
 
     /// <summary>
@@ -64,6 +85,12 @@ public static class ProjectSerializer
         return docParts[0] == curParts[0] && docParts[1] == curParts[1];
     }
 }
+
+/// <summary>A deserialized document plus the migration (if any) that
+/// brought it to the current schema version.</summary>
+public sealed record NuiDeserializedDocument(
+    NuiDocument Document,
+    NuiMigrationResult? Migration);
 
 public sealed class NuiVersionMismatchException : Exception
 {

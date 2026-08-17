@@ -62,6 +62,12 @@ milestone per `engineering/ROADMAP.md`:
   renderer standing in for the Nyrqis UI Runtime (which doesn't exist yet),
   and everything outside that small set of types renders as a marked
   placeholder rather than faking interactivity it doesn't have.
+- **Schema migrations** — old `.nstudio` files keep opening: a
+  versioned migration chain (`NuiSchemaMigrations`) moves a document
+  forward to the current schema before parsing, in memory only — the
+  file on disk is untouched until you save, and opening a migrated
+  project reports the chain that ran (never silently). A v0.2.0 file
+  that used to throw a version-mismatch error now opens cleanly.
 - **A check-before-Preview validator** — `NuiValidator` runs every time
   you hit Preview: errors mirror the Nyrqis import gate at design time
   (unknown type/property/event, dangling behavior/binding/reusable ref,

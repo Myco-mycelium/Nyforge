@@ -241,6 +241,13 @@ compiler-verified yet.**
   without blocking. Every example fixture must validate with zero
   errors in CI (`NuiValidatorTests`). Tracked as FEATURE_STATUS
   `NuiValidator` (implemented).
+- ~~Schema migrations~~ — **resolved 2026-08-17.** `NuiSchemaMigrations`
+  (Nyforge.Core) runs a versioned migration chain before parsing, in
+  memory only: a v0.2.0 document opens in a v0.4.0 build (it previously
+  threw `NuiVersionMismatchException`), the file on disk is untouched
+  until save, and opening reports the chain that ran. Genuinely
+  incompatible versions still fail the gate. Tracked as FEATURE_STATUS
+  `SchemaMigrations` (implemented).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0

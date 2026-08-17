@@ -132,6 +132,14 @@
       "roadmapPhrase": "metadata-driven Inspector"
     },
     {
+      "id": "SchemaMigrations",
+      "status": "implemented",
+      "introduced": "0.7",
+      "tests": "NuiSchemaMigrationTests (9 tests) — the chain moves a v0.2.0 document forward to the current schema before parsing (it previously threw NuiVersionMismatchException); idempotent steps, in-memory only, input never mutated, future versions untouched, genuine incompatibility still throws",
+      "readmePhrase": "schema migrations",
+      "roadmapPhrase": "Schema migrations"
+    },
+    {
       "id": "NuiValidator",
       "status": "implemented",
       "introduced": "0.7",
