@@ -170,5 +170,13 @@ Proposed and **implemented 2026-08-17** (Priority 2). The registry
 
 Open follow-ons (reserved in this proposal, not yet populated): the
 richer per-property metadata (`min`/`max`/`enumValues`/`units`/`editor`)
-for a generated Inspector, and the desktop-shell component vocabulary —
-both land with Priority 3 / the shell work.
+for a generated Inspector — lands with Priority 3.
+
+The desktop-shell vocabulary is **no longer future work**: the same day,
+the registry grew to 63 components across five new categories (Shell,
+Data, Form, Media, Developer — Taskbar, StartMenu, WindowFrame,
+CommandPalette, LockScreen, List, DataTable, TreeView, DatePicker,
+FilePicker, Video, MediaPlayer, Terminal, CodeEditor, …), each with a
+real semantic contract, and all three consumers regenerated. Nyforge's
+palette now offers the shell's components; building the shell screens on
+top of them is the v0.6 shell-milestone work.

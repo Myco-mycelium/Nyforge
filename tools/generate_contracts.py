@@ -103,8 +103,14 @@ FOOTER_CONTRACTS = """\
         All.Where(c => string.Equals(c.Category, category, StringComparison.Ordinal));
 }"""
 
-# Category grouping order (matches the schema).
-CATEGORY_ORDER = ["Basic", "Layout", "System", "Navigation"]
+# Category grouping order (matches the schema). Registry entries are
+# grouped under these headers in this order; unknown categories sort
+# last in encounter order (the generator only uses this to emit the
+# `// Category` comment lines, preserving registry order otherwise).
+CATEGORY_ORDER = [
+    "Basic", "Layout", "System", "Navigation",
+    "Shell", "Data", "Form", "Media", "Developer",
+]
 
 
 def generate_contracts(components: List[Dict[str, Any]]) -> str:

@@ -125,9 +125,9 @@
     },
     {
       "id": "NyrqisDesktopShell",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — three draft shell screens exist as .nstudio examples only",
+      "status": "partial",
+      "introduced": "0.6",
+      "tests": "registry carries the shell vocabulary (Taskbar, StartMenu, WindowFrame, …); three draft shell screens exist as .nstudio examples only",
       "readmePhrase": null,
       "roadmapPhrase": "Nyrqis Desktop Shell reference application"
     },

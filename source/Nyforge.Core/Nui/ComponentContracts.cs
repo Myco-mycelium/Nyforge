@@ -62,6 +62,45 @@ public static class ComponentContracts
         new ComponentContract("NavigationRail", "Navigation", new[] { "collapsible" }, Array.Empty<string>(), Actions: new[] { "Toggle" }),
         new ComponentContract("Tabs", "Navigation", new[] { "selectedIndex" }, new[] { "changed" }, Actions: new[] { "SetSelectedIndex" }),
         new ComponentContract("Breadcrumbs", "Navigation", new[] { "items" }, new[] { "itemClicked" }),
+        // Shell
+        new ComponentContract("DesktopSurface", "Shell", new[] { "wallpaper", "accent", "iconSize" }, Array.Empty<string>()),
+        new ComponentContract("DesktopIcon", "Shell", new[] { "glyph", "label", "target" }, new[] { "activated" }, Actions: new[] { "Launch" }),
+        new ComponentContract("Taskbar", "Shell", new[] { "position", "alignment", "autoHide", "pinnedApps", "runningApps", "showClock", "showTray" }, Array.Empty<string>()),
+        new ComponentContract("StartMenu", "Shell", new[] { "open", "pinnedApps", "recommendedApps" }, new[] { "opened", "closed" }, Actions: new[] { "Open", "Close", "Toggle" }),
+        new ComponentContract("SystemTray", "Shell", new[] { "icons", "visible" }, Array.Empty<string>()),
+        new ComponentContract("NotificationCenter", "Shell", new[] { "open", "notifications" }, new[] { "opened", "closed", "notificationClicked" }, Actions: new[] { "Open", "Close", "Clear" }),
+        new ComponentContract("QuickSettings", "Shell", new[] { "open", "toggles" }, new[] { "opened", "closed", "toggleChanged" }, Actions: new[] { "Open", "Close", "Toggle" }),
+        new ComponentContract("WorkspaceSwitcher", "Shell", new[] { "workspaces", "currentWorkspace" }, new[] { "changed" }, Actions: new[] { "SetCurrentWorkspace" }),
+        new ComponentContract("WindowFrame", "Shell", new[] { "title", "resizable", "movable", "minimized", "maximized" }, new[] { "opened", "closed", "moved", "resized" }, Actions: new[] { "Minimize", "Maximize", "Restore", "Close" }),
+        new ComponentContract("WindowControls", "Shell", new[] { "showMinimize", "showMaximize", "showClose" }, new[] { "minimizeClicked", "maximizeClicked", "closeClicked" }),
+        new ComponentContract("ContextMenu", "Shell", new[] { "open", "items" }, new[] { "opened", "closed", "itemClicked" }, Actions: new[] { "Open", "Close" }),
+        new ComponentContract("CommandPalette", "Shell", new[] { "open", "query", "results" }, new[] { "opened", "closed", "queryChanged", "commandExecuted" }, Actions: new[] { "Open", "Close", "SetQuery" }),
+        new ComponentContract("Launcher", "Shell", new[] { "open", "query" }, new[] { "opened", "closed", "appLaunched" }, Actions: new[] { "Open", "Close", "Launch" }),
+        new ComponentContract("Search", "Shell", new[] { "query", "placeholder", "results" }, new[] { "changed", "submitted" }, Actions: new[] { "Clear", "Submit" }),
+        new ComponentContract("PowerMenu", "Shell", new[] { "open" }, new[] { "opened", "closed", "actionSelected" }, Actions: new[] { "Open", "Close" }),
+        new ComponentContract("LockScreen", "Shell", new[] { "open", "clockFormat", "wallpaper" }, new[] { "opened", "closed", "unlocked" }, Actions: new[] { "Open", "Close", "Lock" }),
+        new ComponentContract("Application", "Shell", new[] { "appId", "title", "icon", "running", "focused" }, new[] { "activated", "deactivated" }, Actions: new[] { "Launch", "Close", "Focus" }),
+        // Data
+        new ComponentContract("List", "Data", new[] { "items", "selectedIndex", "multiple" }, new[] { "selectionChanged", "itemActivated" }, Actions: new[] { "SetSelectedIndex" }),
+        new ComponentContract("ListItem", "Data", new[] { "label", "icon", "selected", "enabled" }, new[] { "clicked", "activated" }),
+        new ComponentContract("DataTable", "Data", new[] { "columns", "rows", "selectedRow" }, new[] { "selectionChanged", "cellActivated" }, Actions: new[] { "SetSelectedRow" }),
+        new ComponentContract("TreeView", "Data", new[] { "nodes", "selectedNode", "expandedNodes" }, new[] { "selectionChanged", "nodeExpanded", "nodeCollapsed" }, Actions: new[] { "Expand", "Collapse" }),
+        new ComponentContract("Menu", "Data", new[] { "items", "open" }, new[] { "opened", "closed", "itemClicked" }, Actions: new[] { "Open", "Close" }),
+        new ComponentContract("MenuItem", "Data", new[] { "label", "icon", "shortcut", "enabled", "checked" }, new[] { "clicked" }),
+        // Form
+        new ComponentContract("Form", "Form", new[] { "fields", "submitLabel", "valid" }, new[] { "submitted", "reset" }, Actions: new[] { "Submit", "Reset" }),
+        new ComponentContract("DatePicker", "Form", new[] { "value", "min", "max", "format" }, new[] { "changed", "submitted" }, Actions: new[] { "Clear" }),
+        new ComponentContract("TimePicker", "Form", new[] { "value", "format" }, new[] { "changed", "submitted" }, Actions: new[] { "Clear" }),
+        new ComponentContract("FilePicker", "Form", new[] { "value", "filter", "multiple", "folder" }, new[] { "selected", "canceled" }, Actions: new[] { "Open", "Clear" }),
+        new ComponentContract("SettingsPanel", "Form", new[] { "sections", "selectedSection", "searchable" }, new[] { "sectionChanged" }, Actions: new[] { "SetSection", "Search" }),
+        // Media
+        new ComponentContract("Video", "Media", new[] { "source", "autoplay", "loop", "muted", "volume" }, new[] { "played", "paused", "ended", "error" }, Actions: new[] { "Play", "Pause", "Seek", "SetVolume" }),
+        new ComponentContract("Audio", "Media", new[] { "source", "autoplay", "loop", "volume" }, new[] { "played", "paused", "ended", "error" }, Actions: new[] { "Play", "Pause", "Seek", "SetVolume" }),
+        new ComponentContract("MediaPlayer", "Media", new[] { "source", "playing", "volume", "position", "muted" }, new[] { "played", "paused", "ended", "positionChanged", "error" }, Actions: new[] { "Play", "Pause", "Seek", "SetVolume" }),
+        // Developer
+        new ComponentContract("Terminal", "Developer", new[] { "command", "cwd", "history", "prompt" }, new[] { "commandEntered", "outputReady" }, Actions: new[] { "Write", "Clear", "RunCommand", "SetCwd" }),
+        new ComponentContract("CodeEditor", "Developer", new[] { "value", "language", "readOnly", "theme", "lineNumbers" }, new[] { "changed", "cursorMoved" }, Actions: new[] { "SetValue", "SetLanguage", "Format" }),
+        new ComponentContract("LogViewer", "Developer", new[] { "entries", "filter", "level", "follow" }, new[] { "filterChanged" }, Actions: new[] { "Clear", "SetFilter" }),
     };
 
     private static readonly Dictionary<string, ComponentContract> ByType =
