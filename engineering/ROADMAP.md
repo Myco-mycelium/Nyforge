@@ -131,6 +131,13 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       makes rushing this risky.
 - [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
       stand-in.
+- [x] **Localization** — `NuiDocument.Locales` carries an active locale
+      plus per-locale string tables; `$localize:key` references in
+      component properties, reusable overrides, and behavior arguments
+      resolve through the active table (`Localize.Resolve`) and must
+      exist in it — the validator rejects missing keys up front
+      (ER-NUI-019), mirroring the Nyrqis import gate. The shell
+      fixture's search label and DND message are localized (en/af).
 - [x] **Schema migrations** — `NuiSchemaMigrations` (Nyforge.Core): a
       versioned migration chain moves old .nstudio files forward to the
       current schema before parsing, in memory only (the file on disk is

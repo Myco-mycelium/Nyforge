@@ -221,6 +221,8 @@ public static class NuiValidator
                             ComponentId: node.Id));
                     }
                 }
+                foreach (var (_, value) in node.Overrides)
+                    CheckLocalize(value, document, issues, $"{where} override");
                 ValidateEvents(node, masterContract, master.Type, document, issues,
                     isMaster ? "master" : "instance", isMaster);
             }
@@ -244,6 +246,8 @@ public static class NuiValidator
                     ComponentId: node.Id));
             }
         }
+        foreach (var (_, value) in node.Properties)
+            CheckLocalize(value, document, issues, $"{where} property");
 
         ValidateEvents(node, contract, node.Type, document, issues,
             "component", isMaster);
@@ -314,16 +318,18 @@ public static class NuiValidator
             }
             else
             {
-                foreach (var (key, _) in action.Arguments)
-                {
-                    if (!sys.ArgumentNames.Contains(key, StringComparer.Ordinal))
-                    {
-                        issues.Add(new NuiIssue("ER-NUI-008", NuiIssueSeverity.Error,
-                            $"Behavior '{behavior.Id}' passes argument '{key}' to " +
-                            $"'{action.Name}' which does not accept it.",
-                            BehaviorId: behavior.Id));
-                    }
-                }
+        foreach (var (key, _) in action.Arguments)
+        {
+            if (!sys.ArgumentNames.Contains(key, StringComparer.Ordinal))
+            {
+                issues.Add(new NuiIssue("ER-NUI-008", NuiIssueSeverity.Error,
+                    $"Behavior '{behavior.Id}' passes argument '{key}' to " +
+                    $"'{action.Name}' which does not accept it.",
+                    BehaviorId: behavior.Id));
+            }
+        }
+        foreach (var (_, value) in action.Arguments)
+            CheckLocalize(value, document, issues, $"behavior '{behavior.Id}' argument");
             }
         }
         else if (action.Target != "System")
@@ -401,6 +407,38 @@ public static class NuiValidator
                 $"Component '{node.Id}' overflows its parent: bottom edge " +
                 $"{c.Y + c.Height:0} > parent height {p.Height:0}.",
                 ComponentId: node.Id, ScreenId: screenId));
+        }
+    }
+
+    private static void CheckLocalize(object? value, NuiDocument document,
+        List<NuiIssue> issues, string where)
+    {
+        // $localize:key references must exist in the ACTIVE locale's
+        // table (fail-closed, mirroring the Nyrqis import gate). A
+        // reference with no locales section is an error too.
+        if (value is not string text || !Localize.HasReference(text)) return;
+        var locales = document.Locales;
+        var active = locales.Active;
+        if (string.IsNullOrEmpty(active) || locales.Tables.Count == 0)
+        {
+            issues.Add(new NuiIssue("ER-NUI-019", NuiIssueSeverity.Error,
+                $"{where}: a '$localize:' reference requires a 'locales' " +
+                "section with an 'active' locale."));
+            return;
+        }
+        if (!locales.Tables.TryGetValue(active, out var table))
+        {
+            issues.Add(new NuiIssue("ER-NUI-019", NuiIssueSeverity.Error,
+                $"{where}: locale '{active}' has no table."));
+            return;
+        }
+        foreach (var key in Localize.References(text))
+        {
+            if (!table.ContainsKey(key))
+            {
+                issues.Add(new NuiIssue("ER-NUI-019", NuiIssueSeverity.Error,
+                    $"{where}: localize key '{key}' not in locale '{active}'."));
+            }
         }
     }
 

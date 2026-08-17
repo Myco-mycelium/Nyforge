@@ -248,6 +248,14 @@ compiler-verified yet.**
   until save, and opening reports the chain that ran. Genuinely
   incompatible versions still fail the gate. Tracked as FEATURE_STATUS
   `SchemaMigrations` (implemented).
+- ~~Localization~~ — **resolved 2026-08-17.** `NuiDocument.Locales`
+  (active locale + per-locale string tables) resolves `$localize:key`
+  references in component properties, reusable overrides, and behavior
+  arguments (`Localize.Resolve`); missing keys are rejected before
+  Preview (ER-NUI-019), mirroring the Nyrqis import gate (byte-identical
+  messages, differential-tested). The shell fixture's search label and
+  DND message are localized (en/af). Tracked as FEATURE_STATUS
+  `Localization` (implemented).
 - ~~Responsive layout constraints~~ — **partially resolved 2026-08-17.**
   `NuiLayout` carries anchors, min/max bounds, and an aspect ratio;
   `ResponsiveLayout.Compute` (and the Nyrqis floor's `resolve_layout`,

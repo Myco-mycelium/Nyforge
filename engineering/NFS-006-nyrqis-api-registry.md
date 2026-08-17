@@ -204,3 +204,9 @@ override outside a master's contract) plus the design-only warnings and
 infos (duplicate ids, overflow, missing image source, unused behavior,
 reusable-instance candidate). Every example fixture must validate with
 zero errors in CI.
+
+Localization is **no longer future work**: `NuiDocument.Locales`
+(active locale + per-locale string tables) resolves `$localize:key`
+references in component properties, reusable overrides, and behavior
+arguments; missing keys are rejected before Preview (ER-NUI-019),
+mirroring the Nyrqis import gate with byte-identical messages.

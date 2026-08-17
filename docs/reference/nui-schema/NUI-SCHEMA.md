@@ -273,10 +273,38 @@ value:
   *from* a state (e.g. mapping a boolean Toggle to one of two theme name
   strings) — that needs a real expression, not substitution. See §7.1 and
   `examples/settings-app/settings-app.nstudio`, which still uses two
-  static buttons for exactly this reason.
-- Multiple components may bind to the same state; multiple bindings on the
+  static buttons for exactly this reason.- Multiple components may bind to the same state; multiple bindings on the
   same component/property pair is undefined behavior in v0.3 (last one
   read wins, not guaranteed which).
+
+## 8.1 Localization
+
+A document may carry a `locales` section — the active locale plus
+per-locale string tables:
+
+```json
+"locales": {
+  "active": "en",
+  "tables": {
+    "en": { "search.label": "Search", "notif.dnd": "Notifications paused until disabled" },
+    "af": { "search.label": "Soek", "notif.dnd": "Kennisgewings onderbreek" }
+  }
+}
+```
+
+- Any string value — a component property, a reusable component's
+  `overrides`, or a `Behaviors` action `arguments` value — may be a
+  `$localize:key` reference. It resolves through the **active** locale's
+  table (`Localize.Resolve` in Nyforge.Core; `resolve_text` in the
+  Nyrqis floor). Keys are `[A-Za-z0-9_.-]+`.
+- A reference whose key is missing from the active table is a **validation
+  error** (ER-NUI-019) at design time and a hard import-gate rejection on
+  the Nyrqis side — fail-closed, like every other dangling reference. At
+  resolution time a missing key stays as the literal placeholder.
+- The active locale `MUST` have a table; tables `MUST` map string keys to
+  string values.
+- `$localize:` is plain substitution, deliberately in the same family as
+  `$state:` (§7.1) — no pluralization/formatting rules yet.
 
 ## 9. Versioning and Compatibility
 

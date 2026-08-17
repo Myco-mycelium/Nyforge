@@ -140,6 +140,14 @@
       "roadmapPhrase": "Schema migrations"
     },
     {
+      "id": "Localization",
+      "status": "implemented",
+      "introduced": "0.7",
+      "tests": "LocalizationTests (9) + Nyrqis TestLocalization (7) + 4 conformance — locales section (active + tables) serialized on NuiDocument; Localize.Resolve resolves $localize:key through the active table; validator rejects missing keys / no-locales-section (ER-NUI-019); desktop.nstudio search label + DND message are localized",
+      "readmePhrase": "localization ($localize: keys with locale tables)",
+      "roadmapPhrase": "Localization"
+    },
+    {
       "id": "NuiValidator",
       "status": "implemented",
       "introduced": "0.7",

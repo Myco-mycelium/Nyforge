@@ -29,6 +29,15 @@ public sealed class NuiDocument
     public Dictionary<string, object?> States { get; set; } = new();
 
     /// <summary>
+    /// Localization (NUI-SCHEMA §8.1): the active locale plus per-locale
+    /// string tables. A component property (or behavior argument) whose
+    /// value is <c>$localize:key</c> resolves through the active locale's
+    /// table. Empty section = no localization.
+    /// </summary>
+    [JsonPropertyName("locales")]
+    public NuiLocalesSection Locales { get; set; } = new();
+
+    /// <summary>
     /// v0.2: WHEN/IF/DO rules. A component's Events dict maps an event
     /// name to one of these by Id. See NuiBehavior and NUI-SCHEMA.md §7.
     /// </summary>
@@ -65,6 +74,21 @@ public sealed class NuiScreen
 
     [JsonPropertyName("size")]
     public NuiCanvasSize Size { get; set; } = new();
+}
+
+/// <summary>
+/// The localization section (NUI-SCHEMA §8.1): <see cref="Active"/> is
+/// the current locale code and <see cref="Tables"/> maps locale codes
+/// to string-key → localized-text tables. <c>$localize:key</c> string
+/// values resolve through the active table (see Localize.Resolve).
+/// </summary>
+public sealed class NuiLocalesSection
+{
+    [JsonPropertyName("active")]
+    public string Active { get; set; } = string.Empty;
+
+    [JsonPropertyName("tables")]
+    public Dictionary<string, Dictionary<string, string>> Tables { get; set; } = new();
 }
 
 public sealed class NuiCanvasSize

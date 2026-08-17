@@ -62,6 +62,12 @@ milestone per `engineering/ROADMAP.md`:
   renderer standing in for the Nyrqis UI Runtime (which doesn't exist yet),
   and everything outside that small set of types renders as a marked
   placeholder rather than faking interactivity it doesn't have.
+- **Localization ($localize: keys with locale tables)** — a project's
+  `locales` section (active locale + per-locale string tables) resolves
+  `$localize:key` references in component properties, reusable
+  overrides, and behavior arguments — one design, many languages,
+  without duplicating layouts. Missing keys are rejected before
+  Preview (mirroring the Nyrqis import gate).
 - **Responsive layout constraints (anchors, min/max, aspect ratio)** —
   one design adapts instead of one canvas per screen size: `NuiLayout`
   carries anchors (both-horizontal = stretch, bottom-anchor = dock),
