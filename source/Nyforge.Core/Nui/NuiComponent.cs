@@ -36,6 +36,23 @@ public sealed class NuiComponent
     [JsonPropertyName("children")]
     public List<NuiComponent> Children { get; set; } = new();
 
+    /// <summary>
+    /// When set, this node is an *instance* of a reusable component
+    /// defined in the document's <c>components[]</c> section (NFS-006's
+    /// reusable-component story): the node stores a reference to the
+    /// master by name plus per-instance property overrides, instead of
+    /// copying the master's tree. Null = a plain authored component.
+    /// See ReusableComponentResolver.
+    /// </summary>
+    [JsonPropertyName("componentRef")]
+    public string? ComponentRef { get; set; }
+
+    /// <summary>Per-instance property overrides, applied on top of the
+    /// referenced master's properties. Only meaningful when
+    /// <see cref="ComponentRef"/> is set.</summary>
+    [JsonPropertyName("overrides")]
+    public Dictionary<string, object?> Overrides { get; set; } = new();
+
     public NuiComponent Clone()
     {
         return new NuiComponent
@@ -45,7 +62,9 @@ public sealed class NuiComponent
             Properties = new Dictionary<string, object?>(Properties),
             Layout = Layout.Clone(),
             Events = new Dictionary<string, string?>(Events),
-            Children = Children.Select(c => c.Clone()).ToList()
+            Children = Children.Select(c => c.Clone()).ToList(),
+            ComponentRef = ComponentRef,
+            Overrides = new Dictionary<string, object?>(Overrides)
         };
     }
 }

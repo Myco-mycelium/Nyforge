@@ -77,10 +77,10 @@
     },
     {
       "id": "ComponentReuse",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — components[] is reserved but unused",
-      "readmePhrase": null,
+      "status": "implemented",
+      "introduced": "0.7",
+      "tests": "ReusableComponentTests (master clone + overrides + instance children); desktop.nstudio carries a TaskbarButton master with componentRef instances, verified by both Nyrqis import gates",
+      "readmePhrase": "reusable component masters (components[]) with componentRef instances and overrides",
       "roadmapPhrase": "Component reuse/instancing"
     },
     {

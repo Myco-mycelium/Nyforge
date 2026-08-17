@@ -185,3 +185,13 @@ FilePicker, Video, MediaPlayer, Terminal, CodeEditor, …), each with a
 real semantic contract, and all three consumers regenerated. Nyforge's
 palette now offers the shell's components; building the shell screens on
 top of them is the v0.6 shell-milestone work.
+
+Reusable component masters are **no longer future work**: the registry's
+`components[]` section is real. A document defines a master there
+(validated like any component) and places `componentRef` instances with
+`overrides` anywhere — instances omit `type` (both Nyrqis import gates
+reject one that declares its own). `ReusableComponentResolver`
+materializes an instance as the master's clone plus overrides and
+instance children, so editing the master updates every instance; the
+`desktop.nstudio` shell example builds its taskbar from one
+`TaskbarButton` master with two instances, verified by floor + crate.

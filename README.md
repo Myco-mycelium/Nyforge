@@ -62,6 +62,13 @@ milestone per `engineering/ROADMAP.md`:
   renderer standing in for the Nyrqis UI Runtime (which doesn't exist yet),
   and everything outside that small set of types renders as a marked
   placeholder rather than faking interactivity it doesn't have.
+- **Reusable component masters (components[]) with componentRef instances and overrides**:
+  define a component once (e.g. a `TaskbarButton`) and place instances
+  anywhere — `ReusableComponentResolver` materializes the instance from
+  the master's clone plus overrides and instance children, so changing
+  the master updates every instance. `examples/nyrqis-shell/desktop.nstudio`
+  builds its taskbar from one master, and both Nyrqis import gates
+  (Python floor + Rust crate) validate the refs and overrides.
 - **Property/state bindings** (`Bindings`): a component's property can be
   tied to a document-level state value, seeded on Preview start and
   updated as you interact with the app.

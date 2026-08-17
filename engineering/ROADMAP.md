@@ -97,7 +97,7 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       also removes behaviors only the deleted subtree referenced and
       restores them on undo. `Ctrl+Z` / `Ctrl+Y` + Edit menu. Backed by
       `Nyforge.Core.Editing` (11 unit tests).
-- [ ] Component reuse/instancing (`components[]` — currently unused).
+- [x] Component reuse/instancing (`components[]` — masters with `componentRef` instances + `overrides`, resolved by `ReusableComponentResolver`).
 
 ## v0.3 — Bindings & a Live-ish Preview
 

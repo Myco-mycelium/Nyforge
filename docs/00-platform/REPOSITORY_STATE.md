@@ -225,6 +225,14 @@ compiler-verified yet.**
   `tools/generate_contracts.py`; `tools/check_contracts_synced.py` is a
   CI gate (both platform jobs). The Nyrqis side reads the same registry
   (its `ui/contracts/nui-api-v1.json`). See `engineering/NFS-006`.
+- ~~Reusable component masters~~ — **resolved 2026-08-17.** A document's
+  `components[]` holds masters; `componentRef` instances with
+  `overrides` (no `type`) are materialized by
+  `ReusableComponentResolver` (master clone + overrides + instance
+  children), serialized by `NuiComponent`, and validated by both Nyrqis
+  import gates (floor + crate, differential). The `desktop.nstudio`
+  shell example builds its taskbar from one `TaskbarButton` master.
+  Tracked as FEATURE_STATUS `ComponentReuse` (implemented).
 - The Nyrqis Desktop Shell (separate, later effort).
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0
