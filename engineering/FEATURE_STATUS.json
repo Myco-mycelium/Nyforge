@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Single machine-readable source of truth for Nyforge feature status. README.md and engineering/ROADMAP.md are validated against this file by tools/check_feature_status.py (run in CI on every push). If a feature's status changes, update it HERE first, then reconcile the docs. Documentation can no longer drift from implementation the way the multi-select claim did.",
+  "statuses": ["implemented", "partial", "not-started"],
+  "features": [
+    {
+      "id": "CanvasMultiSelect",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — the canvas keeps a single _selectedElement (MainWindowViewModel)",
+      "readmePhrase": "multi-select",
+      "roadmapPhrase": "multi-select"
+    },
+    {
+      "id": "SnapToGrid",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none",
+      "readmePhrase": "snap-to-grid",
+      "roadmapPhrase": "snap-to-grid"
+    },
+    {
+      "id": "AlignmentGuides",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none",
+      "readmePhrase": "Alignment guides",
+      "roadmapPhrase": "Alignment guides"
+    },
+    {
+      "id": "CopyPaste",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none",
+      "readmePhrase": "copy/paste",
+      "roadmapPhrase": "copy/paste"
+    },
+    {
+      "id": "UndoRedo",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — no command architecture exists yet",
+      "readmePhrase": null,
+      "roadmapPhrase": "Undo/redo"
+    },
+    {
+      "id": "NestedTreeEditing",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — canvas edits root-level children only; nesting exists only by hand in the schema",
+      "readmePhrase": null,
+      "roadmapPhrase": "Nested-tree canvas editing"
+    },
+    {
+      "id": "ComponentReuse",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — components[] is reserved but unused",
+      "readmePhrase": null,
+      "roadmapPhrase": "Component reuse/instancing"
+    },
+    {
+      "id": "NodeGraphLogicEditor",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — the Events tab is a flat list",
+      "readmePhrase": "node graph",
+      "roadmapPhrase": "rather than the current flat list"
+    },
+    {
+      "id": "ExpressionLanguage",
+      "status": "partial",
+      "introduced": "0.4",
+      "tests": "ActionArgumentResolver tests (tests/Nyforge.Core.Tests) — $state: substitution only, no conditionals/computation",
+      "readmePhrase": null,
+      "roadmapPhrase": "A real expression language"
+    },
+    {
+      "id": "AdvancedCodeMode",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none",
+      "readmePhrase": "advanced code mode",
+      "roadmapPhrase": "Advanced code mode"
+    },
+    {
+      "id": "ResponsiveBreakpoints",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none",
+      "readmePhrase": null,
+      "roadmapPhrase": "Responsive breakpoints"
+    },
+    {
+      "id": "ApiRegistry",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — ComponentContracts.cs/NuiSystemActions.cs remain hand-maintained static tables (NFS-006 proposed)",
+      "readmePhrase": null,
+      "roadmapPhrase": "API Registry integration"
+    },
+    {
+      "id": "NyrqisDesktopShell",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — three draft shell screens exist as .nstudio examples only",
+      "readmePhrase": null,
+      "roadmapPhrase": "Nyrqis Desktop Shell reference application"
+    },
+    {
+      "id": "SelfHostedHome",
+      "status": "implemented",
+      "introduced": "0.4",
+      "tests": "manual (shell) — Home tab renders an actual .nstudio file; persistence via PreferencesService",
+      "readmePhrase": "self-hosted Home tab",
+      "roadmapPhrase": "custom Home screen"
+    },
+    {
+      "id": "CodeGenerationExporters",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none",
+      "readmePhrase": "code-generation exporters",
+      "roadmapPhrase": "First NUI → native code exporter"
+    },
+    {
+      "id": "NyrqisUiRuntime",
+      "status": "not-started",
+      "introduced": null,
+      "tests": "none — PreviewWindow is Forge's own stand-in",
+      "readmePhrase": null,
+      "roadmapPhrase": "A real Nyrqis UI Runtime"
+    },
+    {
+      "id": "CrossPlatformBuilds",
+      "status": "implemented",
+      "introduced": "0.5",
+      "tests": "CI builds + publishes win-x64 and linux-x64, attached to tagged releases (v0.1.0, v0.2.0)",
+      "readmePhrase": "Cross-platform builds",
+      "roadmapPhrase": "Linux build in tandem"
+    },
+    {
+      "id": "DesignSystemChrome",
+      "status": "implemented",
+      "introduced": "0.5",
+      "tests": "manual (shell) — tokenized chrome, AA-contrast primary button, 4 px grid",
+      "readmePhrase": "design system for Forge's own chrome",
+      "roadmapPhrase": "Design system for Forge's own chrome"
+    },
+    {
+      "id": "Bindings",
+      "status": "implemented",
+      "introduced": "0.3",
+      "tests": "NuiSerializationTests round-trip + resolver tests",
+      "readmePhrase": "Property/state bindings",
+      "roadmapPhrase": "Stabilize `Bindings`"
+    },
+    {
+      "id": "LogicEditorFlat",
+      "status": "implemented",
+      "introduced": "0.2",
+      "tests": "manual (shell) — WHEN/IF/DO flat list, dropdown-validated against the contract tables",
+      "readmePhrase": "first-cut Logic Editor",
+      "roadmapPhrase": "Visual `WHEN / IF / DO` graph editor"
+    }
+  ]
+}

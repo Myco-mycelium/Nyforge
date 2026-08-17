@@ -8,19 +8,17 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [x] **GitHub Actions CI** (`.github/workflows/build.yml`): restore,
       build, test, then publish a real self-contained `Nyforge.exe` for
       Windows on every push to `main`, and attach it to a GitHub Release
-      whenever a `v*` tag is pushed. This is also, finally, what actually
-      answers "does this compile" — pushing this repo and watching the
-      workflow run is the verification that hasn't happened any other way
-      yet.
-- [ ] **Verify the build locally too**, once CI has run at least once —
-      if CI is green, this is basically done; if CI is red, start here.
-      `dotnet restore && dotnet build` from the repo root, fix whatever a
-      real compiler finds. Large parts of this repo were authored without
-      NuGet access in the environment that wrote them; treat everything as
-      "carefully hand-written and manually reviewed, not yet
-      compiler-checked," until CI says otherwise.
-- [ ] Get `tests/Nyforge.Core.Tests` actually running (`dotnet test` — CI
-      does this now, but confirm locally too).
+      whenever a `v*` tag is pushed (releases v0.1.0, v0.2.0). CI also
+      runs the feature-status/doc-consistency check
+      (`python3 tools/check_feature_status.py`) on both platform jobs.
+- [x] **Verify the build locally** — done 2026-08-17 with the .NET 8 SDK:
+      `dotnet restore` (NuGet access confirmed), `dotnet build` (0 errors,
+      0 warnings after fixing one nullable warning in
+      `MainWindowViewModel.SetThemeCommand`), `dotnet test` (18/18 pass).
+      The "carefully hand-written, not yet compiler-checked" status is
+      retired — see REPOSITORY_STATE v0.6.
+- [x] Get `tests/Nyforge.Core.Tests` actually running locally — 18/18
+      pass on 2026-08-17.
 - [ ] Enforce the Core/Shell one-way dependency (NFC-001 §5.2) as an
       automated CI check, not just a convention — e.g. a project-reference
       analyzer step, once the basic build/test pipeline above is confirmed
@@ -65,6 +63,10 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       (`examples/settings-app/settings-app.nstudio` uses it by hand); the
       canvas UI for it is what's missing.
 - [ ] Alignment guides, snap-to-grid, multi-select, copy/paste.
+- [ ] **Undo/redo** — command-based transactions (BeginTransaction on
+      pointer-down, Commit on pointer-up, one command per completed
+      gesture; never full-project snapshots per mouse move). See the
+      2026-08-17 architecture review.
 - [ ] Component reuse/instancing (`components[]` — currently unused).
 
 ## v0.3 — Bindings & a Live-ish Preview
@@ -97,6 +99,8 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       Editor would represent it too — see NFM-000 §2.3 on why the visual
       and code paths need to stay trivially equivalent, which is what
       makes rushing this risky.
+- [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
+      stand-in.
 - [ ] Move NUI schema to `1.0.0` / `Accepted` once the above are solid, per
       NFC-001 §4.1.
 - [ ] "Advanced code mode" as an alternate way to author the same behaviors
@@ -128,11 +132,27 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       doc explicitly warns against committing to one implementation
       language too early; this needs its own NFS to pick one deliberately).
 
+## v0.6 — Nyrqis API Registry + the Shell as a reference application
+
+Elevated by the 2026-08-17 architecture review: the editor must not be the
+source of truth for the operating system API, and the shell is now a
+first-class target built with Forge, not a separate later project. Tracked
+in `engineering/FEATURE_STATUS.json` like every other feature.
+
+- [ ] **Nyrqis API Registry integration** — replace the hand-maintained
+      `ComponentContracts`/`NuiSystemActions` static tables with a
+      versioned, machine-readable platform contract owned by the Nyrqis
+      repo and consumed by Forge (palette, Inspector, Behaviors dropdowns)
+      and by the Nyrqis NUI import gate — one source of truth, enforced by
+      conformance tests on both sides. See `engineering/NFS-006`.
+- [ ] **Nyrqis Desktop Shell reference application** — build the shell's
+      screens in Forge as a real end-to-end test (three draft workspaces
+      already exist under `examples/nyrqis-shell/`), driving the editor's
+      structural gaps (nested trees, reparenting, constraints) with real
+      requirements.
+
 ## Later, separate effort
 
-- The Nyrqis Desktop Shell prototype (Avalonia-based, Windows-hosted)
-  described in the original design document is **out of scope for this
-  repository's early milestones** and should live as its own tracked
-  effort once Nyforge's project system and schema are stable enough to
-  design the Shell's own screens in Forge itself — which is the point of
-  building Nyforge first.
+- The remaining runtime-side work (a real Nyrqis runtime, code-generation
+  exporters) — the shell itself is elevated to v0.6 above; what stays out of
+  scope here is the runtime that will eventually run shell screens.

@@ -1,13 +1,13 @@
 ---
 title: Repository State
 document_id: NF-STATE
-version: 0.5.0
+version: 0.6.0
 status: Accepted
 classification: Informative
 owners:
   - Nyforge Architecture
 created: 2026-08-13
-updated: 2026-08-16
+updated: 2026-08-17
 ai_assisted: true
 review_cycle: PerRelease
 depends_on:
@@ -16,7 +16,40 @@ depends_on:
 
 # Repository State
 
-## Current Milestone: v0.5 — Design System + Cross-platform build
+## Current Milestone: v0.6 — Feature-status enforcement + build verification
+
+Landed 2026-08-17, from the architecture review's **Priority 0** (make the
+current code unquestionably real) plus the two doc-consistency items it
+surfaced:
+
+- **Build verification resolved.** The "carefully hand-written, not yet
+  compiler-checked" status is retired: CI has restored/built/tested
+  `Nyforge.sln` on both platforms on every push since the v0.1.0 milestone
+  (releases v0.1.0 and v0.2.0 carry the built binaries), and the codebase
+  was additionally built and tested **locally** on 2026-08-17 with the
+  .NET 8 SDK. README's "Building it yourself" section is now the verified
+  recipe; the roadmap's "Verify the build locally too" item is checked.
+- **Machine-readable feature status.** `engineering/FEATURE_STATUS.json`
+  is now the single source of truth for what's implemented;
+  `tools/check_feature_status.py` validates `README.md` and
+  `engineering/ROADMAP.md` against it and runs in CI, so documentation
+  can't drift from implementation again.
+- **Multi-select claim corrected.** The README claimed canvas multi-select;
+  the canvas keeps a single `_selectedElement`. README now states it's not
+  implemented, and the feature is tracked in FEATURE_STATUS.json.
+- **Roadmap reconciled and extended.** Undo/redo (command-based) is now an
+  explicit v0.2 item; the Nyrqis API Registry and the Nyrqis Desktop Shell
+  are elevated to a first-class **v0.6** section (the shell is no longer a
+  "later, separate effort"); `NFS-006` proposes the registry.
+
+### What exists (cumulative)
+
+- `engineering/FEATURE_STATUS.json` + `tools/check_feature_status.py`
+  (CI-enforced doc-consistency).
+- `engineering/NFS-006-nyrqis-api-registry.md` — Proposed.
+- Everything in the v0.5 milestone below.
+
+## Previous Milestone: v0.5 — Design System + Cross-platform build
 
 A design system for Forge's own chrome (docs/reference/design-system.md):
 both themes now define the full token contract — NUI §6 colors,
@@ -141,16 +174,15 @@ compiler-verified yet.**
 - Code-generation exporters beyond the NUI document itself.
 - Nyrqis API Registry integration.
 - The Nyrqis Desktop Shell (separate, later effort).
-- **A compiler-verified build.** Still the single most important open
-  question — but for the first time, there's now an automatic way to
-  answer it: `.github/workflows/build.yml` restores, builds, tests, and
-  publishes a real self-contained `Nyforge.exe` on every push to `main`
-  (and attaches it to a GitHub Release on a `v*` tag). Push this repo and
-  the Actions tab will say, definitively, whether it compiles — that
-  hasn't been true at any earlier point in this document's history.
+- ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
+  restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0
+  carry the binaries), and the codebase was built and tested locally with
+  the .NET 8 SDK the same day. See the v0.6 milestone above.
 
 ### Immediate next steps
 
-See `engineering/ROADMAP.md`. Short version: verify the build (still not
-done), then either extend self-hosting further, close the
-expression-valued-arguments gap, or start v0.5 (code generation).
+See `engineering/ROADMAP.md`. Short version: Priority 1 editor-structural
+work (nested-tree editing, undo/redo, snapping — tracked in
+`engineering/FEATURE_STATUS.json`), then Priority 2 (Nyrqis API Registry,
+`engineering/NFS-006`), then Priority 3 (NUI production-grade) and
+Priority 4 (the Nyrqis Desktop Shell as a reference application).

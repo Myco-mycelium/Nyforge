@@ -100,7 +100,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         NewProjectCommand = new RelayCommand(NewProject);
         DeleteSelectedCommand = new RelayCommand(DeleteSelected, () => HasSelection);
         AddComponentCommand = new RelayCommand<string>(AddComponent);
-        SetThemeCommand = new RelayCommand<string>(name => _themeManager.SetTheme(name));
+        SetThemeCommand = new RelayCommand<string>(name => { if (name is not null) _themeManager.SetTheme(name); });
         AddBehaviorForSelectedCommand = new RelayCommand<string>(AddBehaviorForSelected);
         RemoveBehaviorCommand = new RelayCommand<BehaviorViewModel>(RemoveBehavior);
 

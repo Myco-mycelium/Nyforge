@@ -15,6 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # FEATURE_STATUS.json is the single source of truth for what's
+      # implemented; this fails the build if README/ROADMAP drift from it.
+      - name: Validate feature status vs docs
+        run: python tools/check_feature_status.py
+
       - name: Set up .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
@@ -73,6 +78,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate feature status vs docs
+        run: python3 tools/check_feature_status.py
 
       - name: Set up .NET 8 SDK
         uses: actions/setup-dotnet@v4

@@ -17,6 +17,9 @@ Nyforge is governed by the same constitutional process as Nythera. See
 2. **[Nyforge Constitution](docs/00-platform/001-NYFORGE_CONSTITUTION.md)** — the enforceable rules that govern this repository.
 3. **[Repository State](docs/00-platform/REPOSITORY_STATE.md)** — what currently exists, at a glance.
 4. **[NUI Schema Reference](docs/reference/nui-schema/NUI-SCHEMA.md)** — the format Nyforge reads and writes.
+5. **[Feature Status](engineering/FEATURE_STATUS.json)** — the machine-readable source of truth for what's actually
+   implemented; `tools/check_feature_status.py` (run in CI) validates README.md and
+   `engineering/ROADMAP.md` against it so documentation can't drift from implementation.
 
 ## What's built so far
 
@@ -25,8 +28,13 @@ milestone per `engineering/ROADMAP.md`:
 
 - A working Avalonia desktop shell (`source/Nyforge.Shell`) with a **Component
   Palette**, an interactive **Design Canvas** (drag from palette, select,
-  move, resize, multi-select, delete), an **Inspector** (position, size,
-  common properties), and a **Layers** panel.
+  move, resize, delete), an **Inspector** (position, size, common
+  properties), and a **Layers** panel. Canvas power-editing (selecting
+  multiple components at once, snapping, alignment, clipboard operations,
+  undo/redo) is not implemented yet — see
+  [`engineering/FEATURE_STATUS.json`](engineering/FEATURE_STATUS.json),
+  the machine-readable feature-status source the docs are validated
+  against.
 - A project system (`source/Nyforge.Core`) that serializes what you build into
   a real, versioned, human-readable project file: **`.nstudio`**. This *is*
   your project's "code" — open one in a text editor and you'll see a
@@ -139,20 +147,22 @@ self-contained Linux binary for Nyrqis hosts (`Nyforge-linux-x64.zip`)
 you push a `v*` tag (e.g. `git tag v0.5.0 && git push --tags`), which
 attaches both zips to a proper GitHub Release.
 
-This is also, finally, the actual verification of whether this compiles —
-see the next section for why that's been an open question until now.
+CI is the definitive build verification: every push to `main` restores,
+builds, and tests `Nyforge.sln` on both Windows and Linux, and a `v*` tag
+attaches both zips to a GitHub Release (see `v0.1.0` and `v0.2.0`). CI also
+runs the feature-status/doc-consistency check
+(`python3 tools/check_feature_status.py`).
 
 ## Building it yourself
 
-This was written and reviewed in a sandboxed environment without access to
-the NuGet package feed, so **the build has not been verified by a compiler
-run locally**. If you'd rather build it yourself than wait on CI:
+The codebase is compiler-verified on every push by CI (both platforms), and
+was also built and tested locally on 2026-08-17 with the .NET 8 SDK — the
+"carefully hand-written, not yet compiler-checked" status is retired.
 
 ```bash
-cd source
-dotnet restore
-dotnet build
-dotnet run --project Nyforge.Shell
+dotnet restore Nyforge.sln
+dotnet build Nyforge.sln --configuration Release
+dotnet test Nyforge.sln --no-build --configuration Release
 ```
 
 Requires the .NET 8 SDK. If you hit a compile error, it's most likely a
