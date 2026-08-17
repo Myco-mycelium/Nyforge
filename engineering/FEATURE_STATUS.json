@@ -29,11 +29,11 @@
     },
     {
       "id": "CopyPaste",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "ComponentClipboardTests (5 tests: round-trip, fresh-id cloning, event stripping, garbage payloads)",
       "readmePhrase": "copy/paste",
-      "roadmapPhrase": "copy/paste"
+      "roadmapPhrase": "Copy/paste"
     },
     {
       "id": "UndoRedo",

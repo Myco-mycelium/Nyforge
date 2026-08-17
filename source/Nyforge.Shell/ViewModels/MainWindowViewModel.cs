@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Nyforge.Core.Editing;
 using Nyforge.Core.Nui;
+using Nyforge.Core.Project;
 using Nyforge.Shell.Services;
 
 namespace Nyforge.Shell.ViewModels;
@@ -24,6 +25,8 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public RelayCommand UndoCommand { get; }
     public RelayCommand RedoCommand { get; }
+    public RelayCommand CopySelectionCommand { get; }
+    public RelayCommand PasteCommand { get; }
 
     /// <summary>
     /// Raised when the Home screen's "Open Project" or "Save Project"
@@ -33,6 +36,14 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// pattern already used by the File menu).
     /// </summary>
     public event EventHandler<string>? HomeCommandRequestedFileDialog;
+
+    /// <summary>Copy produced a payload — the window writes it to the OS clipboard.</summary>
+    public event EventHandler<string>? CopyRequested;
+
+    /// <summary>Paste needs the OS clipboard — the window reads it, then calls <see cref="Paste"/>.</summary>
+    public event EventHandler? PasteRequested;
+
+    private int _pasteCascade;
 
     /// <summary>
     /// The component tree's top-level VMs (children of the screen root);
@@ -130,6 +141,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(AvailableEventsForSelection));
         OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
         DeleteSelectedCommand.RaiseCanExecuteChanged();
+        CopySelectionCommand.RaiseCanExecuteChanged();
     }
 
     private string _projectName = "Untitled Project";
@@ -198,6 +210,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         RemoveBehaviorCommand = new RelayCommand<BehaviorViewModel>(RemoveBehavior);
         UndoCommand = new RelayCommand(() => History.Undo(), () => History.CanUndo);
         RedoCommand = new RelayCommand(() => History.Redo(), () => History.CanRedo);
+        CopySelectionCommand = new RelayCommand(CopySelection, () => HasSelection);
+        PasteCommand = new RelayCommand(() => PasteRequested?.Invoke(this, EventArgs.Empty));
 
         // After any command (execute/undo/redo/clear) the model changed:
         // rebuild the VM tree + render list + behaviors from the model,
@@ -556,6 +570,70 @@ public sealed class MainWindowViewModel : ViewModelBase
         "Slider" or "ProgressBar" => 24,
         _ => 32
     };
+
+    /// <summary>
+    /// v0.6 copy/paste: copies the topmost-selected subtrees (children of
+    /// a selected container ride along) as a JSON payload the window writes
+    /// to the OS clipboard. Behaviors never travel: they are document-scoped.
+    /// </summary>
+    public void CopySelection()
+    {
+        if (!HasSelection) return;
+        var topmost = TopmostSelected();
+        var payload = ComponentClipboard.Serialize(topmost.Select(vm => vm.Model));
+        _pasteCascade = 0;
+        CopyRequested?.Invoke(this, payload);
+        StatusMessage = $"Copied {topmost.Count} element{(topmost.Count == 1 ? "" : "s")}.";
+    }
+
+    /// <summary>
+    /// Pastes a clipboard payload into the selected container (or the root),
+    /// one undoable command per paste. Pasted components get fresh ids and
+    /// arrive unbound; each paste cascades 8 px so repeats stay visible.
+    /// </summary>
+    public void Paste(string? json)
+    {
+        if (string.IsNullOrEmpty(json)) return;
+
+        var parsed = ComponentClipboard.Deserialize(json);
+        if (parsed.Count == 0)
+        {
+            StatusMessage = "Clipboard doesn't contain NUI components.";
+            return;
+        }
+
+        var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
+        if (root is null) return;
+
+        var container = SelectedElement is { CanContainChildren: true } sel ? sel : null;
+        var parentModel = container?.Model ?? root;
+
+        var clones = ComponentClipboard.CloneWithFreshIds(parsed);
+        var offset = ++_pasteCascade * 8.0;
+        foreach (var clone in clones)
+        {
+            clone.Layout.X += offset;
+            clone.Layout.Y += offset;
+        }
+
+        var commands = clones
+            .Select(c => (IEditorCommand)new AddComponentCommand(parentModel, c))
+            .ToList();
+        if (commands.Count == 1) History.Execute(commands[0]);
+        else History.Execute(new CompositeCommand(commands));
+
+        // Select what was pasted.
+        var pasted = CanvasRenderItems.Where(vm => clones.Contains(vm.Model)).ToList();
+        for (var i = 0; i < pasted.Count; i++)
+        {
+            SelectForInteraction(pasted[i], additive: i > 0);
+        }
+
+        _projectService.Current.MarkDirty();
+        StatusMessage = container is null
+            ? $"Pasted {clones.Count} element{(clones.Count == 1 ? "" : "s")}."
+            : $"Pasted {clones.Count} element{(clones.Count == 1 ? "" : "s")} into {container.Id}.";
+    }
 
     public void DeleteSelected()
     {

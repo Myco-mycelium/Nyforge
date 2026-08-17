@@ -73,7 +73,12 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [x] **Snap-to-grid** — drags and resizes snap to the design system's
       4 px grid.
 - [ ] Alignment guides.
-- [ ] Copy/paste.
+- [x] **Copy/paste** — `Ctrl+C`/`Ctrl+V` via the OS clipboard
+      (`Nyforge.Core.Project.ComponentClipboard`): pasted subtrees get
+      fresh ids and arrive unbound (behaviors are document-scoped), go
+      into the selected container or the root, cascade 8 px per paste,
+      and land as one undoable command (composite for multi-copy). 5 new
+      unit tests (suite 44 → 49).
 - [x] **Undo/redo** — command-based (v0.6): every edit is one
       `IEditorCommand` (Add/Delete/Move/Resize/Reparent/ChangeProperty/
       AddBehavior/DeleteBehavior) on a bounded history; a drag

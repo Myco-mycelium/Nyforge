@@ -66,6 +66,16 @@ surfaced:
   click on a multi-selection collapses to that element without
   accidentally moving anything). `CompositeCommand` — 3 new unit tests
   (suite 41 → 44).
+- **Priority 1, fourth slice: copy/paste.** `Ctrl+C`/`Ctrl+V` through the
+  OS clipboard: `Nyforge.Core.Project.ComponentClipboard` serializes
+  copied subtrees (same JSON options as .nstudio so values round-trip as
+  native types) and `CloneWithFreshIds` gives every pasted node a fresh,
+  document-unique id and strips event wiring — behaviors are
+  document-scoped and never cross a clipboard. Paste lands in the
+  selected container (or the root) cascading 8 px per paste, as one
+  undoable command (composite for multi-copy); the pasted elements are
+  selected. Clipboard IO lives in MainWindow's code-behind; the ViewModel
+  stays pure. 5 new unit tests (suite 44 → 49).
 - **Roadmap reconciled and extended.** Undo/redo (command-based) is now an
   explicit v0.2 item; the Nyrqis API Registry and the Nyrqis Desktop Shell
   are elevated to a first-class **v0.6** section (the shell is no longer a

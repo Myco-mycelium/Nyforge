@@ -24,8 +24,32 @@ public partial class MainWindow : Window
             if (Vm is not null)
             {
                 Vm.HomeCommandRequestedFileDialog += OnHomeCommandRequestedFileDialog;
+                Vm.CopyRequested += OnCopyRequested;
+                Vm.PasteRequested += OnPasteRequested;
             }
         };
+    }
+
+    // --- Clipboard (OS clipboard IO lives here, not the ViewModel) ---
+
+    private async void OnCopyRequested(object? sender, string json)
+    {
+        var clipboard = Clipboard;
+        if (clipboard is not null)
+        {
+            await clipboard.SetTextAsync(json);
+        }
+    }
+
+    private async void OnPasteRequested(object? sender, EventArgs e)
+    {
+        var clipboard = Clipboard;
+        if (clipboard is null) return;
+        var text = await clipboard.GetTextAsync();
+        if (text is not null)
+        {
+            Vm?.Paste(text);
+        }
     }
 
     private void OnHomeCommandRequestedFileDialog(object? sender, string commandId)

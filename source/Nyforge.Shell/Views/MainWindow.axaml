@@ -26,6 +26,9 @@
         <MenuItem Header="Undo" Command="{Binding UndoCommand}" HotKey="Ctrl+Z" />
         <MenuItem Header="Redo" Command="{Binding RedoCommand}" HotKey="Ctrl+Y" />
         <Separator />
+        <MenuItem Header="Copy" Command="{Binding CopySelectionCommand}" HotKey="Ctrl+C" />
+        <MenuItem Header="Paste" Command="{Binding PasteCommand}" HotKey="Ctrl+V" />
+        <Separator />
         <MenuItem Header="Delete Selected" Command="{Binding DeleteSelectedCommand}" />
       </MenuItem>
       <MenuItem Header="_View">
