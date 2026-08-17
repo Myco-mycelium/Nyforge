@@ -18,8 +18,13 @@ public sealed class PreviewElementViewModel : ViewModelBase
 
     public string Id => Model.Id;
     public string Type => Model.Type;
-    public double X => Model.Layout.X;
-    public double Y => Model.Layout.Y;
+
+    /// <summary>
+    /// Absolute canvas position (parent-relative Layout offsets summed up
+    /// the chain, per NUI-SCHEMA §3) — v0.6 renders nested trees.
+    /// </summary>
+    public double X { get; }
+    public double Y { get; }
     public double Width => Model.Layout.Width;
     public double Height => Model.Layout.Height;
 
@@ -37,9 +42,11 @@ public sealed class PreviewElementViewModel : ViewModelBase
         set => SetField(ref _text, value);
     }
 
-    public PreviewElementViewModel(NuiComponent model)
+    public PreviewElementViewModel(NuiComponent model, double x, double y)
     {
         Model = model;
+        X = x;
+        Y = y;
         _text = model.Properties.TryGetValue("text", out var t) ? t?.ToString() ?? model.Type : model.Type;
         _boolValue = model.Properties.TryGetValue("value", out var v) && v is bool b && b;
     }
@@ -77,16 +84,29 @@ public sealed class PreviewViewModel : ViewModelBase
         var root = project.Document.Screens.FirstOrDefault()?.Root;
         if (root is not null)
         {
-            foreach (var child in root.Children)
-            {
-                var vm = new PreviewElementViewModel(child);
-                Elements.Add(vm);
-                _byId[child.Id] = vm;
-            }
+            AddSubtree(root, 0, 0);
         }
 
         SeedBindings();
         Log.Insert(0, "Preview started (Forge's own renderer — not the real Nyrqis UI Runtime).");
+    }
+
+    /// <summary>
+    /// v0.6: flattens the whole component tree (not just the screen
+    /// root's children) into absolute-positioned preview elements — the
+    /// same math the canvas uses, so what you design is what previews.
+    /// </summary>
+    private void AddSubtree(NuiComponent node, double parentX, double parentY)
+    {
+        foreach (var child in node.Children)
+        {
+            var absX = parentX + child.Layout.X;
+            var absY = parentY + child.Layout.Y;
+            var vm = new PreviewElementViewModel(child, absX, absY);
+            Elements.Add(vm);
+            _byId[child.Id] = vm;
+            AddSubtree(child, absX, absY);
+        }
     }
 
     /// <summary>Seed each bound property from its current state value, per NUI-SCHEMA.md §8.</summary>

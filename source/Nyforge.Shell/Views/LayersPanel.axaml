@@ -4,20 +4,24 @@
              x:Class="Nyforge.Shell.Views.LayersPanel"
              x:DataType="vm:MainWindowViewModel">
 
-  <ListBox ItemsSource="{Binding CanvasElements}"
-           SelectedItem="{Binding SelectedElement}"
-           Background="Transparent"
-           Padding="{DynamicResource Nyforge.Inset.Small}">
-    <ListBox.ItemTemplate>
-      <DataTemplate DataType="vm:CanvasElementViewModel">
+  <!-- v0.6: the Layers panel is now a real hierarchy, mirroring the
+       component tree (root children, then each container's children).
+       Selection is shared with the canvas via SelectedElement. -->
+  <TreeView ItemsSource="{Binding CanvasElements}"
+            SelectedItem="{Binding SelectedElement}"
+            Background="Transparent"
+            Padding="{DynamicResource Nyforge.Inset.Small}">
+    <TreeView.ItemTemplate>
+      <TreeDataTemplate x:DataType="vm:CanvasElementViewModel"
+                        ItemsSource="{Binding Children}">
         <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Nyforge.Space.2}">
           <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Body}"
                      Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
           <TextBlock Text="{Binding Id}" FontSize="{DynamicResource Nyforge.Type.Caption}"
                      Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
         </StackPanel>
-      </DataTemplate>
-    </ListBox.ItemTemplate>
-  </ListBox>
+      </TreeDataTemplate>
+    </TreeView.ItemTemplate>
+  </TreeView>
 
 </UserControl>

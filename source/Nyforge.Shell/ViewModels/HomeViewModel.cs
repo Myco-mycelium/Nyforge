@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Nyforge.Core.Nui;
 using Nyforge.Core.Project;
 using Nyforge.Shell.Services;
 
@@ -94,10 +95,20 @@ public sealed class HomeViewModel : ViewModelBase
         var root = project.Document.Screens.FirstOrDefault()?.Root;
         if (root is not null)
         {
-            foreach (var child in root.Children)
+            // v0.6: render the full tree, not just root children — Home
+            // screens may nest, same as any other .nstudio document.
+            void AddSubtree(NuiComponent node, double parentX, double parentY)
             {
-                Elements.Add(new PreviewElementViewModel(child));
+                foreach (var child in node.Children)
+                {
+                    var absX = parentX + child.Layout.X;
+                    var absY = parentY + child.Layout.Y;
+                    Elements.Add(new PreviewElementViewModel(child, absX, absY));
+                    AddSubtree(child, absX, absY);
+                }
             }
+
+            AddSubtree(root, 0, 0);
         }
 
         var renderedMessage = $"Rendering {Path.GetFileName(resolvedPath)} — File → Customize Home Screen... to change it.";

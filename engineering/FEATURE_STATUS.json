@@ -45,11 +45,19 @@
     },
     {
       "id": "NestedTreeEditing",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "ComponentTreeTests (find/remove/insert/reparent/absolute-position, 12 tests); canvas + Preview render nested trees",
+      "readmePhrase": "nested-tree canvas editing",
+      "roadmapPhrase": "Nested-tree canvas editing"
+    },
+    {
+      "id": "DragReorderWithinParent",
       "status": "not-started",
       "introduced": null,
-      "tests": "none — canvas edits root-level children only; nesting exists only by hand in the schema",
+      "tests": "none — reparenting appends to the end of the target; drag-to-reorder is follow-on",
       "readmePhrase": null,
-      "roadmapPhrase": "Nested-tree canvas editing"
+      "roadmapPhrase": null
     },
     {
       "id": "ComponentReuse",

@@ -10,6 +10,7 @@ public partial class DesignCanvas : UserControl
     private CanvasElementViewModel? _dragTarget;
     private Point _dragStartPointerPosition;
     private double _dragStartX, _dragStartY;
+    private CanvasElementViewModel? _dropTargetHighlight;
 
     private CanvasElementViewModel? _resizeTarget;
     private Point _resizeStartPointerPosition;
@@ -52,22 +53,49 @@ public partial class DesignCanvas : UserControl
 
     private void OnElementPointerMoved(object? sender, PointerEventArgs e)
     {
-        if (_dragTarget is null) return;
+        if (_dragTarget is null || Vm is null) return;
 
         var current = e.GetPosition(RootCanvas);
         var deltaX = current.X - _dragStartPointerPosition.X;
         var deltaY = current.Y - _dragStartPointerPosition.Y;
 
+        // Relative model position (clamped inside the parent), then the
+        // absolute render position follows via the parent chain.
         _dragTarget.X = Math.Max(0, _dragStartX + deltaX);
         _dragTarget.Y = Math.Max(0, _dragStartY + deltaY);
+        Vm.RefreshRenderPositions();
+
+        // v0.6 drop affordance: highlight the container we'd reparent into.
+        var hover = Vm.ContainerAt(current.X, current.Y, _dragTarget);
+        if (hover != _dropTargetHighlight)
+        {
+            if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = false;
+            _dropTargetHighlight = hover;
+            if (_dropTargetHighlight is not null) _dropTargetHighlight.IsSelected = true;
+        }
     }
 
     private void OnElementPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (_dragTarget is not null)
+        if (_dragTarget is null) return;
+
+        var element = _dragTarget;
+        e.Pointer.Capture(null);
+        _dragTarget = null;
+
+        if (_dropTargetHighlight is not null)
         {
-            e.Pointer.Capture(null);
-            _dragTarget = null;
+            _dropTargetHighlight.IsSelected = false;
+            _dropTargetHighlight = null;
+        }
+
+        // v0.6: dropping on a container reparents into it; dropping on
+        // empty canvas pops the element out to the screen root.
+        if (Vm is not null)
+        {
+            var current = e.GetPosition(RootCanvas);
+            var target = Vm.ContainerAt(current.X, current.Y, element);
+            Vm.TryReparent(element, target);
         }
     }
 

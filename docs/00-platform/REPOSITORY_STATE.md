@@ -37,6 +37,16 @@ surfaced:
 - **Multi-select claim corrected.** The README claimed canvas multi-select;
   the canvas keeps a single `_selectedElement`. README now states it's not
   implemented, and the feature is tracked in FEATURE_STATUS.json.
+- **Priority 1, first slice: nested-tree canvas editing.** The canvas now
+  edits the real component tree, not just the screen root's children:
+  drag a component *into* a container (reparenting preserves its absolute
+  position), double-click-add goes into the selected container, delete
+  works from anywhere in the tree, the Layers panel shows the hierarchy
+  (TreeView), and Preview + the Home tab render nested trees. New
+  `Nyforge.Core.Nui.ComponentTree` — pure, position-preserving tree
+  operations (find/remove/insert/reparent/absolute-position) — covered by
+  12 new unit tests (suite 18 → 30). Follow-ons tracked in
+  FEATURE_STATUS.json (`DragReorderWithinParent` and friends).
 - **Roadmap reconciled and extended.** Undo/redo (command-based) is now an
   explicit v0.2 item; the Nyrqis API Registry and the Nyrqis Desktop Shell
   are elevated to a first-class **v0.6** section (the shell is no longer a

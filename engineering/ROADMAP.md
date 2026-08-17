@@ -58,10 +58,14 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       for Nyrqis-API-level actions (`Nyrqis.Theme.Set`, etc.) — both are
       still hand-maintained placeholders for the eventual Nyrqis API
       Registry, per NFC-001 §4.3.
-- [ ] Nested-tree canvas editing (drag a component *into* a Container/Stack/
-      Grid, not just onto the root) — the schema already supports nesting
-      (`examples/settings-app/settings-app.nstudio` uses it by hand); the
-      canvas UI for it is what's missing.
+- [x] **Nested-tree canvas editing** — drag a component *into* a
+      Container/Stack/Grid, not just onto the root (v0.6, Priority 1 first
+      slice): reparenting preserves absolute position, double-click-add
+      goes into the selected container, delete works from anywhere in the
+      tree, the Layers panel is a real hierarchy, and Preview + the Home
+      tab render nested trees. Backed by `Nyforge.Core.Nui.ComponentTree`
+      (12 unit tests). Follow-on: drag-to-reorder within a parent,
+      insertion indicators.
 - [ ] Alignment guides, snap-to-grid, multi-select, copy/paste.
 - [ ] **Undo/redo** — command-based transactions (BeginTransaction on
       pointer-down, Commit on pointer-up, one command per completed

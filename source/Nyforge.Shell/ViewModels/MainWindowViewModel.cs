@@ -21,7 +21,19 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// </summary>
     public event EventHandler<string>? HomeCommandRequestedFileDialog;
 
+    /// <summary>
+    /// The component tree's top-level VMs (children of the screen root);
+    /// nesting hangs off each VM's Children. Drives the Layers tree.
+    /// </summary>
     public ObservableCollection<CanvasElementViewModel> CanvasElements { get; } = new();
+
+    /// <summary>
+    /// The same VMs flattened in depth-first order with absolute
+    /// (canvas) positions — what the DesignCanvas draws. Kept in sync by
+    /// RebuildRenderItems/RefreshRenderPositions; structural changes go
+    /// through the former, pointer drags through the latter.
+    /// </summary>
+    public ObservableCollection<CanvasElementViewModel> CanvasRenderItems { get; } = new();
 
     /// <summary>All behaviors reachable from the current screen's component tree, v0.2 Logic Editor.</summary>
     public ObservableCollection<BehaviorViewModel> Behaviors { get; } = new();
@@ -83,9 +95,16 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    /// <summary>Every component id on the current screen — valid Action targets besides "System".</summary>
-    public IReadOnlyList<string> AvailableActionTargets =>
-        new[] { "System" }.Concat(CanvasElements.Select(e => e.Id)).ToList();
+    /// <summary>Every component id in the current screen's whole tree — valid Action targets besides "System".</summary>
+    public IReadOnlyList<string> AvailableActionTargets
+    {
+        get
+        {
+            var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
+            if (root is null) return new[] { "System" };
+            return new[] { "System" }.Concat(ComponentTree.Walk(root).Select(n => n.Id)).ToList();
+        }
+    }
 
     /// <summary>True once an element is selected but has nothing left to wire up — drives the BehaviorsPanel empty state.</summary>
     public bool NoUnboundEventsOnSelection => HasSelection && AvailableEventsForSelection.Count == 0;
@@ -157,8 +176,9 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         foreach (var child in root.Children)
         {
-            CanvasElements.Add(new CanvasElementViewModel(child));
+            CanvasElements.Add(BuildTree(child, null));
         }
+        RebuildRenderItems();
 
         RebuildBehaviors(root);
 
@@ -255,6 +275,122 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// </summary>
     private void SyncSelectedProjectRoot() { }
 
+    /// <summary>
+    /// Builds the VM tree for one model node (and its descendants),
+    /// mirroring the model hierarchy so the canvas, Layers, and reparent
+    /// operations all share the same structure.
+    /// </summary>
+    private static CanvasElementViewModel BuildTree(NuiComponent model, CanvasElementViewModel? parent)
+    {
+        var vm = new CanvasElementViewModel(model, parent);
+        foreach (var child in model.Children)
+        {
+            vm.Children.Add(BuildTree(child, vm));
+        }
+        return vm;
+    }
+
+    /// <summary>
+    /// Rebuilds the flat render list from the VM tree after a structural
+    /// change (load/add/delete/reparent) and recomputes absolute positions.
+    /// </summary>
+    private void RebuildRenderItems()
+    {
+        CanvasRenderItems.Clear();
+        void Add(CanvasElementViewModel vm)
+        {
+            vm.RenderX = (vm.Parent?.RenderX ?? 0) + vm.X;
+            vm.RenderY = (vm.Parent?.RenderY ?? 0) + vm.Y;
+            CanvasRenderItems.Add(vm);
+            foreach (var child in vm.Children) Add(child);
+        }
+        foreach (var rootVm in CanvasElements) Add(rootVm);
+    }
+
+    /// <summary>
+    /// Recomputes absolute positions without touching the collection
+    /// (pointer drags call this every move; the list is already correct).
+    /// </summary>
+    public void RefreshRenderPositions()
+    {
+        void Walk(CanvasElementViewModel vm)
+        {
+            vm.RenderX = (vm.Parent?.RenderX ?? 0) + vm.X;
+            vm.RenderY = (vm.Parent?.RenderY ?? 0) + vm.Y;
+            foreach (var child in vm.Children) Walk(child);
+        }
+        foreach (var rootVm in CanvasElements) Walk(rootVm);
+    }
+
+    /// <summary>
+    /// The deepest container under the given canvas point that isn't the
+    /// dragged element or inside its subtree — the drop target for
+    /// reparenting. Null means "the screen root" (drop on empty canvas).
+    /// </summary>
+    public CanvasElementViewModel? ContainerAt(double x, double y, CanvasElementViewModel? exclude)
+    {
+        CanvasElementViewModel? best = null;
+        void Consider(CanvasElementViewModel vm)
+        {
+            if (!vm.CanContainChildren) return;
+            // Skip the dragged element itself and anything inside its own
+            // subtree (that would create a cycle). Its ancestors stay
+            // eligible — dropping back onto your own parent is a no-op.
+            if (vm == exclude || IsDescendant(exclude, vm)) return;
+            if (x >= vm.RenderX && x <= vm.RenderX + vm.Width &&
+                y >= vm.RenderY && y <= vm.RenderY + vm.Height)
+            {
+                if (best is null || vm.Depth > best.Depth) best = vm;
+            }
+        }
+        void Walk(CanvasElementViewModel vm)
+        {
+            Consider(vm);
+            foreach (var child in vm.Children) Walk(child);
+        }
+        foreach (var rootVm in CanvasElements) Walk(rootVm);
+        return best;
+    }
+
+    private static bool IsDescendant(CanvasElementViewModel? ancestor, CanvasElementViewModel? node)
+    {
+        if (ancestor is null || node is null) return false;
+        foreach (var child in ancestor.Children)
+        {
+            if (child == node || IsDescendant(child, node)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// v0.6: move a component to a new parent (a container VM, or null for
+    /// the screen root), preserving its absolute canvas position. Pure no-op
+    /// when the target is the current parent or the move is impossible.
+    /// </summary>
+    public bool TryReparent(CanvasElementViewModel element, CanvasElementViewModel? newParent)
+    {
+        if (element.Parent == newParent) return false;
+
+        var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
+        if (root is null) return false;
+
+        if (!ComponentTree.Reparent(root, element.Model, newParent?.Model ?? root)) return false;
+
+        if (element.Parent is not null) element.Parent.Children.Remove(element);
+        else CanvasElements.Remove(element);
+
+        element.Parent = newParent;
+        if (newParent is not null) newParent.Children.Add(element);
+        else CanvasElements.Add(element);
+
+        RebuildRenderItems();
+        _projectService.Current.MarkDirty();
+        StatusMessage = newParent is null
+            ? $"Moved {element.Id} to the root."
+            : $"Moved {element.Id} into {newParent.Id}.";
+        return true;
+    }
+
     public void AddComponent(string? componentType)
     {
         if (string.IsNullOrEmpty(componentType)) return;
@@ -267,23 +403,36 @@ public sealed class MainWindowViewModel : ViewModelBase
         var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
         if (root is null) return;
 
+        // v0.6: adding into the selected container when one is selected,
+        // otherwise into the screen root — the first step of nested editing.
+        var container = SelectedElement is { CanContainChildren: true } sel ? sel : null;
+        var parentModel = container?.Model ?? root;
+
         var component = new NuiComponent
         {
             Id = $"{componentType.ToLowerInvariant()}_{Guid.NewGuid().ToString("N")[..6]}",
             Type = componentType,
-            Layout = new NuiLayout { X = 40, Y = 40, Width = DefaultWidthFor(componentType), Height = DefaultHeightFor(componentType) }
+            Layout = new NuiLayout
+            {
+                X = container is null ? 40 : 16,
+                Y = container is null ? 40 : 16,
+                Width = DefaultWidthFor(componentType),
+                Height = DefaultHeightFor(componentType)
+            }
         };
         if (componentType is "Text" or "Button" or "Link" or "Checkbox" or "Radio" or "Toggle")
         {
             component.Properties["text"] = componentType;
         }
 
-        root.Children.Add(component);
-        var vm = new CanvasElementViewModel(component);
-        CanvasElements.Add(vm);
+        parentModel.Children.Add(component);
+        var vm = new CanvasElementViewModel(component, container);
+        if (container is not null) container.Children.Add(vm);
+        else CanvasElements.Add(vm);
+        RebuildRenderItems();
         SelectedElement = vm;
         _projectService.Current.MarkDirty();
-        StatusMessage = $"Added {componentType}.";
+        StatusMessage = container is null ? $"Added {componentType}." : $"Added {componentType} into {container.Id}.";
         OnPropertyChanged(nameof(AvailableActionTargets));
     }
 
@@ -309,8 +458,10 @@ public sealed class MainWindowViewModel : ViewModelBase
         if (SelectedElement is null) return;
 
         var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
-        root?.Children.Remove(SelectedElement.Model);
-        CanvasElements.Remove(SelectedElement);
+        if (root is null) return;
+        ComponentTree.Remove(root, SelectedElement.Model.Id);
+        if (SelectedElement.Parent is not null) SelectedElement.Parent.Children.Remove(SelectedElement);
+        else CanvasElements.Remove(SelectedElement);
 
         // Clean up any behaviors reachable only from the deleted subtree
         // (the element itself, plus any nested children it carried) — both
@@ -326,6 +477,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
 
         SelectedElement = null;
+        RebuildRenderItems();
         _projectService.Current.MarkDirty();
         StatusMessage = "Deleted element.";
         OnPropertyChanged(nameof(AvailableActionTargets));

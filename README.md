@@ -84,6 +84,12 @@ milestone per `engineering/ROADMAP.md`:
   publishes **Windows** (`Nyforge-win-x64.zip`) **and Linux**
   (`Nyforge-linux-x64.zip`, the Nyrqis-host target), both
   self-contained single-file.
+- **Nested-tree canvas editing** — components can be dragged *into*
+  containers (reparenting preserves their on-screen position), added
+  directly into a selected container, and deleted from anywhere in the
+  tree; the **Layers** panel shows the real component hierarchy; Preview
+  and the Home tab render nested trees at their absolute positions.
+  Backed by `Nyforge.Core.Nui.ComponentTree` (fully unit-tested).
 - **A worked dashboard example** — [`examples/vault-dashboard/vault-dashboard.nstudio`](examples/vault-dashboard/vault-dashboard.nstudio)
   is a Vault Monitor designed to the design system: card hierarchy,
   bound state, a conditional behavior, and `$state:` substitution.

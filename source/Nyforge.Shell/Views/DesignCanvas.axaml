@@ -15,7 +15,11 @@
             Background="{DynamicResource Nyforge.Brush.Surface}"
             PointerPressed="OnCanvasPointerPressed">
 
-      <ItemsControl ItemsSource="{Binding CanvasElements}">
+      <!-- v0.6: the canvas draws the flattened tree (CanvasRenderItems),
+           each item positioned at its absolute canvas position; nested
+           children simply appear at their parent-offset position. The
+           model keeps relative coords — see CanvasElementViewModel. -->
+      <ItemsControl ItemsSource="{Binding CanvasRenderItems}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
             <Canvas />
@@ -26,7 +30,7 @@
           <DataTemplate DataType="vm:CanvasElementViewModel">
             <Border Name="ElementBorder"
                     Width="{Binding Width}" Height="{Binding Height}"
-                    Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
+                    Canvas.Left="{Binding RenderX}" Canvas.Top="{Binding RenderY}"
                     Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
                     BorderBrush="{Binding IsSelected, Converter={x:Static vm:SelectionBrushConverter.Instance}}"
                     BorderThickness="{Binding IsSelected, Converter={x:Static vm:SelectionThicknessConverter.Instance}}"
