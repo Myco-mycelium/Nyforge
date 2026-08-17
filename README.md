@@ -28,8 +28,10 @@ milestone per `engineering/ROADMAP.md`:
 
 - A working Avalonia desktop shell (`source/Nyforge.Shell`) with a **Component
   Palette**, an interactive **Design Canvas** (drag from palette, select,
-  move, resize, delete), an **Inspector** (position, size, common
-  properties), and a **Layers** panel. Canvas power-editing (alignment) is
+  move, resize, delete), a **metadata-driven Inspector** (property rows
+  generated from the Nyrqis API Registry's `PropertyDefinition.Type` —
+  string/boolean/number/enum editors, edits undoable), and a **Layers**
+  panel. Canvas power-editing (alignment) is
   not implemented yet — see
   [`engineering/FEATURE_STATUS.json`](engineering/FEATURE_STATUS.json),
   the machine-readable feature-status source the docs are validated

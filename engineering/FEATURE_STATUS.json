@@ -119,9 +119,17 @@
       "id": "ApiRegistry",
       "status": "implemented",
       "introduced": "0.6",
-      "tests": "generate_contracts.py + check_contracts_synced.py + CI gate — ComponentContracts.cs/NuiSystemActions.cs are regenerated from the vendored Nyrqis API Registry (engineering/registry/nui-api-v1.json)",
+      "tests": "generate_contracts.py + check_contracts_synced.py + CI gate — ComponentContracts.cs/NuiSystemActions.cs/PropertyDefinitions.cs are regenerated from the vendored Nyrqis API Registry (engineering/registry/nui-api-v1.json)",
       "readmePhrase": null,
       "roadmapPhrase": "API Registry integration"
+    },
+    {
+      "id": "MetadataDrivenInspector",
+      "status": "implemented",
+      "introduced": "0.6",
+      "tests": "PropertyDefinitionsTests (7 tests) + build — Inspector rows generated from registry PropertyDefinition.Type (string/boolean/number/enum editors); edits route through undoable ChangePropertyCommand",
+      "readmePhrase": "metadata-driven Inspector",
+      "roadmapPhrase": "metadata-driven Inspector"
     },
     {
       "id": "NyrqisDesktopShell",

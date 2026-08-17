@@ -54,10 +54,44 @@
 
         <TextBlock Classes="section-header" Text="PROPERTIES"
                    Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
-        <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
-          <TextBlock Classes="field-label" Text="Text" />
-          <TextBox Text="{Binding DisplayText}" Watermark="(no text property)" />
-          </StackPanel>
+
+        <!-- Metadata-driven (NFS-006): one editor per property, chosen
+             from the registry's PropertyDefinition.Type — string → text
+             box, boolean → checkbox, number → numeric up-down, enum →
+             combo box, array → read-only text.  Writes route through
+             MainWindowViewModel's undoable history. -->
+        <ItemsControl ItemsSource="{Binding PropertyEditors}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:PropertyEditorViewModel">
+              <StackPanel Spacing="{DynamicResource Nyforge.Space.1}" Margin="0,4,0,0">
+                <TextBlock Classes="field-label" Text="{Binding Name}" />
+
+                <TextBox Text="{Binding Value, Mode=TwoWay}"
+                         Watermark="(text)"
+                         IsVisible="{Binding IsStringEditor}" />
+
+                <CheckBox Content="{Binding Name}" IsChecked="{Binding Value, Mode=TwoWay}"
+                          IsVisible="{Binding IsBooleanEditor}" />
+
+                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsNumberEditor}">
+                  <NumericUpDown Value="{Binding Value, Mode=TwoWay}"
+                                 Minimum="{Binding Min}" Maximum="{Binding Max}"
+                                 FormatString="0.##" />
+                  <TextBlock Grid.Column="1" Classes="field-label"
+                             Text="{Binding Units}" VerticalAlignment="Center"
+                             Margin="4,0,0,0" />
+                </Grid>
+
+                <ComboBox ItemsSource="{Binding EnumValues}"
+                          SelectedItem="{Binding Value, Mode=TwoWay}"
+                          IsVisible="{Binding IsEnumEditor}" />
+
+                <TextBlock Classes="field-label" Text="(array)"
+                           IsVisible="{Binding IsArrayEditor}" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
         </StackPanel>
       </StackPanel>
     </Panel>

@@ -72,6 +72,12 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [x] **Snap-to-grid** — drags and resizes snap to the design system's
       4 px grid.
 - [ ] Alignment guides.
+- [x] **metadata-driven Inspector** — the Inspector's property rows are
+      generated from the Nyrqis API Registry's `PropertyDefinition.Type`
+      (string → text box, boolean → checkbox, number → numeric up-down
+      with min/max/units, enum → combo box, array → read-only); edits
+      route through the undoable history like canvas edits. No more
+      hardcoded property fields (v0.6).
 - [x] **Drag-to-reorder within a parent** — drop a component onto a
       sibling to change stacking order (one undoable command, exact index
       restored on undo). Alongside: arrow keys nudge the selection (4 px,

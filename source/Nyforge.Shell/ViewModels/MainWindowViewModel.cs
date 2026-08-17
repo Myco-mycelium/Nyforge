@@ -142,6 +142,23 @@ public sealed class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
         DeleteSelectedCommand.RaiseCanExecuteChanged();
         CopySelectionCommand.RaiseCanExecuteChanged();
+
+        // The metadata-driven Inspector rows (one per property from the
+        // Nyrqis API Registry); commits route through the history so
+        // Inspector edits are undoable like canvas edits.
+        if (SelectedElement is not null)
+        {
+            SelectedElement.RefreshPropertyEditors(CommitPropertyEdit);
+        }
+    }
+
+    /// <summary>Wrap an Inspector property edit in an undoable
+    /// ChangePropertyCommand (the metadata-driven Inspector's write
+    /// path — the same history as drag/delete/reparent).</summary>
+    private void CommitPropertyEdit(
+        NuiComponent component, string property, object? oldValue, object? newValue)
+    {
+        History.Execute(new ChangePropertyCommand(component, property, oldValue, newValue));
     }
 
     private string _projectName = "Untitled Project";

@@ -87,6 +87,29 @@ public sealed class CanvasElementViewModel : ViewModelBase
         set { Model.Properties["text"] = value; OnPropertyChanged(); }
     }
 
+    /// <summary>
+    /// The metadata-driven Inspector rows for this element — one editor
+    /// per property from the Nyrqis API Registry (via
+    /// <see cref="PropertyDefinitions.For"/>).  Writes route through
+    /// <paramref name="commit"/> so MainWindowViewModel can wrap them in
+    /// an undoable ChangePropertyCommand.
+    /// </summary>
+    public IReadOnlyList<PropertyEditorViewModel> PropertyEditors { get; private set; }
+        = Array.Empty<PropertyEditorViewModel>();
+
+    /// <summary>Rebuild the metadata-driven Inspector rows after a
+    /// selection change or after the registry-backed definitions are
+    /// refreshed.</summary>
+    public void RefreshPropertyEditors(
+        Action<NuiComponent, string, object?, object?> commit)
+    {
+        PropertyEditors = PropertyDefinitions
+            .For(Type)
+            .Select(d => new PropertyEditorViewModel(Model, d, commit))
+            .ToList();
+        OnPropertyChanged(nameof(PropertyEditors));
+    }
+
     public CanvasElementViewModel(NuiComponent model, CanvasElementViewModel? parent = null)
     {
         Model = model;

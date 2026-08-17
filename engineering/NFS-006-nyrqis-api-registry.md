@@ -168,9 +168,14 @@ Proposed and **implemented 2026-08-17** (Priority 2). The registry
 - The Nyrqis Python floor (`ui/nstudio.py`) and Rust crate (`rust/nyui`)
   read/embed the same file; the conformance gate passes unchanged.
 
-Open follow-ons (reserved in this proposal, not yet populated): the
-richer per-property metadata (`min`/`max`/`enumValues`/`units`/`editor`)
-for a generated Inspector — lands with Priority 3.
+The richer per-property metadata is **no longer future work**: the same
+day, every property in the registry became a metadata object
+(`name`/`type`/`default`/`bindable`/`required`, plus
+`min`/`max`/`enumValues`/`units` where meaningful — Slider value 0–100,
+Taskbar position enum, MediaPlayer position stays a number),
+`PropertyDefinitions.cs` is generated from it, and the Inspector builds
+its editors from `PropertyDefinition.Type` (string/boolean/number/enum),
+with writes routed through the undoable history.
 
 The desktop-shell vocabulary is **no longer future work**: the same day,
 the registry grew to 63 components across five new categories (Shell,

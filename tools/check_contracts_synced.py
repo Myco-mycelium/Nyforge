@@ -25,9 +25,11 @@ if TOOLS_DIR not in sys.path:
 from generate_contracts import (
     CONTRACTS_OUT,
     SYSTEM_ACTIONS_OUT,
+    PROPERTY_DEFS_OUT,
     NYRQIS_UPSTREAM,
     generate_contracts,
     generate_system_actions,
+    generate_property_definitions,
     load_registry,
     check_upstream,
 )
@@ -42,12 +44,14 @@ def main() -> None:
     components, system_actions = load_registry()
     expected_contracts = generate_contracts(components)
     expected_actions = generate_system_actions(system_actions)
+    expected_defs = generate_property_definitions(components)
 
     errors: list[str] = []
 
     for label, path, expected in [
         ("ComponentContracts.cs", CONTRACTS_OUT, expected_contracts),
         ("NuiSystemActions.cs", SYSTEM_ACTIONS_OUT, expected_actions),
+        ("PropertyDefinitions.cs", PROPERTY_DEFS_OUT, expected_defs),
     ]:
         if not os.path.isfile(path):
             errors.append(f"{label}: file missing — run generate_contracts.py")
