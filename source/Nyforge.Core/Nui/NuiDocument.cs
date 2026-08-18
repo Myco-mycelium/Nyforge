@@ -287,5 +287,5 @@ public static class NuiSchemaVersion
     /// v0.3.0: added the Bindings section (NFS-003) — see NUI-SCHEMA.md §8.
     /// v0.2.0: added the Behaviors section (NFS-002) — see NUI-SCHEMA.md §7.
     /// </summary>
-    public const string Current = "0.4.0";
+    public const string Current = "1.0.0";
 }

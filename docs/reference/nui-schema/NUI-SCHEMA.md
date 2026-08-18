@@ -1,8 +1,8 @@
 ---
 title: NUI Schema Reference
 document_id: NFS-001
-version: 0.4.0
-status: Draft
+version: 1.0.0
+status: Accepted
 classification: Normative
 owners:
   - Nyforge Architecture
@@ -24,7 +24,7 @@ consumer of the design — today, Nyforge's own stand-in renderer; eventually,
 the real Nyrqis UI Runtime; potentially, native code generators. Nyforge
 edits NUI. Nothing downstream should need to know Nyforge exists.
 
-Status is **Draft**. `Components`, `Layouts`, `Themes`, `Behaviors`
+Status is **Accepted**. `Components`, `Layouts`, `Themes`, `Behaviors`
 (`0.2.0`), and, as of `0.3.0`, `Bindings` are all implemented and
 considered stable enough to build against. It stays `Draft` because the
 logic model is still deliberately small (see §7, §10) — moving to
@@ -561,11 +561,11 @@ the Nyforge application version.
 - **0.x** (current): breaking changes are expected between minor versions
   while the schema is in `Draft` status. The bump from `0.1.0` to `0.2.0`
   (adding `Behaviors`), `0.2.0` to `0.3.0` (adding `Bindings`), and `0.3.0`
-  to `0.4.0` (adding `$state:` argument substitution, §7.1) are each such a
+  to `1.0.0` (stabilized `$state:` argument substitution, §7.1) are each such a
   break — which is exactly what the **migration chain** is for
   (`NuiSchemaMigrations` in `Nyforge.Core`): an older `.nstudio` file is
   moved forward one step at a time to the current schema before parsing
-  (0.2.0 → 0.3.0 adds the `bindings` section, 0.3.0 → 0.4.0 adds
+  (0.2.0 → 0.3.0 adds the `bindings` section, 0.3.0 → 0.4.0 added
   `states`), **in memory only** — the file on disk is untouched until a
   save, and opening reports the chain that ran rather than migrating
   silently. Every `.nstudio` file still records the schema version it was

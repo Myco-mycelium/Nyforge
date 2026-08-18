@@ -319,7 +319,7 @@ public class NuiSerializationTests
 
         var doc = ProjectSerializer.LoadFromFile(path);
 
-        Assert.Equal("0.4.0", doc.Version);
+        Assert.Equal("1.0.0", doc.Version);
         Assert.Equal(2, doc.Screens.Count);
         Assert.Equal("desktop", doc.Screens[0].Id);
         Assert.Equal("lock", doc.Screens[1].Id);
@@ -345,7 +345,7 @@ public class NuiSerializationTests
 
         var doc = ProjectSerializer.LoadFromFile(path);
 
-        Assert.Equal("0.4.0", doc.Version);
+        Assert.Equal("1.0.0", doc.Version);
         Assert.Equal(2, doc.Screens.Count);
         Assert.Equal("windows", doc.Screens[0].Id);
         Assert.Equal("power", doc.Screens[1].Id);
@@ -371,7 +371,7 @@ public class NuiSerializationTests
 
         var doc = ProjectSerializer.LoadFromFile(path);
 
-        Assert.Equal("0.4.0", doc.Version);
+        Assert.Equal("1.0.0", doc.Version);
         Assert.Equal(3, doc.Screens.Count);
         Assert.Equal("widgets", doc.Screens[0].Id);
         Assert.Equal("osd", doc.Screens[1].Id);

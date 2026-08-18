@@ -72,6 +72,9 @@ public static class NuiSchemaMigrations
             if (root["states"] is null)
                 root["states"] = new JsonObject();
         }),
+        // 0.4.0 -> 1.0.0: schema stabilized. No structural changes;
+        // the version bump signals production readiness.
+        new("0.4.0", "1.0.0", root => { }),
     };
 
     /// <summary>

@@ -40,10 +40,10 @@ public class NuiSchemaMigrationTests
         Assert.NotNull(result);
         Assert.Equal("0.2.0", result!.FromVersion);
         Assert.Equal(NuiSchemaVersion.Current, result.ToVersion);
-        Assert.Equal(new[] { "0.2.0 -> 0.3.0", "0.3.0 -> 0.4.0" }, result.Applied);
+        Assert.Equal(new[] { "0.2.0 -> 0.3.0", "0.3.0 -> 0.4.0", "0.4.0 -> 1.0.0" }, result.Applied);
 
         var migrated = System.Text.Json.Nodes.JsonNode.Parse(result.MigratedJson)!;
-        Assert.Equal("0.4.0", migrated["version"]!.GetValue<string>());
+        Assert.Equal("1.0.0", migrated["version"]!.GetValue<string>());
         Assert.NotNull(migrated["bindings"]); // added by 0.2.0 -> 0.3.0
         Assert.NotNull(migrated["states"]);   // added by 0.3.0 -> 0.4.0
     }
@@ -54,9 +54,9 @@ public class NuiSchemaMigrationTests
         var result = NuiSchemaMigrations.MigrateIfNeeded(V3WithBindings);
 
         Assert.NotNull(result);
-        Assert.Equal(new[] { "0.3.0 -> 0.4.0" }, result!.Applied);
+        Assert.Equal(new[] { "0.3.0 -> 0.4.0", "0.4.0 -> 1.0.0" }, result!.Applied);
         var migrated = System.Text.Json.Nodes.JsonNode.Parse(result.MigratedJson)!;
-        Assert.Equal("0.4.0", migrated["version"]!.GetValue<string>());
+        Assert.Equal("1.0.0", migrated["version"]!.GetValue<string>());
         // Existing sections are left alone (idempotent steps).
         Assert.Equal("Eclipse", migrated["states"]!["themeName"]!.GetValue<string>());
         Assert.NotNull(migrated["bindings"]);
