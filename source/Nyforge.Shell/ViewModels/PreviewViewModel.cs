@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Nyforge.Core.Nui;
 using Nyforge.Core.Project;
+using Nyforge.Core.Runtime;
 using Nyforge.Shell.Services;
 
 namespace Nyforge.Shell.ViewModels;
@@ -57,13 +58,16 @@ public sealed class PreviewElementViewModel : ViewModelBase
 /// Forge's honest stand-in for "running" the app — see NFM-000 §2.1 and
 /// MainWindow.axaml.cs's OnPreview. It reads the saved NuiDocument but
 /// never writes back to it; closing Preview discards all runtime state.
+///
+/// All dispatch goes through <see cref="ForgePreviewRuntime"/> (the
+/// <see cref="INuiRuntime"/> seam), so the same application logic runs
+/// identically here and in a future Nyrqis runtime (doc #8/#9).
 /// </summary>
 public sealed class PreviewViewModel : ViewModelBase
 {
     private readonly NyforgeProject _project;
-    private readonly Dictionary<string, object?> _runtimeStates;
+    private readonly ForgePreviewRuntime _runtime;
     private readonly Dictionary<string, PreviewElementViewModel> _byId = new();
-    private readonly BehaviorDispatcher _dispatcher;
 
     public ObservableCollection<PreviewElementViewModel> Elements { get; } = new();
     public ObservableCollection<string> Log { get; } = new();
@@ -73,17 +77,15 @@ public sealed class PreviewViewModel : ViewModelBase
     public PreviewViewModel(NyforgeProject project, ThemeManager themeManager)
     {
         _project = project;
-        // Runtime state is the document's flattened view: flat states
-        // merged with every declared scope under its dotted names
-        // (NUI-SCHEMA §8.4), so `state.persistent.theme` and bare
-        // references resolve identically to the reference floor.
-        _runtimeStates = project.Document.FlattenedStates();
 
-        _dispatcher = new BehaviorDispatcher(
-            themeManager,
-            _runtimeStates,
-            message => Log.Insert(0, message),
-            windowId => CloseRequested?.Invoke(this, windowId));
+        // ForgePreviewRuntime owns the runtime state and dispatches
+        // through INuiRuntime — the same seam the real Nyrqis runtime
+        // will implement (doc #8/#9).
+        _runtime = new ForgePreviewRuntime(project, themeManager);
+
+        // Wire runtime log and close events to our public collections.
+        _runtime.PropertyChanged += OnRuntimePropertyChanged;
+        _runtime.CloseRequested += windowId => CloseRequested?.Invoke(this, windowId);
 
         var root = project.Document.Screens.FirstOrDefault()?.Root;
         if (root is not null)
@@ -118,11 +120,14 @@ public sealed class PreviewViewModel : ViewModelBase
     {
         foreach (var binding in _project.Document.Bindings)
         {
-            if (!_byId.TryGetValue(binding.ComponentId, out var element)) continue;
-            if (!_runtimeStates.TryGetValue(binding.State, out var value)) continue;
-
-            ApplyValueToProperty(element, binding.Property, value);
+            _runtime.ApplyBinding(binding);
         }
+    }
+
+    private void OnRuntimePropertyChanged(string componentId, string property, object? value)
+    {
+        if (!_byId.TryGetValue(componentId, out var element)) return;
+        ApplyValueToProperty(element, property, value);
     }
 
     private static void ApplyValueToProperty(PreviewElementViewModel element, string property, object? value)
@@ -150,22 +155,22 @@ public sealed class PreviewViewModel : ViewModelBase
 
         if (binding is not null)
         {
-            _runtimeStates[binding.State] = newValue;
+            _runtime.RuntimeStates[binding.State] = newValue;
             Log.Insert(0, $"State '{binding.State}' = {newValue}");
         }
     }
 
     public void FireEvent(PreviewElementViewModel element, string eventName)
     {
-        if (!element.Model.Events.TryGetValue(eventName, out var behaviorId) || behaviorId is null) return;
+        _runtime.FireEvent(element.Model, eventName);
 
-        var behavior = _project.Document.Behaviors.FirstOrDefault(b => b.Id == behaviorId);
-        if (behavior is null)
+        // Sync log from the runtime (which appends to its own log).
+        // In a full implementation the runtime would notify via events;
+        // for now we merge.
+        foreach (var entry in _runtime.Log.Where(e => !Log.Contains(e)))
         {
-            Log.Insert(0, $"Behavior '{behaviorId}' not found — the events map points at something that doesn't exist in Behaviors[].");
-            return;
+            Log.Insert(0, entry);
         }
-
-        _dispatcher.Fire(behavior);
+        _runtime.Log.Clear();
     }
 }

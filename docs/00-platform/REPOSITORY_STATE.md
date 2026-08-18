@@ -221,9 +221,10 @@ compiler-verified yet.**
   surfaces. Tracked as FEATURE_STATUS `NodeGraphLogicEditor` and
   `AdvancedCodeMode` (implemented).
 - A real Nyrqis UI Runtime — `INuiRuntime` (Nyforge.Core.Runtime) and
-  `ForgePreviewRuntime` landed 2026-08-18; the `PreviewWindow` now
-  goes through the runtime seam. The actual Nyrqis runtime is the
-  follow-on.
+  `ForgePreviewRuntime` landed 2026-08-18; `PreviewViewModel` is now
+  fully refactored: all dispatch goes through the `INuiRuntime` seam
+  (no inline `BehaviorDispatcher`). The actual Nyrqis runtime
+  implementation is the follow-on.
 - Code-generation exporters beyond the NUI document itself.
 - ~~Nyrqis API Registry integration~~ — **resolved 2026-08-17.**
   `ComponentContracts`/`NuiSystemActions` are regenerated from the
