@@ -139,9 +139,11 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       forward|reverse|alternate). A behavior triggers one via the new
       `Nyrqis.Animation.Play` registry system action, whose `animation`
       argument must name a declared animation (validator ER-NUI-022,
-      mirroring both Nyrqis import gates byte-for-byte). The desktop
-      shell's Start menu fade plays on toggle. Multi-point keyframes are
-      the follow-on.
+      mirroring both Nyrqis import gates byte-for-byte). Keyframes — a
+      multi-point curve of strictly increasing offsets in [0, 1], each
+      with a number/string/boolean value — round the animation out; the
+      desktop shell's Start menu fade is a 3-keyframe curve playing on
+      toggle. The animation timeline editor is the follow-on.
 - [x] **State scopes** — `NuiDocument.StateScopes` (NUI-SCHEMA §8.4)
       carries the five named state tables (global/screen/component/
       session/persistent) referenced as dotted `scope.key` names in

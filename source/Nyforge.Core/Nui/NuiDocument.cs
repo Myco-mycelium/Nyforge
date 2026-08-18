@@ -211,8 +211,9 @@ public sealed class NuiResourcesSection
 /// one of a target component's properties, triggered by a behavior's
 /// <c>Nyrqis.Animation.Play</c> action. <see cref="Easing"/> is one of
 /// linear / ease-in / ease-out / ease-in-out / steps; <see cref="Direction"/>
-/// is one of forward / reverse / alternate. Keyframes (multi-point
-/// transitions) are the documented follow-on.
+/// is one of forward / reverse / alternate. <see cref="Keyframes"/> is
+/// an optional multi-point curve (strictly increasing offsets in [0, 1]);
+/// without it the transition is a single segment.
 /// </summary>
 public sealed class NuiAnimation
 {
@@ -239,6 +240,22 @@ public sealed class NuiAnimation
 
     [JsonPropertyName("direction")]
     public string Direction { get; set; } = "forward";
+
+    [JsonPropertyName("keyframes")]
+    public List<NuiKeyframe> Keyframes { get; set; } = new();
+}
+
+/// <summary>One point of an animation's multi-point curve (NUI-SCHEMA
+/// §8.3): <see cref="Offset"/> is the normalized time in [0, 1] and
+/// <see cref="Value"/> is the target component property's value there
+/// (a number, string, or boolean).</summary>
+public sealed class NuiKeyframe
+{
+    [JsonPropertyName("offset")]
+    public double Offset { get; set; }
+
+    [JsonPropertyName("value")]
+    public object? Value { get; set; }
 }
 
 public sealed class NuiCanvasSize

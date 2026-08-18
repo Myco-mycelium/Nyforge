@@ -292,9 +292,13 @@ compiler-verified yet.**
   messages). A behavior triggers one through the new
   `Nyrqis.Animation.Play` registry system action (added to the Nyrqis
   API Registry; contracts regenerated); its `animation` argument must
-  name a declared animation. The desktop shell's Start menu fade plays
-  on toggle. Multi-point keyframes are the documented follow-on.
-  Tracked as FEATURE_STATUS `Animations` (implemented).
+  name a declared animation. Keyframes (2026-08-18) add a multi-point
+  curve — strictly increasing offsets in [0, 1], each with a
+  number/string/boolean value — validated byte-identically on both
+  Nyrqis gates and as ER-NUI-022; the desktop shell's Start menu fade
+  is a 3-keyframe curve playing on toggle. The animation timeline
+  editor is the remaining follow-on. Tracked as FEATURE_STATUS
+  `Animations` (implemented).
 - ~~State scopes~~ — **resolved 2026-08-17.** `NuiDocument.StateScopes`
   (NUI-SCHEMA §8.4): the five named state tables (global/screen/
   component/session/persistent) referenced as dotted `scope.key` names

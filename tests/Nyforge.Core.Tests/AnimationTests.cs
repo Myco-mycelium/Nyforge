@@ -175,6 +175,104 @@ public class AnimationTests
             e.Code == "ER-NUI-022" && e.Message.Contains("Duplicate animation id 'fade'"));
     }
 
+    // ---- keyframes (NUI-SCHEMA §8.3) ----------------------------------------
+
+    private static NuiAnimation KeyframedFade() => new()
+    {
+        Id = "fade",
+        Target = "menu",
+        Property = "opacity",
+        Duration = 200,
+        Easing = "ease-out",
+        Keyframes = new List<NuiKeyframe>
+        {
+            new() { Offset = 0.0, Value = 0.0 },
+            new() { Offset = 0.6, Value = 0.75 },
+            new() { Offset = 1.0, Value = 1.0 },
+        },
+    };
+
+    [Fact]
+    public void Keyframes_round_trip_through_json()
+    {
+        var doc = DocWithAnimation(KeyframedFade());
+        var json = ProjectSerializer.Serialize(doc);
+        var back = ProjectSerializer.Deserialize(json);
+        var anim = Assert.Single(back.Animations);
+        Assert.Equal(3, anim.Keyframes.Count);
+        Assert.Equal(0.6, anim.Keyframes[1].Offset);
+        Assert.Equal(0.75, anim.Keyframes[1].Value);
+    }
+
+    [Fact]
+    public void Validator_accepts_keyframed_animation()
+    {
+        var doc = DocWithAnimation(KeyframedFade(), PlayAnimation("fade"));
+        var result = NuiValidator.Validate(doc);
+        Assert.DoesNotContain(result.Errors, e => e.Code == "ER-NUI-022");
+    }
+
+    [Fact]
+    public void Validator_rejects_out_of_range_keyframe_offset()
+    {
+        var doc = DocWithAnimation(new NuiAnimation
+        {
+            Id = "f",
+            Target = "menu",
+            Property = "opacity",
+            Keyframes = new List<NuiKeyframe>
+            {
+                new() { Offset = 1.5, Value = 1.0 },
+            },
+        });
+        var result = NuiValidator.Validate(doc);
+        Assert.Contains(result.Errors, e =>
+            e.Code == "ER-NUI-022" &&
+            e.Message.Contains("keyframe 0 'offset' must be a number in [0, 1]"));
+    }
+
+    [Fact]
+    public void Validator_rejects_non_increasing_keyframe_offsets()
+    {
+        var doc = DocWithAnimation(new NuiAnimation
+        {
+            Id = "f",
+            Target = "menu",
+            Property = "opacity",
+            Keyframes = new List<NuiKeyframe>
+            {
+                new() { Offset = 0.5, Value = 1.0 },
+                new() { Offset = 0.5, Value = 2.0 },
+            },
+        });
+        var result = NuiValidator.Validate(doc);
+        Assert.Contains(result.Errors, e =>
+            e.Code == "ER-NUI-022" &&
+            e.Message.Contains("keyframe 1 'offset' must be greater than " +
+                               "the previous offset"));
+    }
+
+    [Fact]
+    public void Validator_rejects_keyframe_without_value()
+    {
+        var doc = DocWithAnimation(new NuiAnimation
+        {
+            Id = "f",
+            Target = "menu",
+            Property = "opacity",
+            Keyframes = new List<NuiKeyframe>
+            {
+                new() { Offset = 0.0, Value = 0.0 },
+                new() { Offset = 1.0, Value = null },
+            },
+        });
+        var result = NuiValidator.Validate(doc);
+        Assert.Contains(result.Errors, e =>
+            e.Code == "ER-NUI-022" &&
+            e.Message.Contains("keyframe 1 'value' must be a number, " +
+                               "string, or boolean"));
+    }
+
     // ---- example fixture -----------------------------------------------------
 
     [Fact]
@@ -192,6 +290,8 @@ public class AnimationTests
         Assert.Equal("opacity", anim.Property);
         Assert.Equal(200, anim.Duration);
         Assert.Equal("ease-out", anim.Easing);
+        Assert.Equal(3, anim.Keyframes.Count);
+        Assert.Equal(0.6, anim.Keyframes[1].Offset);
 
         var behavior = document.Behaviors
             .First(b => b.Id == "behavior_start_toggle");

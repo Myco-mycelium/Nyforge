@@ -147,6 +147,37 @@ public static class NuiValidator
                     $"Animation '{animation.Id}' direction '{animation.Direction}' is " +
                     "not one of forward / reverse / alternate."));
             }
+            // Keyframes (NUI-SCHEMA §8.3): offsets in [0, 1], strictly
+            // increasing, each with a value (number/string/boolean).
+            double prevOffset = double.NaN;
+            for (var i = 0; i < animation.Keyframes.Count; i++)
+            {
+                var keyframe = animation.Keyframes[i];
+                if (keyframe.Offset < 0 || keyframe.Offset > 1)
+                {
+                    issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                        $"Animation '{animation.Id}' keyframe {i} 'offset' must be " +
+                        "a number in [0, 1]."));
+                }
+                else if (i > 0 && keyframe.Offset <= prevOffset)
+                {
+                    issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                        $"Animation '{animation.Id}' keyframe {i} 'offset' must be " +
+                        "greater than the previous offset."));
+                }
+                else
+                {
+                    prevOffset = keyframe.Offset;
+                }
+                if (keyframe.Value is null ||
+                    keyframe.Value is System.Collections.IDictionary ||
+                    keyframe.Value is System.Collections.IList)
+                {
+                    issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                        $"Animation '{animation.Id}' keyframe {i} 'value' must be " +
+                        "a number, string, or boolean."));
+                }
+            }
         }
 
         // ---- behavior / binding / action references -------------------------

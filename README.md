@@ -53,7 +53,7 @@ milestone per `engineering/ROADMAP.md`:
   the palette uses, not free text you can typo into something nonexistent.
   Conditions can be a full **expression** (`state.volume > 50 && !state.dnd`)
   evaluated by the same expression language (NUI-SCHEMA §7.2) the runtime
-  uses, and actions can play **declarative animations (duration, easing, direction)** (NUI-SCHEMA §8.3) via the `Nyrqis.Animation.Play` system action — a behavior fires `WHEN StartMenu.Opened DO animation StartMenu.Open` as a timed, eased property transition.
+  uses, and actions can play **declarative animations (duration, easing, direction)** (NUI-SCHEMA §8.3) via the `Nyrqis.Animation.Play` system action — a behavior fires `WHEN StartMenu.Opened DO animation StartMenu.Open` as a timed, eased property transition, optionally along a multi-point **keyframe** curve (strictly increasing offsets in [0, 1], each with a value).
   State references can also be **state scopes (global, session, persistent)** (NUI-SCHEMA §8.4): named state tables referenced as
   dotted `scope.key` names in expressions, conditions, bindings, and
   arguments — the shell's persistent theme and session clock are scoped

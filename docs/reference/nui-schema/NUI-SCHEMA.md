@@ -413,7 +413,10 @@ property transitions:
 "animations": [
   { "id": "start_menu_fade", "target": "start_menu", "property": "opacity",
     "duration": 200, "delay": 0, "easing": "ease-out",
-    "repeat": 0, "direction": "forward" }
+    "repeat": 0, "direction": "forward",
+    "keyframes": [ { "offset": 0.0, "value": 0.0 },
+                     { "offset": 0.6, "value": 0.75 },
+                     { "offset": 1.0, "value": 1.0 } ] }
 ]
 ```
 
@@ -426,6 +429,15 @@ property transitions:
   linear / ease-in / ease-out / ease-in-out / steps (default
   ease-in-out); `direction` is one of forward / reverse / alternate
   (default forward).
+- **Keyframes** (optional): a multi-point curve — a list of
+  `{ "offset": 0.0–1.0, "value": … }` stops whose offsets must be
+  strictly increasing. `value` is the target property's value at that
+  normalized time (a number, string, or boolean). Without keyframes the
+  animation is a single-segment transition; with them the runtime
+  interpolates between the stops (e.g. the Start menu fade dips to 0.75
+  at 60 % of the way in). Keyframe validation — list shape, offset
+  range, strict ordering, and a present value — is byte-identical on
+  both Nyrqis import gates and mirrored as ER-NUI-022 at design time.
 - Animations are **triggered by behaviors**, never hardcoded into a
   component: a behavior whose action is the `Nyrqis.Animation.Play`
   system action (added to the Nyrqis API Registry) plays the animation
@@ -441,10 +453,9 @@ property transitions:
 
 - One semantics, three implementations: `Nyforge.Core.Nui.NuiAnimation`
   (design time), the reference floor's `animations` validation, and the
-  Rust crate — differential-tested byte-for-byte. Multi-point
-  **keyframes** (a list of time/value stops) and an animation timeline
-  editor are the documented follow-on; the section's shape is designed
-  to grow them without a breaking change.
+  Rust crate — differential-tested byte-for-byte. Keyframes are
+  implemented (see above); an animation **timeline editor** in Forge is
+  the remaining follow-on.
 
 ## 8.4 State Scopes
 
