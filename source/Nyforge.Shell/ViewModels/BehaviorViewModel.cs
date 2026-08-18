@@ -21,6 +21,14 @@ public sealed class BehaviorViewModel : ViewModelBase
     /// <summary>Resolves a component id -> its NUI type, so ActionName choices can be looked up per-target. Supplied by MainWindowViewModel.</summary>
     private readonly Func<string, string?> _resolveComponentType;
 
+    /// <summary>The action the single-action editor surfaces: the
+    /// behavior's `action`, or the first step of an `actions` chain
+    /// (NUI-SCHEMA §7.3) — mirroring the floor's back-compatible
+    /// single-action view. Chain editing arrives with the node-graph
+    /// editor; the dispatcher and validator already handle the full chain.</summary>
+    private NuiAction PrimaryAction =>
+        Model.Action ?? Model.Actions?.FirstOrDefault() ?? new NuiAction();
+
     public string Summary
     {
         get
@@ -28,17 +36,18 @@ public sealed class BehaviorViewModel : ViewModelBase
             var condition = Model.Condition is { } c
                 ? $" IF {c.State} {(c.Operator == "equals" ? "==" : "!=")} {c.Value}"
                 : string.Empty;
-            var target = Model.Action.Target == "System" ? "System" : Model.Action.Target;
-            return $"WHEN {SourceComponent.Id}.{EventName}{condition} DO {target}.{Model.Action.Name}";
+            var action = PrimaryAction;
+            var target = action.Target == "System" ? "System" : action.Target;
+            return $"WHEN {SourceComponent.Id}.{EventName}{condition} DO {target}.{action.Name}";
         }
     }
 
     public string ActionTarget
     {
-        get => Model.Action.Target;
+        get => PrimaryAction.Target;
         set
         {
-            Model.Action.Target = value;
+            PrimaryAction.Target = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Summary));
             OnPropertyChanged(nameof(AvailableActionNames));
@@ -47,8 +56,8 @@ public sealed class BehaviorViewModel : ViewModelBase
 
     public string ActionName
     {
-        get => Model.Action.Name;
-        set { Model.Action.Name = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summary)); }
+        get => PrimaryAction.Name;
+        set { PrimaryAction.Name = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summary)); }
     }
 
     /// <summary>

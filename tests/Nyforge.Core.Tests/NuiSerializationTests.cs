@@ -251,7 +251,9 @@ public class NuiSerializationTests
 
         Assert.True(reloaded.States["useDarkTheme"] is bool);
 
-        var arg = reloaded.Behaviors.Single().Action.Arguments["theme"];
+        var action = reloaded.Behaviors.Single().Action;
+        Assert.NotNull(action);
+        var arg = action!.Arguments["theme"];
         Assert.True(arg is string);
         Assert.Equal("Eclipse", arg);
     }

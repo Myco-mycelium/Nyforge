@@ -3,41 +3,50 @@ using System.Text.Json.Serialization;
 namespace Nyforge.Core.Nui;
 
 /// <summary>
-/// A single "WHEN [event] IF [condition] DO [action]" rule, per the
+/// A single "WHEN [event] IF [condition] DO [action(s)]" rule, per the
 /// original design document's logic model. A component's Events dict
 /// (see NuiComponent) maps an event name to the Id of one of these.
 ///
-/// v0.2 scope: one optional condition (a simple equality check against a
-/// document-level state value), one action. Multi-condition boolean logic
-/// and action chaining are v0.3+ — see engineering/ROADMAP.md.
+/// A behavior declares exactly one of <see cref="Action"/> (single) or
+/// <see cref="Actions"/> (a chain run in order — NUI-SCHEMA §7.3). The
+/// condition is a leaf (expression or state/operator/value equality) or
+/// an AND/OR logic group of conditions, recursively.
 /// </summary>
 public sealed class NuiBehavior
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
 
-    /// <summary>Optional. Null means the action always runs when the event fires.</summary>
+    /// <summary>Optional. Null means the actions always run when the event fires.</summary>
     [JsonPropertyName("condition")]
     public NuiCondition? Condition { get; set; }
 
+    /// <summary>The single-action form; null when the behavior uses <see cref="Actions"/>.</summary>
     [JsonPropertyName("action")]
-    public NuiAction Action { get; set; } = new();
+    public NuiAction? Action { get; set; }
+
+    /// <summary>The action-chain form (NUI-SCHEMA §7.3); null when the
+    /// behavior uses the single <see cref="Action"/>.</summary>
+    [JsonPropertyName("actions")]
+    public List<NuiAction>? Actions { get; set; }
 
     public NuiBehavior Clone() => new()
     {
         Id = Id,
         Condition = Condition?.Clone(),
-        Action = Action.Clone()
+        Action = Action?.Clone(),
+        Actions = Actions?.Select(a => a.Clone()).ToList()
     };
 }
 
 /// <summary>
-/// A condition. Either the legacy simple equality form (a named
-/// document state value, <see cref="State"/>/<see cref="Operator"/>/<see cref="Value"/>) or — when
+/// A condition. A leaf is either the legacy simple equality form (a
+/// named document state value, <see cref="State"/>/<see cref="Operator"/>/<see cref="Value"/>) or — when
 /// <see cref="Expression"/> is set — a full NUI expression (NUI-SCHEMA
-/// §7.2), which supersedes the equality form. The same expression
-/// string evaluates identically in NyForge, the reference floor, and
-/// the Rust crate.
+/// §7.2), which supersedes the equality form. When <see cref="Logic"/>
+/// is set, the condition is an AND/OR group (NUI-SCHEMA §7.3) whose
+/// <see cref="Conditions"/> each validate and evaluate recursively — the
+/// internal representation the visual logic-graph editor builds on.
 /// </summary>
 public sealed class NuiCondition
 {
@@ -57,12 +66,23 @@ public sealed class NuiCondition
     [JsonPropertyName("expression")]
     public string? Expression { get; set; }
 
+    /// <summary>"and" or "or" when this condition is a logic group; null for a leaf.</summary>
+    [JsonPropertyName("logic")]
+    public string? Logic { get; set; }
+
+    /// <summary>The group's sub-conditions when <see cref="Logic"/> is set;
+    /// null for a leaf.</summary>
+    [JsonPropertyName("conditions")]
+    public List<NuiCondition>? Conditions { get; set; }
+
     public NuiCondition Clone() => new()
     {
         State = State,
         Operator = Operator,
         Value = Value,
-        Expression = Expression
+        Expression = Expression,
+        Logic = Logic,
+        Conditions = Conditions?.Select(c => c.Clone()).ToList()
     };
 }
 

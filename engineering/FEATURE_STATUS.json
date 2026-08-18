@@ -172,6 +172,14 @@
       "roadmapPhrase": "Localization"
     },
     {
+      "id": "LogicGraphs",
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "LogicGraphTests (13) + Nyrqis TestBehaviorLogicGraphs (11) + 4 crate conformance — nested AND/OR condition groups and ordered action chains (NUI-SCHEMA §7.3): BehaviorEvaluator evaluates groups with all/any recursion; validator rejects unknown logic / empty groups / both-or-neither action forms (ER-NUI-024) and unknown states in nested groups (ER-NUI-005); serializer emits no empty actions/conditions noise; desktop.nstudio exercises a 2-action theme chain and an AND quiet-hours guard",
+      "readmePhrase": "logic graphs (nested AND/OR conditions, action chains)",
+      "roadmapPhrase": "Logic graphs — nested AND/OR condition groups"
+    },
+    {
       "id": "NuiValidator",
       "status": "implemented",
       "introduced": "0.7",

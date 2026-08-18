@@ -34,22 +34,36 @@ public sealed class BehaviorDispatcher
     /// <summary>
     /// Fires the behavior an event pointed at, if its condition (evaluated
     /// against the live runtime state snapshot, not the saved document) holds.
+    /// A behavior carries exactly one of a single <c>action</c> or an
+    /// <c>actions</c> chain (NUI-SCHEMA §7.3); the chain runs in order.
     /// </summary>
     public void Fire(NuiBehavior behavior)
     {
+        var actions = behavior.Actions is { Count: > 0 } chain
+            ? chain
+            : behavior.Action is { } single ? new List<NuiAction> { single } : new();
+        var first = actions.FirstOrDefault();
+
         if (!BehaviorEvaluator.Evaluate(behavior.Condition, _runtimeStates))
         {
-            _log($"Condition not met, skipped: {behavior.Action.Target}.{behavior.Action.Name}");
+            if (first is not null)
+            {
+                _log($"Condition not met, skipped: {first.Target}.{first.Name}");
+            }
             return;
         }
 
-        // Resolve "$state:key" argument placeholders against the live
-        // runtime state before executing — see ActionArgumentResolver's
-        // doc comment and NUI-SCHEMA.md §7's "Expression-valued arguments"
-        // subsection. Resolution happens once, here, so every branch below
-        // (system actions, component actions) sees already-resolved values.
-        var resolvedArguments = ActionArgumentResolver.Resolve(behavior.Action.Arguments, _runtimeStates);
-        Execute(behavior.Action, resolvedArguments);
+        // Resolve "$state:key" / "$expr:" argument placeholders against
+        // the live runtime state before executing — see
+        // ActionArgumentResolver's doc comment and NUI-SCHEMA.md §7's
+        // "Expression-valued arguments" subsection. Resolution happens
+        // per step, so every branch below (system actions, component
+        // actions) sees already-resolved values.
+        foreach (var action in actions)
+        {
+            var resolvedArguments = ActionArgumentResolver.Resolve(action.Arguments, _runtimeStates);
+            Execute(action, resolvedArguments);
+        }
     }
 
     private void Execute(NuiAction action, IReadOnlyDictionary<string, object?> resolvedArguments)

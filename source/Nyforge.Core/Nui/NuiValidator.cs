@@ -449,74 +449,166 @@ public static class NuiValidator
 
         if (behavior.Condition is { } condition)
         {
-            if (!string.IsNullOrEmpty(condition.Expression))
-            {
-                // Expression conditions (NUI-SCHEMA §7.2) supersede the
-                // legacy equality form and must pass the same checks as
-                // the Nyrqis import gate. State references resolve against
-                // the flat section AND every declared scope (NUI-SCHEMA §8.4).
-                var states = ScopedStateKeys(document);
-                var problem = NExpr.TryValidate(condition.Expression, states);
-                if (problem is not null)
-                {
-                    issues.Add(new NuiIssue("ER-NUI-021", NuiIssueSeverity.Error,
-                        $"Behavior '{behavior.Id}' condition expression: {problem}.",
-                        BehaviorId: behavior.Id));
-                }
-            }
-            else if (!document.IsStateKnown(condition.State))
-            {
-                issues.Add(new NuiIssue("ER-NUI-005", NuiIssueSeverity.Error,
-                    $"Behavior '{behavior.Id}' condition references state " +
-                    $"'{condition.State}' which no longer exists.",
-                    BehaviorId: behavior.Id));
-            }
+            ValidateCondition(behavior.Id, condition, document, issues, "");
         }
 
-        var action = behavior.Action;
+        // Action — exactly one of `action` (single) / `actions` (a
+        // non-empty chain run in order), per the Nyrqis import gate
+        // (NUI-SCHEMA §7.3); declaring both (or neither) is an error.
+        if (behavior.Action is not null && behavior.Actions is { Count: > 0 })
+        {
+            issues.Add(new NuiIssue("ER-NUI-024", NuiIssueSeverity.Error,
+                $"Behavior '{behavior.Id}' must declare either 'action' or " +
+                "'actions', not both.",
+                BehaviorId: behavior.Id));
+        }
+        else if (behavior.Action is null && behavior.Actions is not { Count: > 0 })
+        {
+            issues.Add(new NuiIssue("ER-NUI-024", NuiIssueSeverity.Error,
+                $"Behavior '{behavior.Id}' must declare an 'action' or 'actions'.",
+                BehaviorId: behavior.Id));
+        }
+
+        var actions = behavior.Actions is { Count: > 0 } chain
+            ? chain
+            : behavior.Action is { } single ? new List<NuiAction> { single } : new();
+        foreach (var action in actions)
+        {
+            ValidateBehaviorAction(behavior.Id, action, document, allIds,
+                animationIds, issues);
+        }
+    }
+
+    /// <summary>
+    /// Validate one condition — a leaf (an expression or the legacy
+    /// state/operator/value equality form) or an AND/OR logic group
+    /// (NUI-SCHEMA §7.3) — recursively. Mirrors the Nyrqis import gate
+    /// (floor + crate); <paramref name="path"/> is the element path
+    /// inside groups ("", " 0", " 0.1") for nested conditions.
+    /// </summary>
+    private static void ValidateCondition(
+        string behaviorId,
+        NuiCondition condition,
+        NuiDocument document,
+        List<NuiIssue> issues,
+        string path)
+    {
+        if (!string.IsNullOrEmpty(condition.Logic))
+        {
+            if (condition.Logic is not ("and" or "or"))
+            {
+                issues.Add(new NuiIssue("ER-NUI-024", NuiIssueSeverity.Error,
+                    $"Behavior '{behaviorId}': condition{path} 'logic' must " +
+                    "be 'and' or 'or'.",
+                    BehaviorId: behaviorId));
+            }
+            if (condition.Conditions is not { Count: > 0 })
+            {
+                issues.Add(new NuiIssue("ER-NUI-024", NuiIssueSeverity.Error,
+                    $"Behavior '{behaviorId}': condition{path} 'conditions' " +
+                    "must be a non-empty list.",
+                    BehaviorId: behaviorId));
+                return;
+            }
+            for (var i = 0; i < condition.Conditions.Count; i++)
+            {
+                ValidateCondition(behaviorId, condition.Conditions[i], document,
+                    issues, $"{path} {i}");
+            }
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(condition.Expression))
+        {
+            // Expression conditions (NUI-SCHEMA §7.2) supersede the
+            // legacy equality form and must pass the same checks as
+            // the Nyrqis import gate. State references resolve against
+            // the flat section AND every declared scope (NUI-SCHEMA §8.4).
+            var states = ScopedStateKeys(document);
+            var problem = NExpr.TryValidate(condition.Expression, states);
+            if (problem is not null)
+            {
+                issues.Add(new NuiIssue("ER-NUI-021", NuiIssueSeverity.Error,
+                    $"Behavior '{behaviorId}' condition{path} expression: " +
+                    $"{problem}.",
+                    BehaviorId: behaviorId));
+            }
+            return;
+        }
+
+        if (condition.Operator is not ("equals" or "notEquals"))
+        {
+            issues.Add(new NuiIssue("ER-NUI-005", NuiIssueSeverity.Error,
+                $"Behavior '{behaviorId}': condition{path} operator must be " +
+                "'equals' or 'notEquals'.",
+                BehaviorId: behaviorId));
+        }
+        if (!document.IsStateKnown(condition.State))
+        {
+            issues.Add(new NuiIssue("ER-NUI-005", NuiIssueSeverity.Error,
+                $"Behavior '{behaviorId}' condition{path} references state " +
+                $"'{condition.State}' which no longer exists.",
+                BehaviorId: behaviorId));
+        }
+    }
+
+    /// <summary>
+    /// Validate one action — the single <c>action</c> or one entry of an
+    /// <c>actions</c> chain — against the component/system contracts,
+    /// including <c>$localize:</c> and <c>$expr:</c> references in its
+    /// arguments.
+    /// </summary>
+    private static void ValidateBehaviorAction(
+        string behaviorId,
+        NuiAction action,
+        NuiDocument document,
+        HashSet<string> allIds,
+        HashSet<string> animationIds,
+        List<NuiIssue> issues)
+    {
         if (action.Target == "System")
         {
             if (!SystemActionsByName.TryGetValue(action.Name, out var sys))
             {
                 issues.Add(new NuiIssue("ER-NUI-007", NuiIssueSeverity.Error,
-                    $"Behavior '{behavior.Id}' references unknown system action " +
+                    $"Behavior '{behaviorId}' references unknown system action " +
                     $"'{action.Name}'.",
-                    BehaviorId: behavior.Id));
+                    BehaviorId: behaviorId));
             }
             else
             {
-        foreach (var (key, _) in action.Arguments)
-        {
-            if (!sys.ArgumentNames.Contains(key, StringComparer.Ordinal))
-            {
-                issues.Add(new NuiIssue("ER-NUI-008", NuiIssueSeverity.Error,
-                    $"Behavior '{behavior.Id}' passes argument '{key}' to " +
-                    $"'{action.Name}' which does not accept it.",
-                    BehaviorId: behavior.Id));
-            }
-        }
-        foreach (var (_, value) in action.Arguments)
-        {
-            CheckLocalize(value, document, issues, $"behavior '{behavior.Id}' argument");
-            CheckExprRef(value, document, issues, $"behavior '{behavior.Id}' argument");
-        }
-        // Animations (NUI-SCHEMA §8.3): the reference must name a
-        // declared animation — fail-closed like the Nyrqis import gate.
-        if (action.Name == "Nyrqis.Animation.Play")
-        {
-            var animationId = action.Arguments.TryGetValue("animation", out var raw)
-                ? raw?.ToString()
-                : null;
-            if (string.IsNullOrEmpty(animationId) ||
-                !animationIds.Contains(animationId))
-            {
-                issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
-                    $"Behavior '{behavior.Id}' plays animation " +
-                    $"'{animationId}' which is not declared in the " +
-                    "animations section.",
-                    BehaviorId: behavior.Id));
-            }
-        }
+                foreach (var (key, _) in action.Arguments)
+                {
+                    if (!sys.ArgumentNames.Contains(key, StringComparer.Ordinal))
+                    {
+                        issues.Add(new NuiIssue("ER-NUI-008", NuiIssueSeverity.Error,
+                            $"Behavior '{behaviorId}' passes argument '{key}' to " +
+                            $"'{action.Name}' which does not accept it.",
+                            BehaviorId: behaviorId));
+                    }
+                }
+                foreach (var (_, value) in action.Arguments)
+                {
+                    CheckLocalize(value, document, issues, $"behavior '{behaviorId}' argument");
+                    CheckExprRef(value, document, issues, $"behavior '{behaviorId}' argument");
+                }
+                // Animations (NUI-SCHEMA §8.3): the reference must name a
+                // declared animation — fail-closed like the Nyrqis import gate.
+                if (action.Name == "Nyrqis.Animation.Play")
+                {
+                    var animationId = action.Arguments.TryGetValue("animation", out var raw)
+                        ? raw?.ToString()
+                        : null;
+                    if (string.IsNullOrEmpty(animationId) ||
+                        !animationIds.Contains(animationId))
+                    {
+                        issues.Add(new NuiIssue("ER-NUI-022", NuiIssueSeverity.Error,
+                            $"Behavior '{behaviorId}' plays animation " +
+                            $"'{animationId}' which is not declared in the " +
+                            "animations section.",
+                            BehaviorId: behaviorId));
+                    }
+                }
             }
         }
         else if (action.Target != "System")
@@ -524,9 +616,9 @@ public static class NuiValidator
             if (!allIds.Contains(action.Target))
             {
                 issues.Add(new NuiIssue("ER-NUI-006", NuiIssueSeverity.Error,
-                    $"Behavior '{behavior.Id}' action targets component " +
+                    $"Behavior '{behaviorId}' action targets component " +
                     $"'{action.Target}' which does not exist.",
-                    BehaviorId: behavior.Id));
+                    BehaviorId: behaviorId));
             }
             else
             {
@@ -536,10 +628,10 @@ public static class NuiValidator
                     !targetContract.Actions.Contains(action.Name, StringComparer.Ordinal))
                 {
                     issues.Add(new NuiIssue("ER-NUI-015", NuiIssueSeverity.Error,
-                        $"Behavior '{behavior.Id}' targets '{action.Target}' with " +
+                        $"Behavior '{behaviorId}' targets '{action.Target}' with " +
                         $"action '{action.Name}' which is not in the " +
                         $"'{targetContract.Type}' contract.",
-                        BehaviorId: behavior.Id));
+                        BehaviorId: behaviorId));
                 }
             }
         }

@@ -320,6 +320,58 @@ Preview) and by both Nyrqis import gates with byte-identical messages
 empty string (the gate already rejected the document, so this only
 matters for hand-edited state).
 
+### 7.3. Logic graphs — nested conditions and action chains (v0.8)
+
+A behavior is a `WHEN [event] IF [condition] DO [action(s)]` rule. The
+`condition` is a **leaf** or an **AND/OR group**, recursively, and the
+`DO` is a single `action` **or** an ordered `actions` chain — the
+internal representation the visual node-graph Logic Editor will build on:
+
+```json
+{
+  "id": "behavior_theme_eclipse",
+  "condition": null,
+  "actions": [
+    { "target": "System", "name": "Nyrqis.Theme.Set", "arguments": { "theme": "Eclipse" } },
+    { "target": "System", "name": "Nyrqis.Animation.Play", "arguments": { "animation": "start_menu_fade" } }
+  ]
+}
+```
+
+```json
+{
+  "id": "behavior_quiet_notify",
+  "condition": {
+    "logic": "and",
+    "conditions": [
+      { "expression": "state.doNotDisturb == true" },
+      { "expression": "state.volume > 50" }
+    ]
+  },
+  "action": { "target": "System", "name": "Nyrqis.Notification.Show", "arguments": {} }
+}
+```
+
+**Rules (fail-closed at every gate, byte-identical messages):**
+
+- A behavior declares **exactly one** of `action` (single) / `actions`
+  (a non-empty chain run in order) — both, or neither, is rejected.
+- A `logic` group's `logic` is `and` or `or` and its `conditions` is a
+  **non-empty** list of condition objects, each itself a leaf or a
+  group (`logic` nests arbitrarily).
+- A leaf is an `expression` (NUI-SCHEMA §7.2) or the legacy
+  `state`/`operator`/`value` equality form — expression wins when both
+  are present.
+- Groups evaluate with all/any recursion: `and` is true only when every
+  sub-condition holds, `or` when any holds.
+
+Enforced identically by the Nyrqis import gate (floor + Rust crate), by
+Nyforge's validator (`ER-NUI-024` for the group/chain shapes, `ER-NUI-005`
+for unknown states in nested groups), and evaluated by
+`BehaviorEvaluator` (Nyforge.Core) and the floor's `resolve_condition`.
+The editor surface is still the single-condition/single-action form
+until the node-graph Logic Editor UI lands.
+
 ## 8. Bindings (v0.3)
 
 A `Bindings` entry ties a component's property to a document-level `states`

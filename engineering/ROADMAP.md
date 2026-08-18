@@ -112,10 +112,17 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       condition logic, reusable by a future runtime) and
       `BehaviorDispatcher` (Nyforge.Shell, host-specific action execution) —
       the concrete enforcement of NFM-000 §2.4 for this feature.
-- [ ] Multi-condition boolean logic (AND/OR chains) and action chaining in
-      `Behaviors`, once a node-graph UI (rather than the current flat list)
-      makes that navigable — see NFS-002 for why this was deliberately
-      deferred.
+- [x] **Logic graphs — nested AND/OR condition groups and ordered action
+      chains (NUI-SCHEMA §7.3)**: a behavior carries a recursively-nested
+      `logic: and|or` condition tree and either a single `action` or an
+      `actions` chain. `BehaviorEvaluator` evaluates groups with all/any
+      recursion, the validator enforces the group/chain shapes (ER-NUI-024),
+      and the Nyrqis import gate (floor + crate) mirrors the rules
+      byte-identically — `desktop.nstudio` exercises a real 2-action theme
+      chain and an AND quiet-hours guard.
+- [ ] A node-graph Logic Editor UI over the group/chain model — the
+      internal representation now exists, so the editor becomes a front
+      end to it (see NFS-002) rather than the current flat list.
 - [x] **Expression-valued arguments — `$state:key` substitution (v0.4,
       NFS-005)** lets an action reference a state's *current value*
       directly (plain substitution, missing keys left as the literal).

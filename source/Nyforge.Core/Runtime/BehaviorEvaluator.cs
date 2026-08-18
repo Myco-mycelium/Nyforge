@@ -21,6 +21,20 @@ public static class BehaviorEvaluator
     {
         if (condition is null) return true; // no condition => always runs
 
+        // AND/OR logic group (NUI-SCHEMA §7.3): combine the
+        // sub-conditions recursively — the internal representation the
+        // visual logic-graph editor builds on. Mirrors the floor's
+        // `all(sub) if logic == "and" else any(sub)`.
+        if (!string.IsNullOrEmpty(condition.Logic))
+        {
+            var results = (condition.Conditions ?? Enumerable.Empty<NuiCondition>())
+                .Select(sub => Evaluate(sub, states))
+                .ToList();
+            return condition.Logic == "and"
+                ? results.All(x => x)
+                : results.Any(x => x);
+        }
+
         // Expression conditions (NUI-SCHEMA §7.2) supersede the legacy
         // equality form — the same expression string evaluates
         // identically in NyForge, the reference floor, and the Rust

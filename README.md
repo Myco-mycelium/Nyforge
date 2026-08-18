@@ -147,6 +147,14 @@ milestone per `engineering/ROADMAP.md`:
   Delete also cleans up behaviors the deleted subtree alone referenced,
   and undo restores them. Backed by `Nyforge.Core.Editing` (fully
   unit-tested).
+- **Logic graphs (nested AND/OR conditions, action chains)** —
+  `NuiBehavior` carries a recursively-nested `logic: and|or` condition
+  tree and either a single `action` or an ordered `actions` chain
+  (NUI-SCHEMA §7.3): `BehaviorEvaluator` evaluates groups with all/any
+  recursion, the validator enforces the group/chain shapes (ER-NUI-024),
+  and the Nyrqis import gate (floor + crate) mirrors the rules
+  byte-identically. `desktop.nstudio` exercises a real 2-action theme
+  chain (Theme.Set then Animation.Play) and an AND quiet-hours guard.
 - **Multi-select and snap-to-grid** — Ctrl/Cmd-click toggles membership;
   dragging moves every selected element as one gesture (a single composite
   undo command; children of a selected container ride along), and delete
@@ -172,7 +180,7 @@ milestone per `engineering/ROADMAP.md`:
   CommandPalette, NotificationCenter, QuickSettings with theme
   switching, and a real Files app window framed by WindowFrame +
   TitleBar + WindowControls) plus a lock screen (LockScreen) — 37
-  components, 10 behaviors, 6 bindings; it opens in Forge and passes
+  components, 11 behaviors, 6 bindings; it opens in Forge and passes
   the Nyrqis import gate (floor + Rust crate).
 - **The Nyrqis window system + power UI** — [`examples/nyrqis-shell/windows.nstudio`](examples/nyrqis-shell/windows.nstudio)
   is the second reference shell screen: WindowFrame + WindowControls
@@ -206,10 +214,12 @@ milestone per `engineering/ROADMAP.md`:
 
 Being upfront about this matters more than pretending otherwise:
 
-- **The Logic Editor is a flat list, not a node graph yet**, and supports
-  one optional equality condition and one action per behavior — no
-  AND/OR chains, no action-triggers-action chaining. Deliberately deferred;
-  see `engineering/NFS-002-behaviors-schema.md` for why.
+- **The Logic Editor UI is a flat list, not a node graph yet** — the
+  group/chain *model* is real (nested AND/OR conditions and ordered
+  action chains, NUI-SCHEMA §7.3), but the editor surface is still the
+  single-condition/single-action form; the visual node-graph editor
+  over the model is the follow-on. See
+  `engineering/NFS-002-behaviors-schema.md`.
 - **Action arguments support `$state:` substitution and `$expr:`
   expressions.** `$state:key` substitutes a state's current value
   directly (NFS-005); the NUI expression language (NUI-SCHEMA §7.2) —

@@ -310,6 +310,20 @@ compiler-verified yet.**
   The shell's persistent theme and session clock are scoped states.
   Scope lifecycle (what persists) is the runtime's follow-on. Tracked
   as FEATURE_STATUS `StateScopes` (implemented).
+- ~~Logic graphs~~ — **resolved 2026-08-18.** Nested AND/OR condition
+  groups and ordered action chains (NUI-SCHEMA §7.3): a behavior
+  carries a recursively-nested `logic: and|or` condition tree and
+  exactly one of a single `action` / an `actions` chain. Evaluated
+  with all/any recursion by `BehaviorEvaluator` (and the floor's
+  `resolve_condition`); the group/chain shapes are fail-closed at
+  Nyforge (ER-NUI-024, unknown states in nested groups ER-NUI-005)
+  and at both Nyrqis import gates with byte-identical messages; the
+  serializer omits unused `actions`/`conditions` collections (no
+  serialization noise). The desktop shell's theme toggle is a
+  2-action chain (Theme.Set then Animation.Play) and its quiet-hours
+  guard is an AND group. The node-graph Logic Editor UI over this
+  model is the follow-on. Tracked as FEATURE_STATUS `LogicGraphs`
+  (implemented).
 - The Nyrqis Desktop Shell as a *running product* — the Shell
   vocabulary (24 types, incl. `AppGrid`/`Clock`/`Dock`/`TitleBar` added
   2026-08-18) and the reference `desktop.nstudio` screens exist and pass
