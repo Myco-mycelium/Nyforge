@@ -212,10 +212,14 @@ compiler-verified yet.**
 - Self-hosting beyond the Home tab — palette, canvas, inspector, and menu
   bar are still hardcoded Avalonia. NFS-004 is explicit that this was a
   deliberately bounded first slice, not a claim of full self-hosting.
-- A node-graph visual representation of behaviors; multi-condition logic;
-  action chaining; "advanced code mode" — the expression language
-  (NUI-SCHEMA §7.2) is the underlying semantics; the visual graph
-  editor over it is the follow-on.
+- ~~A node-graph visual representation of behaviors; multi-condition
+  logic; action chaining; "advanced code mode"~~ — **resolved
+  2026-08-18.** The node-graph Logic Editor UI (ConditionNodeViewModel
+  + ActionStepViewModel) and advanced code mode (NuiBehaviorText,
+  the Visual/Code toggle) are now implemented; the expression language
+  (NUI-SCHEMA §7.2) is the underlying semantics for both editing
+  surfaces. Tracked as FEATURE_STATUS `NodeGraphLogicEditor` and
+  `AdvancedCodeMode` (implemented).
 - A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own stand-in.
 - Code-generation exporters beyond the NUI document itself.
 - ~~Nyrqis API Registry integration~~ — **resolved 2026-08-17.**

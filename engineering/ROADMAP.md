@@ -194,9 +194,13 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       `SchemaMigrations`.
 - [ ] Move NUI schema to `1.0.0` / `Accepted` once the above are solid, per
       NFC-001 §4.1.
-- [ ] "Advanced code mode" as an alternate way to author the same behaviors
-      — both compile to the same `Behaviors` schema section, per the
-      original design doc's "two development approaches, one API" model.
+- [x] **Advanced code mode** — the Behaviors panel exposes a Visual/Code
+      toggle per behavior; code mode renders the behavior as a compact
+      text format (`WHEN component event` / `IF condition` /
+      `DO target.action key=value`), and edits parse back into the same
+      `NuiBehavior` model (`NuiBehaviorText`, Nyforge.Core, `BehaviorTextTests` ×16).
+      Two editing surfaces, one API (per the original design doc's
+      model).
 - [x] **Validation/linting** — `NuiValidator` (Nyforge.Core): check-before-
       Preview. Errors mirror the Nyrqis import gate at design time
       (unknown type/property/event, dangling behavior/binding/ref, unknown

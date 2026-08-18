@@ -219,6 +219,14 @@ milestone per `engineering/ROADMAP.md`:
   usage bar, a volume list with quota indicators, quick actions, and
   an auto-snapshot Toggle bound to state with a conditional pause
   behavior.
+- **Advanced code mode** — a Visual/Code toggle on each behavior card;
+  code mode renders the behavior as a compact, readable text format
+  (`WHEN component event` / `IF condition` / `DO target.action key=value`)
+  and edits parse back into the same `NuiBehavior` model — two
+  editing surfaces, one API. The text format supports nested AND/OR
+  groups, action chains, and expression/equality leaves.
+  `NuiBehaviorText` (Nyforge.Core, `BehaviorTextTests` ×16) provides
+  the round-trip parser/serializer.
 
 ## What's still not there yet
 
@@ -232,8 +240,6 @@ Being upfront about this matters more than pretending otherwise:
   in properties, overrides, and action arguments, evaluated identically
   in Nyforge, the reference floor, and the Rust crate — and the
   node-graph Logic Editor's expression leaves use the same language.
-- **No "advanced code mode"** as an alternate way to author the same
-  behaviors yet (the original design doc's two-modes-one-API idea).
 - **No live Nyrqis runtime to preview against**, because that runtime
   doesn't exist yet. `▶ Preview` is Forge's own honest stand-in — genuinely
   interactive for a small set of component types, clearly labeled as a

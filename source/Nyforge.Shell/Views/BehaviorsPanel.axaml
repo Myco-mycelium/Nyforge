@@ -124,13 +124,28 @@
                   <TextBlock Grid.Column="0" Text="{Binding Summary}" FontSize="{DynamicResource Nyforge.Type.Body}"
                              Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
                              TextWrapping="Wrap" VerticalAlignment="Center" />
-                  <Button Grid.Column="1" Content="✕" Padding="6,2"
-                          Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveBehaviorCommand}"
-                          CommandParameter="{Binding}" />
+                  <Grid Grid.Column="1" ColumnDefinitions="Auto,Auto">
+                    <TextBlock Grid.Column="0" Text="Visual" FontSize="10" Padding="4,2"
+                               VerticalAlignment="Center" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding IsCodeMode}"
+                              Content="Code" FontSize="10" Padding="0,2" />
+                    <Button Grid.Column="1" Content="✕" Padding="6,2" Margin="8,0,0,0"
+                            Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveBehaviorCommand}"
+                            CommandParameter="{Binding}" />
+                  </Grid>
                 </Grid>
 
-                <!-- DO: the action chain (NUI-SCHEMA §7.3) -->
-                <TextBlock Classes="field-label" Text="DO" />
+                <!-- Code mode: the text editor (advanced code mode, NUI-SCHEMA §7.3) -->
+                <StackPanel IsVisible="{Binding IsCodeMode}" Spacing="4">
+                  <TextBox Text="{Binding CodeText}" FontFamily="Consolas,monospace"
+                           FontSize="12" AcceptsReturn="True" MinHeight="120"
+                           TextWrapping="Wrap" Watermark="WHEN component event&#10;IF condition&#10;DO target.action" />
+                  <TextBlock Text="{Binding CodeParseError}" FontSize="11"
+                             Foreground="#FF6666" IsVisible="{Binding CodeParseError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+
+                <!-- Visual mode: the action chain (NUI-SCHEMA §7.3) -->
+                <StackPanel IsVisible="{Binding !IsCodeMode}">
 
                 <ItemsControl ItemsSource="{Binding Steps}">
                   <ItemsControl.ItemTemplate>
@@ -170,6 +185,8 @@
                 <ContentControl Content="{Binding ConditionRoot}"
                                 ContentTemplate="{StaticResource ConditionNodeTemplate}"
                                 IsVisible="{Binding HasCondition}" />
+
+                </StackPanel> <!-- end visual mode -->
 
               </StackPanel>
             </Border>

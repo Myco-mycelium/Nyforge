@@ -48,6 +48,48 @@ public sealed class BehaviorViewModel : ViewModelBase
         RebuildConditionRoot();
     }
 
+    // ---- code mode -------------------------------------------------------
+
+    /// <summary>When true, the behavior card shows the text editor
+    /// instead of the visual node-graph. The text round-trips through
+    /// NuiBehaviorText (Nyforge.Core) so the representation stays the
+    /// same — two development approaches, one API.</summary>
+    public bool IsCodeMode
+    {
+        get => _isCodeMode;
+        set { if (SetField(ref _isCodeMode, value)) { OnPropertyChanged(nameof(CodeText)); } }
+    }
+    private bool _isCodeMode;
+
+    public string CodeText
+    {
+        get => NuiBehaviorText.Serialize(Model, SourceComponent.Id, EventName);
+        set
+        {
+            if (!NuiBehaviorText.TryParse(value, out var parsed, out _, out _,
+                out var parseError))
+            {
+                _parseError = parseError;
+                OnPropertyChanged(nameof(CodeParseError));
+                return;
+            }
+            _parseError = null;
+            OnPropertyChanged(nameof(CodeParseError));
+            // Apply the condition + actions from the parsed text
+            // (component/event binding stays fixed — structural
+            // rebinding is a follow-on).
+            Model.Condition = parsed!.Condition;
+            Model.Action = parsed.Action;
+            Model.Actions = parsed.Actions;
+            RebuildSteps();
+            RebuildConditionRoot();
+            OnPropertyChanged(nameof(Summary));
+        }
+    }
+
+    public string? CodeParseError => _parseError;
+    private string? _parseError;
+
     // ---- condition tree -----------------------------------------------------
 
     /// <summary>The root of the condition graph; null = the behavior

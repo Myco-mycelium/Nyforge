@@ -101,9 +101,9 @@
     },
     {
       "id": "AdvancedCodeMode",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none",
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "BehaviorTextTests (16) — the compact text format parser/serializer for NuiBehavior (NuiBehaviorText): round-trip fidelity, nested AND/OR groups, action chains, expression-vs-equality leaves, parse errors; the Behaviors panel exposes a Visual/Code toggle so each behavior can be edited as readable text (WHEN/IF/DO) or as the node-graph, both surfaces producing the same NuiBehavior model",
       "readmePhrase": "advanced code mode",
       "roadmapPhrase": "Advanced code mode"
     },
