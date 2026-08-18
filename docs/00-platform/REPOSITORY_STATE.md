@@ -223,8 +223,11 @@ compiler-verified yet.**
 - A real Nyrqis UI Runtime — `INuiRuntime` (Nyforge.Core.Runtime) and
   `ForgePreviewRuntime` landed 2026-08-18; `PreviewViewModel` is now
   fully refactored: all dispatch goes through the `INuiRuntime` seam
-  (no inline `BehaviorDispatcher`). The actual Nyrqis runtime
-  implementation is the follow-on.
+  (no inline `BehaviorDispatcher`). Component rendering is
+  registry-driven (`ComponentRendererRegistry` + `ForgeRendererRegistry`)
+  with `IComponentRenderer`/`IPropertyRenderer`/`ILayoutRenderer`/
+  `IEventRenderer` interfaces — 80+ renderers cover every NUI type.
+  The actual Nyrqis runtime implementation is the follow-on.
 - Code-generation exporters beyond the NUI document itself.
 - ~~Nyrqis API Registry integration~~ — **resolved 2026-08-17.**
   `ComponentContracts`/`NuiSystemActions` are regenerated from the

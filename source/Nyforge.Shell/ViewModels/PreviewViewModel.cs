@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Nyforge.Core.Nui;
 using Nyforge.Core.Project;
 using Nyforge.Core.Runtime;
+using Nyforge.Shell.Renderers;
 using Nyforge.Shell.Services;
 
 namespace Nyforge.Shell.ViewModels;
@@ -72,6 +73,11 @@ public sealed class PreviewViewModel : ViewModelBase
     public ObservableCollection<PreviewElementViewModel> Elements { get; } = new();
     public ObservableCollection<string> Log { get; } = new();
 
+    /// <summary>
+    /// The renderer registry driving Preview's component rendering.
+    /// </summary>
+    public ComponentRendererRegistry Renderers { get; } = null!;
+
     public event EventHandler<string>? CloseRequested;
 
     public PreviewViewModel(NyforgeProject project, ThemeManager themeManager)
@@ -82,6 +88,11 @@ public sealed class PreviewViewModel : ViewModelBase
         // through INuiRuntime — the same seam the real Nyrqis runtime
         // will implement (doc #8/#9).
         _runtime = new ForgePreviewRuntime(project, themeManager);
+
+        // Register Forge's Avalonia renderers so the Preview's type
+        // converters are driven by the registry, not hardcoded sets.
+        Renderers = ForgeRendererRegistry.Create();
+        PreviewTypeConverters.Initialise(Renderers);
 
         // Wire runtime log and close events to our public collections.
         _runtime.PropertyChanged += OnRuntimePropertyChanged;

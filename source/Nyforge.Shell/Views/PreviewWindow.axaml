@@ -36,18 +36,39 @@
                        else renders as a clearly-labeled static placeholder,
                        consistent with NFM-000 §2.1 (the canvas is truthful). -->
                   <Panel>
+                    <!-- Button -->
                     <Button Content="{Binding Text}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                             IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsButton}}"
                             Click="OnButtonClicked" Tag="{Binding}" />
 
+                    <!-- Toggle / Checkbox / Radio -->
                     <CheckBox Content="{Binding Text}" IsChecked="{Binding BoolValue}"
                                IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsToggleLike}}"
                                Checked="OnToggleChanged" Unchecked="OnToggleChanged" Tag="{Binding}" />
 
+                    <!-- Text / Label / Heading / Paragraph -->
                     <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
                                Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
                                IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsText}}" />
 
+                    <!-- Slider -->
+                    <Slider Minimum="0" Maximum="100" Value="50" HorizontalAlignment="Stretch"
+                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsSlider}}" />
+
+                    <!-- ProgressBar -->
+                    <ProgressBar Minimum="0" Maximum="100" Value="60" HorizontalAlignment="Stretch"
+                                 IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsProgressBar}}" />
+
+                    <!-- Image (placeholder rectangle) -->
+                    <Border Background="{DynamicResource Nyforge.Brush.Border}"
+                            CornerRadius="{DynamicResource Nyforge.Radius.Small}"
+                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsImage}}">
+                      <TextBlock Text="[Image]" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                 FontSize="{DynamicResource Nyforge.Type.Caption}"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                    </Border>
+
+                    <!-- Generic placeholder for all other registered component types -->
                     <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
                             BorderBrush="{DynamicResource Nyforge.Brush.Border}" BorderThickness="1"
                             CornerRadius="{DynamicResource Nyforge.Radius.Small}"

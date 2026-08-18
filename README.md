@@ -30,8 +30,10 @@ milestone per `engineering/ROADMAP.md`:
   Palette**, an interactive **Design Canvas** (drag from palette, select,
   move, resize, delete), a **metadata-driven Inspector** (property rows
   generated from the Nyrqis API Registry's `PropertyDefinition.Type` —
-  string/boolean/number/enum editors, edits undoable), and a **Layers**
-  panel. Canvas power-editing (alignment) is
+  string/boolean/number/enum editors, edits undoable), a **Layers**
+  panel, and **registry-driven runtime renderers** (`ComponentRendererRegistry` +
+  `ForgeRendererRegistry`) mapping every NUI type to an `IComponentRenderer`.
+  Canvas power-editing (alignment) is
   not implemented yet — see
   [`engineering/FEATURE_STATUS.json`](engineering/FEATURE_STATUS.json),
   the machine-readable feature-status source the docs are validated
@@ -245,8 +247,10 @@ Being upfront about this matters more than pretending otherwise:
   (wrapping `BehaviorDispatcher`) landed 2026-08-18, so the preview
   now goes through the runtime seam; `TestRuntime` records calls for
   unit testing. The actual Nyrqis runtime is the follow-on.
-  `▶ Preview` is Forge's own honest stand-in — genuinely interactive
-  for a small set of component types, clearly labeled as a stand-in.
+  `▶ Preview` is Forge's own honest stand-in — registry-driven runtime renderers (`ComponentRendererRegistry` + `ForgeRendererRegistry`)
+  map every NUI type to an `IComponentRenderer`; interactive types
+  (Button, Text, Toggle, Slider, ProgressBar, Image, etc.) get real
+  controls, everything else is a labeled placeholder.
 - **No code-generation exporters** beyond the NUI document itself yet
   (no native C++/Rust backend emission).
 - **No Nyrqis Desktop Shell.** That's a separate, later effort per the

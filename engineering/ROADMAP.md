@@ -104,10 +104,15 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [x] Stabilize `Bindings` — done (NFS-003, schema now `0.3.0`): typed
       `NuiBinding`, seeded on Preview start, updated on interaction.
 - [x] A live-ish preview stand-in, honestly labeled as such: `PreviewWindow`
-      actually renders `Button`/`Link`/`Toggle`/`Checkbox`/`Text`
-      interactively, dispatches events through `BehaviorDispatcher`, and
-      shows an event log. Everything else on the canvas still renders as a
-      clearly-marked placeholder rather than pretending to be interactive.
+      renders `Button`/`Link`/`Toggle`/`Checkbox`/`Radio`/`Text`/`Label`/
+      `Heading`/`Paragraph`/`Slider`/`ProgressBar`/`Image` interactively,
+      dispatches events through `ForgePreviewRuntime` (via `INuiRuntime`),
+      and shows an event log. The Preview's type converters and templates
+      read the registry — everything not in the registry renders as a
+      clearly-marked placeholder.
+- [x] Component renderers (registry-driven) — `ComponentRendererRegistry`
+      (Core) + `ForgeRendererRegistry` (Shell) map every NUI type to an
+      `IComponentRenderer`; 80+ renderers cover every NUI component type.
 - [x] Split behavior execution into `BehaviorEvaluator` (Nyforge.Core, pure
       condition logic, reusable by a future runtime) and
       `BehaviorDispatcher` (Nyforge.Shell, host-specific action execution) —

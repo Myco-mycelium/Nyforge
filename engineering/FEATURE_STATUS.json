@@ -250,6 +250,14 @@
       "tests": "manual (shell) — WHEN/IF/DO flat list, dropdown-validated against the contract tables",
       "readmePhrase": "first-cut Logic Editor",
       "roadmapPhrase": "Visual `WHEN / IF / DO` graph editor"
+    },
+    {
+      "id": "RuntimeRenderers",
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "26 RendererRegistryTests (Core) — CRUD, lookup, multi-type, override, container flag, events",
+      "readmePhrase": "registry-driven runtime renderers",
+      "roadmapPhrase": "Component renderers (registry-driven)"
     }
   ]
 }
