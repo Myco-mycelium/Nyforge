@@ -120,9 +120,13 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       and the Nyrqis import gate (floor + crate) mirrors the rules
       byte-identically — `desktop.nstudio` exercises a real 2-action theme
       chain and an AND quiet-hours guard.
-- [ ] A node-graph Logic Editor UI over the group/chain model — the
-      internal representation now exists, so the editor becomes a front
-      end to it (see NFS-002) rather than the current flat list.
+- [x] **node-graph Logic Editor UI** — the Behaviors panel now edits the
+      full NUI-SCHEMA §7.3 model directly: a recursively-nested AND/OR
+      condition tree (add leaf / add group / remove self, expression or
+      equality leaves, logic toggle) and an ordered action chain (add /
+      remove / reorder steps; a second step migrates the behavior to the
+      chain form). The editor became a front end to the model it
+      validates against (see NFS-002).
 - [x] **Expression-valued arguments — `$state:key` substitution (v0.4,
       NFS-005)** lets an action reference a state's *current value*
       directly (plain substitution, missing keys left as the literal).
@@ -135,8 +139,8 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       byte-identical) and evaluated identically in Nyforge, the
       reference floor (`ui/nexpr.py`), and the Rust crate — the visual
       and code paths share one semantics (NFM-000 §2.3). The node-graph
-      Logic Editor UI is still the follow-on; the expression is its
-      underlying model.
+      Logic Editor UI (landed 2026-08-18) builds on the expression as
+      its underlying model.
 - [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
       stand-in.
 - [x] **Animation system** — `NuiDocument.Animations` (NUI-SCHEMA §8.3)

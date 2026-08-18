@@ -155,6 +155,16 @@ milestone per `engineering/ROADMAP.md`:
   and the Nyrqis import gate (floor + crate) mirrors the rules
   byte-identically. `desktop.nstudio` exercises a real 2-action theme
   chain (Theme.Set then Animation.Play) and an AND quiet-hours guard.
+- **The node-graph Logic Editor** — the Behaviors panel edits the full
+  NUI-SCHEMA §7.3 model directly instead of a flat single-condition /
+  single-action form: a recursively-nested AND/OR condition tree
+  (add leaf / add group / remove self, expression or equality leaves,
+  AND/OR toggle) and an ordered action chain (add / remove / reorder
+  steps — a second step migrates the behavior to the chain form).
+  Editing stays contract-driven: action names are offered per-target
+  from the registry, and the tree operations live on
+  `NuiConditionTree` (Nyforge.Core) so they're reusable and tested
+  (`ConditionTreeTests`).
 - **Multi-select and snap-to-grid** — Ctrl/Cmd-click toggles membership;
   dragging moves every selected element as one gesture (a single composite
   undo command; children of a selected container ride along), and delete
@@ -214,20 +224,14 @@ milestone per `engineering/ROADMAP.md`:
 
 Being upfront about this matters more than pretending otherwise:
 
-- **The Logic Editor UI is a flat list, not a node graph yet** — the
-  group/chain *model* is real (nested AND/OR conditions and ordered
-  action chains, NUI-SCHEMA §7.3), but the editor surface is still the
-  single-condition/single-action form; the visual node-graph editor
-  over the model is the follow-on. See
-  `engineering/NFS-002-behaviors-schema.md`.
 - **Action arguments support `$state:` substitution and `$expr:`
   expressions.** `$state:key` substitutes a state's current value
   directly (NFS-005); the NUI expression language (NUI-SCHEMA §7.2) —
   `state.name` references, comparisons, `&&`/`||`/`!`, and
   `if`/`min`/`max`/`contains`/`format` — computes values and conditionals
   in properties, overrides, and action arguments, evaluated identically
-  in Nyforge, the reference floor, and the Rust crate. The node-graph
-  Logic Editor UI is the follow-on.
+  in Nyforge, the reference floor, and the Rust crate — and the
+  node-graph Logic Editor's expression leaves use the same language.
 - **No "advanced code mode"** as an alternate way to author the same
   behaviors yet (the original design doc's two-modes-one-API idea).
 - **No live Nyrqis runtime to preview against**, because that runtime

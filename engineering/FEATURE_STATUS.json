@@ -85,11 +85,11 @@
     },
     {
       "id": "NodeGraphLogicEditor",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — the Events tab is a flat list",
-      "readmePhrase": "node graph",
-      "roadmapPhrase": "rather than the current flat list"
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "ConditionTreeTests (9) — the Behaviors panel edits the full NUI-SCHEMA §7.3 model: a recursively-nested AND/OR condition tree (ConditionNodeViewModel: add leaf / add group / remove self / expression-vs-equality leaves, logic toggle) and an ordered action chain (ActionStepViewModel steps with add / remove / reorder, migrating single-action to chain on the second step); ConditionNodeViewModel.Changed bubbles so the behavior card summary stays live",
+      "readmePhrase": "node-graph Logic Editor",
+      "roadmapPhrase": "node-graph Logic Editor UI"
     },
     {
       "id": "ExpressionLanguage",

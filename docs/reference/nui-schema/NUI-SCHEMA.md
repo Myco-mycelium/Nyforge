@@ -369,8 +369,12 @@ Enforced identically by the Nyrqis import gate (floor + Rust crate), by
 Nyforge's validator (`ER-NUI-024` for the group/chain shapes, `ER-NUI-005`
 for unknown states in nested groups), and evaluated by
 `BehaviorEvaluator` (Nyforge.Core) and the floor's `resolve_condition`.
-The editor surface is still the single-condition/single-action form
-until the node-graph Logic Editor UI lands.
+The node-graph Logic Editor (the Behaviors panel) edits this model
+directly: a recursively-nested AND/OR condition tree (add leaf / add
+group / remove self, expression or equality leaves) and an ordered
+action chain (add / remove / reorder steps). The pure tree operations
+live in `NuiConditionTree` (Nyforge.Core) so the editor and the gate
+share one recursion.
 
 ## 8. Bindings (v0.3)
 

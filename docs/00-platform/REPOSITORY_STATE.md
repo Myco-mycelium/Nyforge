@@ -324,6 +324,16 @@ compiler-verified yet.**
   guard is an AND group. The node-graph Logic Editor UI over this
   model is the follow-on. Tracked as FEATURE_STATUS `LogicGraphs`
   (implemented).
+- ~~Node-graph Logic Editor UI~~ — **resolved 2026-08-18.** The Behaviors
+  panel now edits the full NUI-SCHEMA §7.3 model directly: a
+  recursively-nested AND/OR condition tree (add leaf / add group /
+  remove self, expression-vs-equality leaves, logic toggle) and an
+  ordered action chain (add / remove / reorder steps — a second step
+  migrates the behavior to the chain form, keeping serialization
+  noise-free). Pure tree operations live in `NuiConditionTree`
+  (Nyforge.Core, `ConditionTreeTests` ×9) so the editor and the gate
+  share one recursion; action names stay contract-driven per target.
+  Tracked as FEATURE_STATUS `NodeGraphLogicEditor` (implemented).
 - The Nyrqis Desktop Shell as a *running product* — the Shell
   vocabulary (24 types, incl. `AppGrid`/`Clock`/`Dock`/`TitleBar` added
   2026-08-18) and the reference `desktop.nstudio` screens exist and pass

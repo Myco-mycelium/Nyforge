@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Nyforge.Core.Nui;
 
 namespace Nyforge.Shell.ViewModels;
@@ -7,6 +8,13 @@ namespace Nyforge.Shell.ViewModels;
 /// it's currently bound to (a behavior is only reachable via some
 /// component's Events dict — see NUI-SCHEMA.md §7). Editor-only concern,
 /// kept out of Nyforge.Core per NFC-001 §5.1.
+///
+/// The node-graph Logic Editor surfaces the full NUI-SCHEMA §7.3 model:
+/// a recursively-nested AND/OR condition tree
+/// (<see cref="ConditionRoot"/> / <see cref="ConditionNodeViewModel"/>)
+/// and an ordered action chain (<see cref="Steps"/>). Structural edits
+/// migrate between the single-`action` and `actions`-chain forms so the
+/// serializer stays noise-free (a lone step keeps the single form).
 /// </summary>
 public sealed class BehaviorViewModel : ViewModelBase
 {
@@ -21,67 +29,66 @@ public sealed class BehaviorViewModel : ViewModelBase
     /// <summary>Resolves a component id -> its NUI type, so ActionName choices can be looked up per-target. Supplied by MainWindowViewModel.</summary>
     private readonly Func<string, string?> _resolveComponentType;
 
-    /// <summary>The action the single-action editor surfaces: the
-    /// behavior's `action`, or the first step of an `actions` chain
-    /// (NUI-SCHEMA §7.3) — mirroring the floor's back-compatible
-    /// single-action view. Chain editing arrives with the node-graph
-    /// editor; the dispatcher and validator already handle the full chain.</summary>
-    private NuiAction PrimaryAction =>
-        Model.Action ?? Model.Actions?.FirstOrDefault() ?? new NuiAction();
-
-    public string Summary
+    public BehaviorViewModel(NuiBehavior model, NuiComponent sourceComponent, string eventName, Func<string, string?> resolveComponentType)
     {
-        get
-        {
-            var condition = Model.Condition is { } c
-                ? $" IF {c.State} {(c.Operator == "equals" ? "==" : "!=")} {c.Value}"
-                : string.Empty;
-            var action = PrimaryAction;
-            var target = action.Target == "System" ? "System" : action.Target;
-            return $"WHEN {SourceComponent.Id}.{EventName}{condition} DO {target}.{action.Name}";
-        }
+        Model = model;
+        SourceComponent = sourceComponent;
+        EventName = eventName;
+        _resolveComponentType = resolveComponentType;
+
+        AddConditionCommand = new RelayCommand(AddCondition);
+        RemoveConditionCommand = new RelayCommand(RemoveCondition);
+        AddStepCommand = new RelayCommand(AddStep);
+        RemoveStepCommand = new RelayCommand<ActionStepViewModel>(RemoveStep, s => s is not null);
+        MoveStepUpCommand = new RelayCommand<ActionStepViewModel>(MoveStepUp, s => s is not null);
+        MoveStepDownCommand = new RelayCommand<ActionStepViewModel>(MoveStepDown, s => s is not null);
+
+        Steps = new ObservableCollection<ActionStepViewModel>();
+        RebuildSteps();
+        RebuildConditionRoot();
     }
 
-    public string ActionTarget
+    // ---- condition tree -----------------------------------------------------
+
+    /// <summary>The root of the condition graph; null = the behavior
+    /// always runs.</summary>
+    public ConditionNodeViewModel? ConditionRoot { get; private set; }
+
+    public RelayCommand AddConditionCommand { get; }
+    public RelayCommand RemoveConditionCommand { get; }
+
+    private void RebuildConditionRoot()
     {
-        get => PrimaryAction.Target;
-        set
+        if (ConditionRoot is not null)
         {
-            PrimaryAction.Target = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(Summary));
-            OnPropertyChanged(nameof(AvailableActionNames));
+            ConditionRoot.Changed -= OnConditionChanged;
         }
+        ConditionRoot = Model.Condition is { } c
+            ? new ConditionNodeViewModel(c, null)
+            : null;
+        if (ConditionRoot is not null)
+        {
+            ConditionRoot.Changed += OnConditionChanged;
+        }
+        OnPropertyChanged(nameof(ConditionRoot));
+        OnPropertyChanged(nameof(Summary));
     }
 
-    public string ActionName
+    private void OnConditionChanged() => OnPropertyChanged(nameof(Summary));
+
+    /// <summary>Starts a condition (a fresh leaf) when none exists.</summary>
+    private void AddCondition()
     {
-        get => PrimaryAction.Name;
-        set { PrimaryAction.Name = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summary)); }
+        if (Model.Condition is not null) return;
+        Model.Condition = NuiConditionTree.CreateLeaf();
+        RebuildConditionRoot();
     }
 
-    /// <summary>
-    /// Valid names for the current ActionTarget, per the anti-drift rule
-    /// in NUI-SCHEMA.md §7 — the editor must not let you type an action
-    /// name that doesn't exist on the target's contract.
-    /// </summary>
-    public IReadOnlyList<string> AvailableActionNames
+    /// <summary>Clears the condition — the behavior always runs.</summary>
+    private void RemoveCondition()
     {
-        get
-        {
-            if (ActionTarget == "System")
-            {
-                return NuiSystemActions.All.Select(a => a.Name).ToList();
-            }
-
-            var type = _resolveComponentType(ActionTarget);
-            if (type is not null && ComponentContracts.TryGet(type, out var contract))
-            {
-                return contract!.Actions;
-            }
-
-            return Array.Empty<string>();
-        }
+        Model.Condition = null;
+        RebuildConditionRoot();
     }
 
     public bool HasCondition
@@ -89,29 +96,99 @@ public sealed class BehaviorViewModel : ViewModelBase
         get => Model.Condition is not null;
         set
         {
-            Model.Condition = value ? (Model.Condition ?? new NuiCondition()) : null;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(Summary));
+            if (value && Model.Condition is null) AddCondition();
+            else if (!value && Model.Condition is not null) RemoveCondition();
+            else OnPropertyChanged();
         }
     }
 
-    public string ConditionState
+    // ---- action chain -------------------------------------------------------
+
+    /// <summary>The action steps — one for the single-`action` form, the
+    /// full ordered chain for `actions` (NUI-SCHEMA §7.3).</summary>
+    public ObservableCollection<ActionStepViewModel> Steps { get; }
+
+    public RelayCommand AddStepCommand { get; }
+    public RelayCommand<ActionStepViewModel> RemoveStepCommand { get; }
+    public RelayCommand<ActionStepViewModel> MoveStepUpCommand { get; }
+    public RelayCommand<ActionStepViewModel> MoveStepDownCommand { get; }
+
+    private void RebuildSteps()
     {
-        get => Model.Condition?.State ?? string.Empty;
-        set { if (Model.Condition is null) return; Model.Condition.State = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summary)); }
+        Steps.Clear();
+        var actions = Model.Actions is { Count: > 0 } chain
+            ? chain
+            : Model.Action is { } single ? new List<NuiAction> { single } : new();
+        foreach (var action in actions)
+        {
+            Steps.Add(new ActionStepViewModel(action, _resolveComponentType) { Owner = this });
+        }
+        OnPropertyChanged(nameof(Summary));
     }
 
-    public string ConditionValue
+    private void AddStep()
     {
-        get => Model.Condition?.Value?.ToString() ?? string.Empty;
-        set { if (Model.Condition is null) return; Model.Condition.Value = value; OnPropertyChanged(); OnPropertyChanged(nameof(Summary)); }
+        // Migrate to the chain form the first time a second step is added
+        // (the serializer omits `actions` when unused, so a lone step
+        // keeps the noise-free single form).
+        if (Model.Actions is not { Count: > 0 })
+        {
+            Model.Actions = new List<NuiAction>
+            {
+                Model.Action ?? new NuiAction { Target = "System" },
+            };
+            Model.Action = null;
+        }
+        Model.Actions.Add(new NuiAction { Target = "System" });
+        RebuildSteps();
     }
 
-    public BehaviorViewModel(NuiBehavior model, NuiComponent sourceComponent, string eventName, Func<string, string?> resolveComponentType)
+    private void RemoveStep(ActionStepViewModel? step)
     {
-        Model = model;
-        SourceComponent = sourceComponent;
-        EventName = eventName;
-        _resolveComponentType = resolveComponentType;
+        if (step is null) return;
+        if (Model.Actions is { Count: > 0 } chain)
+        {
+            if (chain.Count <= 1) return; // a behavior needs at least one action
+            chain.Remove(step.Model);
+            RebuildSteps();
+        }
+        else if (Model.Action is not null)
+        {
+            // The single-action form can't drop below one step.
+            return;
+        }
+    }
+
+    private void MoveStepUp(ActionStepViewModel? step)
+    {
+        if (step is null || Model.Actions is not { Count: > 0 } chain) return;
+        var index = chain.IndexOf(step.Model);
+        if (index <= 0) return;
+        (chain[index], chain[index - 1]) = (chain[index - 1], chain[index]);
+        RebuildSteps();
+    }
+
+    private void MoveStepDown(ActionStepViewModel? step)
+    {
+        if (step is null || Model.Actions is not { Count: > 0 } chain) return;
+        var index = chain.IndexOf(step.Model);
+        if (index < 0 || index >= chain.Count - 1) return;
+        (chain[index], chain[index + 1]) = (chain[index + 1], chain[index]);
+        RebuildSteps();
+    }
+
+    // ---- summary ------------------------------------------------------------
+
+    public string Summary
+    {
+        get
+        {
+            var condition = NuiConditionTree.Describe(Model.Condition);
+            var conditionText = Model.Condition is null ? string.Empty : $" IF {condition}";
+            var actions = Steps.Count > 0
+                ? string.Join(", ", Steps.Select(s => s.Summary))
+                : string.Empty;
+            return $"WHEN {SourceComponent.Id}.{EventName}{conditionText} DO {actions}";
+        }
     }
 }

@@ -12,7 +12,77 @@
     enabled, DataContext is statically typed as object, so reaching the
     VM requires the cast syntax ((vm:MainWindowViewModel)DataContext)
     anchored on the named root element (#Root).
+
+    The condition graph is rendered by the self-referencing
+    ConditionNodeTemplate (a leaf or an AND/OR group whose children are
+    themselves leaves or groups — NUI-SCHEMA §7.3). The node's own
+    commands (add leaf / add group / remove self) live on
+    ConditionNodeViewModel; the behavior's chain commands (add / remove /
+    reorder steps) live on BehaviorViewModel and are reached through each
+    step's Owner.
   -->
+  <UserControl.Resources>
+    <DataTemplate x:Key="ConditionNodeTemplate" x:DataType="vm:ConditionNodeViewModel">
+      <Border BorderBrush="{DynamicResource Nyforge.Brush.BorderSubtle}"
+              BorderThickness="1"
+              CornerRadius="{DynamicResource Nyforge.Radius.Small}"
+              Padding="6" Margin="0,2,0,0">
+        <StackPanel Spacing="4">
+
+          <!-- Group header: AND/OR toggle + remove -->
+          <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding IsGroup}">
+            <ComboBox Grid.Column="0" Width="76" FontSize="11"
+                      ItemsSource="{Binding LogicOptions}"
+                      SelectedItem="{Binding Logic}" />
+            <TextBlock Grid.Column="1" Text="group" FontSize="10"
+                       Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                       VerticalAlignment="Center" Margin="6,0" />
+            <Button Grid.Column="2" Content="✕" Padding="4,0"
+                    Command="{Binding RemoveSelfCommand}" />
+          </Grid>
+
+          <!-- Children (groups only) -->
+          <ItemsControl Grid.Column="0" ItemsSource="{Binding Children}"
+                        ItemTemplate="{StaticResource ConditionNodeTemplate}"
+                        IsVisible="{Binding IsGroup}" />
+
+          <!-- Add leaf / add group (groups only) -->
+          <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding IsGroup}">
+            <Button Content="+ leaf" FontSize="11" Padding="6,1"
+                    Command="{Binding AddLeafCommand}" />
+            <Button Content="+ group" FontSize="11" Padding="6,1"
+                    Command="{Binding AddGroupCommand}" />
+          </StackPanel>
+
+          <!-- Leaf editor: expression mode or legacy equality -->
+          <StackPanel IsVisible="{Binding IsLeaf}">
+            <CheckBox Content="expression" FontSize="11"
+                      IsChecked="{Binding UsesExpression}" />
+            <TextBox Text="{Binding Expression}"
+                     Watermark="e.g. state.volume > 50"
+                     FontSize="11" Margin="0,2,0,0"
+                     IsVisible="{Binding UsesExpression}" />
+            <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*,Auto" Margin="0,2,0,0"
+                  IsVisible="{Binding !UsesExpression}">
+              <TextBlock Grid.Column="0" Classes="field-label" Text="state"
+                         VerticalAlignment="Center" />
+              <TextBox Grid.Column="1" Text="{Binding State}" FontSize="11" Margin="4,0" />
+              <ComboBox Grid.Column="2" Width="88" FontSize="11"
+                        ItemsSource="{Binding OperatorOptions}"
+                        SelectedItem="{Binding Operator}" />
+              <TextBlock Grid.Column="3" Classes="field-label" Text="value"
+                         VerticalAlignment="Center" Margin="6,0,0,0" />
+              <TextBox Grid.Column="4" Text="{Binding Value}" FontSize="11" Margin="4,0" />
+              <Button Grid.Column="6" Content="✕" Padding="4,0" Margin="6,0,0,0"
+                      Command="{Binding RemoveSelfCommand}" />
+            </Grid>
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+
   <Grid ColumnDefinitions="220,*" Margin="8">
 
     <!-- Left: attach a new behavior to an unbound event on the selection -->
@@ -49,6 +119,7 @@
                     CornerRadius="{DynamicResource Nyforge.Radius.Small}"
                     Padding="{DynamicResource Nyforge.Padding.Card}" Margin="{DynamicResource Nyforge.Margin.BehaviorCard}">
               <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
+
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{Binding Summary}" FontSize="{DynamicResource Nyforge.Type.Body}"
                              Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
@@ -58,28 +129,48 @@
                           CommandParameter="{Binding}" />
                 </Grid>
 
-                <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto" >
-                  <TextBlock Grid.Column="0" Classes="field-label" Text="DO"
-                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
-                  <ComboBox Grid.Column="1" Margin="0,0,10,0"
-                            ItemsSource="{Binding #Root.((vm:MainWindowViewModel)DataContext).AvailableActionTargets}"
-                            SelectedItem="{Binding ActionTarget}" />
-                  <TextBlock Grid.Column="2" Text="." VerticalAlignment="Center" Margin="0,0,6,0"
-                             Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-                  <ComboBox Grid.Column="3" ItemsSource="{Binding AvailableActionNames}"
-                            SelectedItem="{Binding ActionName}" />
-                </Grid>
+                <!-- DO: the action chain (NUI-SCHEMA §7.3) -->
+                <TextBlock Classes="field-label" Text="DO" />
 
+                <ItemsControl ItemsSource="{Binding Steps}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:ActionStepViewModel">
+                      <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto,Auto" Margin="0,2">
+                        <TextBlock Grid.Column="0" Classes="field-label" Text="target"
+                                   VerticalAlignment="Center" />
+                        <ComboBox Grid.Column="1" Margin="4,0"
+                                  ItemsSource="{Binding #Root.((vm:MainWindowViewModel)DataContext).AvailableActionTargets}"
+                                  SelectedItem="{Binding Target}" />
+                        <TextBlock Grid.Column="2" Text="." VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                        <ComboBox Grid.Column="3" Margin="4,0"
+                                  ItemsSource="{Binding AvailableActionNames}"
+                                  SelectedItem="{Binding Name}" />
+                        <Button Grid.Column="4" Content="↑" Padding="4,1"
+                                Command="{Binding Owner.MoveStepUpCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Grid.Column="5" Content="↓" Padding="4,1"
+                                Command="{Binding Owner.MoveStepDownCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Grid.Column="6" Content="✕" Padding="4,1"
+                                Command="{Binding Owner.RemoveStepCommand}"
+                                CommandParameter="{Binding}" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="+ add action" FontSize="11" Padding="6,1"
+                        HorizontalAlignment="Left"
+                        Command="{Binding AddStepCommand}" />
+
+                <!-- IF: the condition graph (NUI-SCHEMA §7.3) -->
                 <CheckBox Content="Only if..." IsChecked="{Binding HasCondition}" FontSize="11" />
 
-                <Grid ColumnDefinitions="Auto,*,Auto,*" IsVisible="{Binding HasCondition}">
-                  <TextBlock Grid.Column="0" Classes="field-label" Text="state"
-                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
-                  <TextBox Grid.Column="1" Text="{Binding ConditionState}" Margin="{DynamicResource Nyforge.Margin.ConditionState}" Watermark="e.g. theme" />
-                  <TextBlock Grid.Column="2" Classes="field-label" Text="equals"
-                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
-                  <TextBox Grid.Column="3" Text="{Binding ConditionValue}" Watermark="e.g. Eclipse" />
-                </Grid>
+                <ContentControl Content="{Binding ConditionRoot}"
+                                ContentTemplate="{StaticResource ConditionNodeTemplate}"
+                                IsVisible="{Binding HasCondition}" />
+
               </StackPanel>
             </Border>
           </DataTemplate>
