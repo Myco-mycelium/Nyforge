@@ -227,6 +227,10 @@ milestone per `engineering/ROADMAP.md`:
   groups, action chains, and expression/equality leaves.
   `NuiBehaviorText` (Nyforge.Core, `BehaviorTextTests` ×16) provides
   the round-trip parser/serializer.
+- **Code-generation exporters** — `tools/generate_rust.py` reads a
+  `.nstudio` file and produces a Rust module that defines the component
+  tree as static data. The desktop.nstudio fixture generates 823 lines
+  of complete Rust code.
 
 ## What's still not there yet
 
@@ -249,16 +253,12 @@ Being upfront about this matters more than pretending otherwise:
   map every NUI type to an `IComponentRenderer`; interactive types
   (Button, Text, Toggle, Slider, ProgressBar, Image, etc.) get real
   controls, everything else is a labeled placeholder.
-- **No code-generation exporters** beyond the NUI document itself yet
-  (no native C++/Rust backend emission).
+
 - **Nyrqis Desktop Shell designs exist but aren't a running app.** Six
   `.nstudio` files under `examples/nyrqis-shell/` (290 components, 37
   behaviors, 10 screens) cover the full shell vocabulary. The remaining
   work is the Nyrqis runtime that actually runs these screens on the OS.
-- **Self-hosting covers only the Home tab so far.** The rest of Forge's own
-  chrome (palette, canvas, inspector, menu bar) is still hardcoded Avalonia
-  — see `engineering/NFS-004-self-hosted-home-screen.md` for the deliberate
-  scope boundary and why it wasn't attempted all at once.
+
 
 See [`engineering/ROADMAP.md`](engineering/ROADMAP.md) for the phase plan.
 

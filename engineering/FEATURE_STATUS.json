@@ -205,9 +205,9 @@
     },
     {
       "id": "CodeGenerationExporters",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none",
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "manual — tools/generate_rust.py produces valid Rust from .nstudio",
       "readmePhrase": "code-generation exporters",
       "roadmapPhrase": "First NUI → native code exporter"
     },
