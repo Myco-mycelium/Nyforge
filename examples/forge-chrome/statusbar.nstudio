@@ -1,0 +1,117 @@
+{
+  "version": "0.4.0",
+  "project": {
+    "name": "Forge Status Bar",
+    "id": "forge-statusbar",
+    "created": "2026-08-18T00:00:00+00:00",
+    "updated": "2026-08-18T00:00:00+00:00"
+  },
+  "themes": {
+    "active": "Eclipse",
+    "overrides": {}
+  },
+  "states": {
+    "statusMessage": "Ready",
+    "previewRunning": false
+  },
+  "stateScopes": {},
+  "animations": [],
+  "locales": {
+    "active": "en",
+    "tables": {
+      "en": {
+        "statusbar.preview": "▶ Preview",
+        "statusbar.run": "▶ Run in Nyrqis",
+        "statusbar.build": "Build",
+        "statusbar.export": "Export NUI"
+      }
+    }
+  },
+  "behaviors": [
+    {
+      "id": "bh_preview_clicked",
+      "condition": null,
+      "action": {
+        "target": "System",
+        "name": "Nyrqis.Notification.Show",
+        "arguments": {
+          "title": "Preview",
+          "message": "Preview launched",
+          "severity": "info"
+        }
+      }
+    },
+    {
+      "id": "bh_run_clicked",
+      "condition": null,
+      "action": {
+        "target": "System",
+        "name": "Nyrqis.Notification.Show",
+        "arguments": {
+          "title": "Run in Nyrqis",
+          "message": "Exporting to Nyrqis runtime",
+          "severity": "info"
+        }
+      }
+    }
+  ],
+  "components": [],
+  "bindings": [
+    { "component": "status_text", "property": "text", "state": "statusMessage" }
+  ],
+  "screens": [
+    {
+      "id": "statusbar",
+      "size": { "width": 1200, "height": 40 },
+      "root": {
+        "id": "statusbar_root",
+        "type": "Container",
+        "properties": {},
+        "layout": { "x": 0, "y": 0, "width": 1200, "height": 40 },
+        "events": {},
+        "children": [
+          {
+            "id": "btn_preview",
+            "type": "Button",
+            "properties": { "text": "$localize:statusbar.preview" },
+            "layout": { "x": 8, "y": 4, "width": 120, "height": 32 },
+            "events": { "clicked": "bh_preview_clicked" },
+            "children": []
+          },
+          {
+            "id": "btn_run",
+            "type": "Button",
+            "properties": { "text": "$localize:statusbar.run" },
+            "layout": { "x": 136, "y": 4, "width": 160, "height": 32 },
+            "events": { "clicked": "bh_run_clicked" },
+            "children": []
+          },
+          {
+            "id": "btn_build",
+            "type": "Button",
+            "properties": { "text": "$localize:statusbar.build", "enabled": false },
+            "layout": { "x": 304, "y": 4, "width": 80, "height": 32 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "btn_export",
+            "type": "Button",
+            "properties": { "text": "$localize:statusbar.export" },
+            "layout": { "x": 392, "y": 4, "width": 120, "height": 32 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "status_text",
+            "type": "Text",
+            "properties": { "text": "$state:statusMessage" },
+            "layout": { "x": 520, "y": 8, "width": 600, "height": 24 },
+            "events": {},
+            "children": []
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -124,8 +124,8 @@ milestone per `engineering/ROADMAP.md`:
   exact file backing the default Home tab — see
   [`docs/how-to/redesigning-the-home-screen.md`](docs/how-to/redesigning-the-home-screen.md).
   This is a first, honestly bounded slice of self-hosting (the Home tab
-  only — palette/canvas/inspector/menu bar are still hardcoded), not a
-  claim that all of Forge is re-skinnable yet.
+  and status bar — palette/canvas/inspector/menu bar are still
+  hardcoded), not a claim that all of Forge is re-skinnable yet.
 - **A design system for Forge's own chrome** — both themes define the
   full token contract (NUI §6 colors + interaction states, a 4 px
   spacing grid, radii, a type scale) and the chrome composes tokens via

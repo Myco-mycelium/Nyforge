@@ -198,8 +198,8 @@
     {
       "id": "SelfHostedHome",
       "status": "implemented",
-      "introduced": "0.4",
-      "tests": "manual (shell) — Home tab renders an actual .nstudio file; persistence via PreferencesService",
+      "introduced": "0.8",
+      "tests": "manual (shell) — Home tab renders an actual .nstudio file; status bar .nstudio validates on both gates",
       "readmePhrase": "self-hosted Home tab",
       "roadmapPhrase": "custom Home screen"
     },
