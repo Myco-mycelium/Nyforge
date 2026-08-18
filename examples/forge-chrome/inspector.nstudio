@@ -1,0 +1,127 @@
+{
+  "version": "0.4.0",
+  "project": {
+    "name": "Forge Inspector",
+    "id": "forge-inspector",
+    "created": "2026-08-18T00:00:00+00:00",
+    "updated": "2026-08-18T00:00:00+00:00"
+  },
+  "themes": { "active": "Eclipse", "overrides": {} },
+  "states": { "selectedType": "None", "selectedId": "" },
+  "stateScopes": {},
+  "animations": [],
+  "locales": {
+    "active": "en",
+    "tables": {
+      "en": {
+        "inspector.title": "INSPECTOR",
+        "inspector.no_selection": "Select a component to inspect",
+        "inspector.type": "Type",
+        "inspector.id": "ID",
+        "inspector.properties": "Properties",
+        "inspector.events": "Events"
+      }
+    }
+  },
+  "behaviors": [],
+  "components": [],
+  "bindings": [
+    { "component": "type_text", "property": "text", "state": "selectedType" },
+    { "component": "id_text", "property": "text", "state": "selectedId" }
+  ],
+  "screens": [
+    {
+      "id": "inspector",
+      "size": { "width": 260, "height": 600 },
+      "root": {
+        "id": "inspector_root",
+        "type": "Container",
+        "properties": {},
+        "layout": { "x": 0, "y": 0, "width": 260, "height": 600 },
+        "events": {},
+        "children": [
+          {
+            "id": "inspector_header",
+            "type": "Text",
+            "properties": { "text": "$localize:inspector.title" },
+            "layout": { "x": 12, "y": 12, "width": 236, "height": 24 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "no_selection",
+            "type": "Text",
+            "properties": { "text": "$localize:inspector.no_selection" },
+            "layout": { "x": 12, "y": 48, "width": 236, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "type_label",
+            "type": "Text",
+            "properties": { "text": "$localize:inspector.type" },
+            "layout": { "x": 12, "y": 80, "width": 60, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "type_text",
+            "type": "Text",
+            "properties": { "text": "$state:selectedType" },
+            "layout": { "x": 80, "y": 80, "width": 168, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "id_label",
+            "type": "Text",
+            "properties": { "text": "$localize:inspector.id" },
+            "layout": { "x": 12, "y": 108, "width": 60, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "id_text",
+            "type": "Text",
+            "properties": { "text": "$state:selectedId" },
+            "layout": { "x": 80, "y": 108, "width": 168, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "props_header",
+            "type": "Text",
+            "properties": { "text": "$localize:inspector.properties" },
+            "layout": { "x": 12, "y": 148, "width": 236, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "props_list",
+            "type": "List",
+            "properties": { "items": [], "selectedIndex": -1, "multiple": false },
+            "layout": { "x": 0, "y": 176, "width": 260, "height": 200 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "events_header",
+            "type": "Text",
+            "properties": { "text": "$localize:inspector.events" },
+            "layout": { "x": 12, "y": 388, "width": 236, "height": 20 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "events_list",
+            "type": "List",
+            "properties": { "items": [], "selectedIndex": -1, "multiple": false },
+            "layout": { "x": 0, "y": 416, "width": 260, "height": 180 },
+            "events": {},
+            "children": []
+          }
+        ]
+      }
+    }
+  ]
+}

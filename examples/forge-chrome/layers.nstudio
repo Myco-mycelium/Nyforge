@@ -1,0 +1,66 @@
+{
+  "version": "0.4.0",
+  "project": {
+    "name": "Forge Layers",
+    "id": "forge-layers",
+    "created": "2026-08-18T00:00:00+00:00",
+    "updated": "2026-08-18T00:00:00+00:00"
+  },
+  "themes": { "active": "Eclipse", "overrides": {} },
+  "states": { "selectedLayer": "" },
+  "stateScopes": {},
+  "animations": [],
+  "locales": {
+    "active": "en",
+    "tables": {
+      "en": {
+        "layers.title": "LAYERS",
+        "layers.no_selection": "No components yet"
+      }
+    }
+  },
+  "behaviors": [],
+  "components": [],
+  "bindings": [
+    { "component": "selected_text", "property": "text", "state": "selectedLayer" }
+  ],
+  "screens": [
+    {
+      "id": "layers",
+      "size": { "width": 260, "height": 180 },
+      "root": {
+        "id": "layers_root",
+        "type": "Container",
+        "properties": {},
+        "layout": { "x": 0, "y": 0, "width": 260, "height": 180 },
+        "events": {},
+        "children": [
+          {
+            "id": "layers_header",
+            "type": "Text",
+            "properties": { "text": "$localize:layers.title" },
+            "layout": { "x": 12, "y": 12, "width": 236, "height": 24 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "layer_tree",
+            "type": "TreeView",
+            "properties": { "nodes": [] },
+            "layout": { "x": 0, "y": 44, "width": 260, "height": 100 },
+            "events": {},
+            "children": []
+          },
+          {
+            "id": "selected_text",
+            "type": "Text",
+            "properties": { "text": "$state:selectedLayer" },
+            "layout": { "x": 12, "y": 152, "width": 236, "height": 20 },
+            "events": {},
+            "children": []
+          }
+        ]
+      }
+    }
+  ]
+}
