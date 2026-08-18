@@ -83,6 +83,10 @@ public static class ComponentContracts
         new ComponentContract("WidgetHost", "Shell", new[] { "widgets", "layout", "visible" }, new[] { "widgetClicked" }, Actions: new[] { "AddWidget", "RemoveWidget" }),
         new ComponentContract("OSD", "Shell", new[] { "open", "message", "timeout", "icon" }, new[] { "opened", "closed" }, Actions: new[] { "Open", "Close", "Dismiss" }),
         new ComponentContract("Login", "Shell", new[] { "open", "username", "avatar", "hint" }, new[] { "submitted", "canceled" }, Actions: new[] { "Submit", "Cancel" }),
+        new ComponentContract("AppGrid", "Shell", new[] { "apps", "columns", "iconSize" }, new[] { "appClicked" }, Actions: new[] { "Launch" }),
+        new ComponentContract("Clock", "Shell", new[] { "format", "showSeconds" }, Array.Empty<string>()),
+        new ComponentContract("Dock", "Shell", new[] { "position", "pinnedApps", "runningApps", "autoHide", "iconSize", "magnify" }, new[] { "appClicked" }, Actions: new[] { "Launch" }),
+        new ComponentContract("TitleBar", "Shell", new[] { "title", "icon" }, new[] { "doubleClicked" }),
         // Data
         new ComponentContract("List", "Data", new[] { "items", "selectedIndex", "multiple" }, new[] { "selectionChanged", "itemActivated" }, Actions: new[] { "SetSelectedIndex" }),
         new ComponentContract("ListItem", "Data", new[] { "label", "icon", "selected", "enabled" }, new[] { "clicked", "activated" }),

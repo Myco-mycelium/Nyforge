@@ -166,12 +166,14 @@ milestone per `engineering/ROADMAP.md`:
   bound state, a conditional behavior, and `$state:` substitution.
 - **The Nyrqis desktop shell** — [`examples/nyrqis-shell/desktop.nstudio`](examples/nyrqis-shell/desktop.nstudio)
   is the reference shell screen built from the Shell vocabulary: a
-  1440×900 desktop (DesktopSurface + DesktopIcons, Taskbar with
-  Start/Search/pinned apps/WorkspaceSwitcher/SystemTray, StartMenu,
+  1440×900 desktop (DesktopSurface + DesktopIcons, a bottom Dock,
+  Taskbar with Start/Search/pinned apps/WorkspaceSwitcher/Clock/
+  SystemTray, StartMenu, a Launcher overlay holding an AppGrid,
   CommandPalette, NotificationCenter, QuickSettings with theme
-  switching) plus a lock screen (LockScreen) — 30 components, 8
-  behaviors, 6 bindings; it opens in Forge and passes the Nyrqis
-  import gate (floor + Rust crate).
+  switching, and a real Files app window framed by WindowFrame +
+  TitleBar + WindowControls) plus a lock screen (LockScreen) — 37
+  components, 10 behaviors, 6 bindings; it opens in Forge and passes
+  the Nyrqis import gate (floor + Rust crate).
 - **The Nyrqis window system + power UI** — [`examples/nyrqis-shell/windows.nstudio`](examples/nyrqis-shell/windows.nstudio)
   is the second reference shell screen: WindowFrame + WindowControls
   drive component-targeted actions (Minimize/Maximize/Close), stacked

@@ -306,7 +306,11 @@ compiler-verified yet.**
   The shell's persistent theme and session clock are scoped states.
   Scope lifecycle (what persists) is the runtime's follow-on. Tracked
   as FEATURE_STATUS `StateScopes` (implemented).
-- The Nyrqis Desktop Shell (separate, later effort).
+- The Nyrqis Desktop Shell as a *running product* — the Shell
+  vocabulary (24 types, incl. `AppGrid`/`Clock`/`Dock`/`TitleBar` added
+  2026-08-18) and the reference `desktop.nstudio` screens exist and pass
+  both Nyrqis gates (FEATURE_STATUS `NyrqisDesktopShell` partial); the
+  full shell as a shipping runtime stays later.
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0
   carry the binaries), and the codebase was built and tested locally with

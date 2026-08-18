@@ -118,10 +118,14 @@ stays usable on narrow windows:
 }
 ```
 
-## 4. Component Vocabulary (v0.1)
+## 4. Component Vocabulary
 
-The set of `type` values Forge's v0.1 palette exposes, grouped as in the
-original design doc:
+The set of `type` values the palette exposes, grouped as in the original
+design doc. **The authoritative, machine-readable list is the Nyrqis API
+Registry** (`engineering/registry/nui-api-v1.json`, NFS-006): `Forge`'s
+palette, Inspector, and Behaviors contract tables derive from it, and the
+Nyrqis import gates (Python floor + Rust crate) validate against the same
+file. Adding a component is a registry change, versioned per §9.
 
 **Basic:** `Text`, `Icon`, `Image`, `Button`, `Link`, `Input`,
 `PasswordField`, `Checkbox`, `Radio`, `Toggle`, `Slider`, `ProgressBar`
@@ -133,23 +137,36 @@ original design doc:
 
 **Navigation:** `Sidebar`, `NavigationRail`, `Tabs`, `Breadcrumbs`
 
-Components listed in the original design doc but **not yet implemented** in
-v0.1 (`ContextMenu`, `StartMenu`, `Taskbar`, `SystemTray`, `FilePicker`,
-`SettingsPanel`, `PermissionPrompt`, `AuthenticationScreen`,
-`PageNavigation`, `CommandPalette`, `FileBrowser`, `Terminal`, `CodeEditor`,
-`MediaPlayer`, `DataTable`, `Graph`, `Calendar`, `Map`, `WebView`) **MUST
-NOT** appear in the palette until they have a corresponding entry here per
-NFC-001 §4.3. Adding one is a schema change, versioned per §9.
+**Shell:** `DesktopSurface`, `DesktopIcon`, `Taskbar`, `StartMenu`,
+`SystemTray`, `NotificationCenter`, `QuickSettings`, `WorkspaceSwitcher`,
+`WindowFrame`, `WindowControls`, `ContextMenu`, `CommandPalette`,
+`Launcher`, `AppGrid`, `Search`, `PowerMenu`, `LockScreen`, `Login`,
+`Application`, `WidgetHost`, `OSD`, `Dock`, `Clock`, `TitleBar` — the
+semantic contracts (not generic rectangles): `Taskbar` knows
+`position`/`alignment`/`autoHide`/`pinnedApps`/`runningApps`/
+`showClock`/`showTray`; `Dock` knows `position`/`autoHide`/`iconSize`/
+`magnify`; `AppGrid` lays out `apps` on a `columns` grid;
+`Clock` renders a `format`; `TitleBar` + `WindowControls` frame an app
+window (`WindowFrame`).
+
+**Data:** `List`, `ListItem`, `DataTable`, `TreeView`, `Menu`, `MenuItem`
+
+**Form:** `Form`, `DatePicker`, `TimePicker`, `FilePicker`, `SettingsPanel`
+
+**Media:** `Video`, `Audio`, `MediaPlayer`
+
+**Developer:** `Terminal`, `CodeEditor`, `LogViewer`
 
 ## 5. Property Contract
 
 Per-component property/event/action sets (the "Nyrqis API contract" from the
-original design doc) are declared in
-`source/Nyforge.Core/Nui/ComponentContracts.cs` today, as a static table.
-This is a placeholder for a future Nyrqis API Registry integration — see
-`engineering/ROADMAP.md`. Until that integration exists, this static table
-**is** the source of truth, and any addition to it **MUST** be reflected
-here.
+original design doc) live in the registry (`engineering/registry/nui-api-v1.json`)
+as typed `PropertyDefinition`s (name, type, default, enum values, units,
+min/max) and are regenerated into `ComponentContracts.cs` /
+`PropertyDefinitions.cs` / `NuiSystemActions.cs` by
+`tools/generate_contracts.py` (CI-gated by `tools/check_contracts_synced.py`
+per NFC-001 §4.3 and NFS-006). Any addition to the vocabulary **MUST** be
+made in the registry first, never in the generated tables by hand.
 
 ## 6. Themes
 

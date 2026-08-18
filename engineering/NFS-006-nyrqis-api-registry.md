@@ -184,7 +184,13 @@ CommandPalette, LockScreen, List, DataTable, TreeView, DatePicker,
 FilePicker, Video, MediaPlayer, Terminal, CodeEditor, …), each with a
 real semantic contract, and all three consumers regenerated. Nyforge's
 palette now offers the shell's components; building the shell screens on
-top of them is the v0.6 shell-milestone work.
+top of them is the v0.6 shell-milestone work. **2026-08-18: doc #15's
+desktop-specific primitives are complete** — `AppGrid`, `Clock`, `Dock`,
+and `TitleBar` bring the registry to 70 components (24 Shell types,
+including the semantic `Dock` surface: `position`/`pinnedApps`/
+`runningApps`/`autoHide`/`iconSize`/`magnify`, `appClicked` → `Launch`),
+and the reference `desktop.nstudio` exercises all of them through both
+Nyrqis gates and Nyforge's serializer.
 
 Reusable component masters are **no longer future work**: the registry's
 `components[]` section is real. A document defines a master there

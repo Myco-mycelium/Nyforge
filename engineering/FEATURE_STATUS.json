@@ -183,7 +183,7 @@
       "id": "NyrqisDesktopShell",
       "status": "partial",
       "introduced": "0.6",
-      "tests": "registry carries the shell vocabulary (Taskbar, StartMenu, WindowFrame, …); the real desktop shell screen (examples/nyrqis-shell/desktop.nstudio — DesktopSurface/Taskbar/StartMenu/CommandPalette/NotificationCenter/QuickSettings/LockScreen, 30 components) opens in Forge (serializer test) and passes the Nyrqis import gate (floor + crate); more shell screens to come",
+      "tests": "registry carries the shell vocabulary (Taskbar, StartMenu, WindowFrame, Dock, AppGrid, Clock, TitleBar, … — 24 Shell types); the real desktop shell screen (examples/nyrqis-shell/desktop.nstudio — DesktopSurface/Taskbar/StartMenu/Launcher+AppGrid/Dock/Clock/WindowFrame+TitleBar+WindowControls/CommandPalette/NotificationCenter/QuickSettings/LockScreen, 37 components) opens in Forge (serializer test) and passes the Nyrqis import gate (floor + crate); more shell screens to come",
       "readmePhrase": null,
       "roadmapPhrase": "Nyrqis Desktop Shell reference application"
     },

@@ -312,6 +312,31 @@ public static class PropertyDefinitions
                 new PropertyDefinition("avatar", "string", DefaultValue: ""),
                 new PropertyDefinition("hint", "string", DefaultValue: ""),
             },
+            ["AppGrid"] = new[]
+            {
+                new PropertyDefinition("apps", "array", DefaultValue: new object[] {  }),
+                new PropertyDefinition("columns", "number", DefaultValue: 4, Min: 1),
+                new PropertyDefinition("iconSize", "number", DefaultValue: 48, Units: "px"),
+            },
+            ["Clock"] = new[]
+            {
+                new PropertyDefinition("format", "enum", DefaultValue: "24h", EnumValues: new[] { "12h", "24h" }),
+                new PropertyDefinition("showSeconds", "boolean", DefaultValue: false),
+            },
+            ["Dock"] = new[]
+            {
+                new PropertyDefinition("position", "enum", DefaultValue: "bottom", EnumValues: new[] { "top", "bottom", "left", "right" }),
+                new PropertyDefinition("pinnedApps", "array", DefaultValue: new object[] {  }),
+                new PropertyDefinition("runningApps", "array", DefaultValue: new object[] {  }),
+                new PropertyDefinition("autoHide", "boolean", DefaultValue: false),
+                new PropertyDefinition("iconSize", "number", DefaultValue: 48, Units: "px"),
+                new PropertyDefinition("magnify", "boolean", DefaultValue: true),
+            },
+            ["TitleBar"] = new[]
+            {
+                new PropertyDefinition("title", "string", DefaultValue: ""),
+                new PropertyDefinition("icon", "string", DefaultValue: ""),
+            },
             ["List"] = new[]
             {
                 new PropertyDefinition("items", "array", DefaultValue: new object[] {  }),
