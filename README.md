@@ -240,11 +240,13 @@ Being upfront about this matters more than pretending otherwise:
   in properties, overrides, and action arguments, evaluated identically
   in Nyforge, the reference floor, and the Rust crate — and the
   node-graph Logic Editor's expression leaves use the same language.
-- **No live Nyrqis runtime to preview against**, because that runtime
-  doesn't exist yet. `▶ Preview` is Forge's own honest stand-in — genuinely
-  interactive for a small set of component types, clearly labeled as a
-  stand-in, with everything else rendering as a marked placeholder rather
-  than fake interactivity.
+- **No live Nyrqis runtime to preview against** — the `INuiRuntime`
+  interface (`Nyforge.Core.Runtime`) and `ForgePreviewRuntime`
+  (wrapping `BehaviorDispatcher`) landed 2026-08-18, so the preview
+  now goes through the runtime seam; `TestRuntime` records calls for
+  unit testing. The actual Nyrqis runtime is the follow-on.
+  `▶ Preview` is Forge's own honest stand-in — genuinely interactive
+  for a small set of component types, clearly labeled as a stand-in.
 - **No code-generation exporters** beyond the NUI document itself yet
   (no native C++/Rust backend emission).
 - **No Nyrqis Desktop Shell.** That's a separate, later effort per the

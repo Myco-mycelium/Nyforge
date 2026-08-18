@@ -141,8 +141,11 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       and code paths share one semantics (NFM-000 §2.3). The node-graph
       Logic Editor UI (landed 2026-08-18) builds on the expression as
       its underlying model.
-- [ ] A real Nyrqis UI Runtime — `PreviewWindow` remains Forge's own
-      stand-in.
+- [ ] A real Nyrqis UI Runtime — `INuiRuntime` (Nyforge.Core.Runtime)
+      landed 2026-08-18; `ForgePreviewRuntime` implements it for the
+      Forge preview; `TestRuntime` records calls for unit tests
+      (RuntimeTests ×9). The `PreviewWindow` now goes through the
+      runtime seam. The actual Nyrqis runtime is the follow-on.
 - [x] **Animation system** — `NuiDocument.Animations` (NUI-SCHEMA §8.3)
       carries the document's declarative animations: a target component,
       one property, and timing (duration/delay/repeat non-negative,

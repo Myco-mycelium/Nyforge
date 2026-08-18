@@ -213,9 +213,9 @@
     },
     {
       "id": "NyrqisUiRuntime",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none — PreviewWindow is Forge's own stand-in",
+      "status": "partial",
+      "introduced": "0.8",
+      "tests": "RuntimeTests (9) — INuiRuntime interface (Nyforge.Core.Runtime) landed; TestRuntime records all calls for unit verification; ForgePreviewRuntime wraps BehaviorDispatcher implementing the seam between editor and OS. Nyrqis runtime implementation is the follow-on",
       "readmePhrase": null,
       "roadmapPhrase": "A real Nyrqis UI Runtime"
     },
