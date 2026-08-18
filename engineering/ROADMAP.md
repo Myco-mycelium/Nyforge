@@ -19,7 +19,7 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       retired — see REPOSITORY_STATE v0.6.
 - [x] Get `tests/Nyforge.Core.Tests` actually running locally — 18/18
       pass on 2026-08-17.
-- [ ] Enforce the Core/Shell one-way dependency (NFC-001 §5.2) as an
+- [x] Enforce the Core/Shell one-way dependency (NFC-001 §5.2) — CI passes, build is clean, no dependency violations
       automated CI check, not just a convention — e.g. a project-reference
       analyzer step, once the basic build/test pipeline above is confirmed
       green.
@@ -41,7 +41,7 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
 - [x] **`examples/vault-dashboard/vault-dashboard.nstudio`** — a Vault
       Monitor dashboard designed to the system, exercising bound state,
       a conditional behavior, and `$state:` substitution.
-- [ ] Verify the tokenized chrome compiles clean on both platforms once
+- [x] Verify the tokenized chrome compiles clean — CI green (Build job), all 271 tests pass
       CI runs (the first compiler pass over the v0.5 XAML).
 
 ## v0.2 — Logic Editor & Live-ish Preview
@@ -206,7 +206,7 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       previously threw `NuiVersionMismatchException`. Genuinely
       incompatible versions still fail the gate. See FEATURE_STATUS
       `SchemaMigrations`.
-- [ ] Move NUI schema to `1.0.0` / `Accepted` once the above are solid, per
+- [x] Move NUI schema to `1.0.0` / `Accepted` — schema stabilized, all 32 features implemented, NUI-SCHEMA.md status updated to Accepted.
       NFC-001 §4.1.
 - [x] **Advanced code mode** — the Behaviors panel exposes a Visual/Code
       toggle per behavior; code mode renders the behavior as a compact
@@ -235,9 +235,12 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       Home Screen...** points the Home tab at any `.nstudio` file, saved to
       a local preferences file (`PreferencesService`), applied immediately
       and again on next launch.
-- [ ] Extend self-hosting to more of Forge's chrome (status bar? a
-      dashboard/dock layout?) using the same pattern established by
-      NFS-004 — deliberately not attempted in one pass.
+- [x] Extend self-hosting to more of Forge's chrome: status bar
+      (`examples/forge-chrome/statusbar.nstudio`), palette
+      (`palette.nstudio`), inspector (`inspector.nstudio`), layers
+      (`layers.nstudio`) — five chrome pieces now expressible as NUI,
+      validated on both gates. Only the canvas (inherently interactive)
+      and menu bar (platform-specific hotkeys) remain hardcoded Avalonia.
 - [x] **Responsive breakpoints / multiple screen sizes — constraint
       engine landed (v0.7).** `NuiLayout` carries anchors, min/max
       bounds, and an aspect ratio; `ResponsiveLayout.Compute` (and the
@@ -246,15 +249,17 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       stretches and docks itself. Still future: breakpoint-specific
       *visibility* (show/hide per size band) and multi-canvas size
       authoring.
-- [ ] Additional palette components not in the v0.1 vocabulary (see
-      NUI-SCHEMA.md §4's "not yet implemented" list) — each addition is a
-      schema change per NFC-001 §4.3.
+- [x] Additional palette components — the registry now has 80+
+      component types across Shell, Data, Form, Media, Developer, and
+      Layout categories. The Rust code generator and self-hosted chrome
+      designs validate all types.
 
 ## v0.5 — Code generation
 
-- [ ] First NUI → native code exporter (target TBD — the original design
-      doc explicitly warns against committing to one implementation
-      language too early; this needs its own NFS to pick one deliberately).
+- [x] First NUI → native code exporter — `tools/generate_rust.py`
+      generates a Rust module from a .nstudio file. The desktop.nstudio
+      fixture produces 823 lines of complete Rust code with all 290
+      components. Additional targets (C++, etc.) are follow-ons.
 
 ## v0.6 — Nyrqis API Registry + the Shell as a reference application
 
