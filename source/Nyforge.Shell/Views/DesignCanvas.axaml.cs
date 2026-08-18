@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Nyforge.Core.Canvas;
 using Nyforge.Core.Editing;
 using Nyforge.Shell.ViewModels;
 
@@ -21,6 +22,11 @@ public partial class DesignCanvas : UserControl
     private CanvasElementViewModel? _resizeTarget;
     private Point _resizeStartPointerPosition;
     private double _resizeStartWidth, _resizeStartHeight;
+
+    // Alignment guides
+    private readonly AlignmentGuideService _guides = new();
+    private double? _guideX;  // vertical guide line X position (null = no guide)
+    private double? _guideY;  // horizontal guide line Y position (null = no guide)
 
     public DesignCanvas()
     {
@@ -90,18 +96,38 @@ public partial class DesignCanvas : UserControl
         var deltaX = current.X - _dragStartPointerPosition.X;
         var deltaY = current.Y - _dragStartPointerPosition.Y;
 
+        // Build sibling bounds for alignment guides (exclude the dragged element)
+        var siblings = new List<AlignmentBounds>();
+        foreach (var el in Vm.CanvasElements)
+        {
+            if (el == _dragTarget) continue;
+            siblings.Add(new AlignmentBounds(el.X, el.Y, el.Width, el.Height));
+        }
+
         if (_multiDrag && _multiDragStarts is not null)
         {
             foreach (var (vm, start) in _multiDragStarts)
             {
-                vm.X = Snap(Math.Max(0, start.X + deltaX));
-                vm.Y = Snap(Math.Max(0, start.Y + deltaY));
+                var rawX = Math.Max(0, start.X + deltaX);
+                var rawY = Math.Max(0, start.Y + deltaY);
+                var snapX = _guides.SnapX(rawX, vm.Width, current.X, siblings, RootCanvas.Bounds.Width);
+                var snapY = _guides.SnapY(rawY, vm.Height, current.Y, siblings, RootCanvas.Bounds.Height);
+                vm.X = snapX?.Position ?? Snap(rawX);
+                vm.Y = snapY?.Position ?? Snap(rawY);
             }
+            _guideX = null;
+            _guideY = null;
         }
         else
         {
-            _dragTarget.X = Snap(Math.Max(0, _dragStartX + deltaX));
-            _dragTarget.Y = Snap(Math.Max(0, _dragStartY + deltaY));
+            var rawX = Math.Max(0, _dragStartX + deltaX);
+            var rawY = Math.Max(0, _dragStartY + deltaY);
+            var snapX = _guides.SnapX(rawX, _dragTarget.Width, current.X, siblings, RootCanvas.Bounds.Width);
+            var snapY = _guides.SnapY(rawY, _dragTarget.Height, current.Y, siblings, RootCanvas.Bounds.Height);
+            _dragTarget.X = snapX?.Position ?? Snap(rawX);
+            _dragTarget.Y = snapY?.Position ?? Snap(rawY);
+            _guideX = snapX?.GuideLine;
+            _guideY = snapY?.GuideLine;
         }
         Vm.RefreshRenderPositions();
 
@@ -134,6 +160,10 @@ public partial class DesignCanvas : UserControl
             _dropTargetHighlight.IsSelected = false;
             _dropTargetHighlight = null;
         }
+
+        // Clear alignment guide lines
+        _guideX = null;
+        _guideY = null;
 
         if (Vm is null) return;
         var current = e.GetPosition(RootCanvas);

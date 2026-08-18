@@ -21,10 +21,10 @@
     },
     {
       "id": "AlignmentGuides",
-      "status": "not-started",
-      "introduced": null,
-      "tests": "none",
-      "readmePhrase": "Alignment guides",
+      "status": "implemented",
+      "introduced": "0.8",
+      "tests": "11 AlignmentGuideTests — edge snap, center snap, canvas bounds, threshold, no candidates",
+      "readmePhrase": "alignment guides",
       "roadmapPhrase": "Alignment guides"
     },
     {
@@ -213,9 +213,9 @@
     },
     {
       "id": "NyrqisUiRuntime",
-      "status": "partial",
+      "status": "implemented",
       "introduced": "0.8",
-      "tests": "RuntimeTests (9) — INuiRuntime interface (Nyforge.Core.Runtime) landed; TestRuntime records all calls for unit verification; ForgePreviewRuntime wraps BehaviorDispatcher implementing the seam between editor and OS. Nyrqis runtime implementation is the follow-on",
+      "tests": "RuntimeTests (9) + NyrqisShell tests (19) — INuiRuntime interface (Nyforge.Core.Runtime) landed; ForgePreviewRuntime + NyrqisRuntime (ui/runtime.py) + NyrqisShell runner. PreviewViewModel fully delegates to ForgePreviewRuntime.",
       "readmePhrase": null,
       "roadmapPhrase": "A real Nyrqis UI Runtime"
     },

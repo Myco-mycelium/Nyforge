@@ -33,11 +33,9 @@ milestone per `engineering/ROADMAP.md`:
   string/boolean/number/enum editors, edits undoable), a **Layers**
   panel, and **registry-driven runtime renderers** (`ComponentRendererRegistry` +
   `ForgeRendererRegistry`) mapping every NUI type to an `IComponentRenderer`.
-  Canvas power-editing (alignment) is
-  not implemented yet — see
-  [`engineering/FEATURE_STATUS.json`](engineering/FEATURE_STATUS.json),
-  the machine-readable feature-status source the docs are validated
-  against.
+  Canvas power-editing: **alignment guides** (snap-to-edge and
+  snap-to-center during drag, 8 px threshold, canvas bounds) and
+  **snap-to-grid** (4 px grid).
 - A project system (`source/Nyforge.Core`) that serializes what you build into
   a real, versioned, human-readable project file: **`.nstudio`**. This *is*
   your project's "code" — open one in a text editor and you'll see a

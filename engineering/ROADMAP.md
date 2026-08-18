@@ -71,7 +71,9 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       delete removes all selected.
 - [x] **Snap-to-grid** — drags and resizes snap to the design system's
       4 px grid.
-- [ ] Alignment guides.
+- [x] Alignment guides — snap-to-edge and snap-to-center during drag,
+      with 8 px threshold, canvas bounds, and visual guide lines
+      (AlignmentGuideService in Nyforge.Core.Canvas, 11 tests).
 - [x] **metadata-driven Inspector** — the Inspector's property rows are
       generated from the Nyrqis API Registry's `PropertyDefinition.Type`
       (string → text box, boolean → checkbox, number → numeric up-down
@@ -146,11 +148,13 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       and code paths share one semantics (NFM-000 §2.3). The node-graph
       Logic Editor UI (landed 2026-08-18) builds on the expression as
       its underlying model.
-- [ ] A real Nyrqis UI Runtime — `INuiRuntime` (Nyforge.Core.Runtime)
+- [x] A real Nyrqis UI Runtime — `INuiRuntime` (Nyforge.Core.Runtime)
       landed 2026-08-18; `ForgePreviewRuntime` implements it for the
       Forge preview; `TestRuntime` records calls for unit tests
       (RuntimeTests ×9). The `PreviewWindow` now goes through the
-      runtime seam. The actual Nyrqis runtime is the follow-on.
+      runtime seam. The Nyrqis-side runtime (`ui/runtime.py`
+      `NyrqisRuntime`) landed 2026-08-18 with 26 tests; the
+      `NyrqisShell` runner loads and exercises desktop.nstudio.
 - [x] **Animation system** — `NuiDocument.Animations` (NUI-SCHEMA §8.3)
       carries the document's declarative animations: a target component,
       one property, and timing (duration/delay/repeat non-negative,
