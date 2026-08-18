@@ -127,8 +127,8 @@
       "id": "Animations",
       "status": "implemented",
       "introduced": "0.4",
-      "tests": "AnimationTests (15) + Nyrqis TestAnimations (16) + 7 conformance — the document's animations section (NUI-SCHEMA §8.3): unique ids, targets that name components, non-empty properties, timing (duration/delay/repeat non-negative, easing linear|ease-in|ease-out|ease-in-out|steps, direction forward|reverse|alternate) and keyframes (list shape, offsets strictly increasing in [0, 1], each with a number/string/boolean value) validated by both Nyrqis import gates (differential, byte-identical) and Nyforge (ER-NUI-022); Nyrqis.Animation.Play (registry system action) references must name a declared animation; desktop.nstudio start-menu fade is a 3-keyframe curve wired to behavior_start_toggle; the animation timeline editor is the remaining follow-on",
-      "readmePhrase": "declarative animations (duration, easing, direction)",
+      "tests": "AnimationTests (15) + Nyrqis TestAnimations (16) + 7 conformance — the document's animations section (NUI-SCHEMA §8.3): unique ids, targets that name components, non-empty properties, timing (duration/delay/repeat non-negative, easing linear|ease-in|ease-out|ease-in-out|steps, direction forward|reverse|alternate) and keyframes (list shape, offsets strictly increasing in [0, 1], each with a number/string/boolean value) validated by both Nyrqis import gates (differential, byte-identical) and Nyforge (ER-NUI-022); Nyrqis.Animation.Play (registry system action) references must name a declared animation; desktop.nstudio start-menu fade is a 3-keyframe curve wired to behavior_start_toggle; the animation timeline editor (Animations tab) edits each animation's timing, easing, and keyframes inline",
+      "readmePhrase": "animation timeline editor",
       "roadmapPhrase": "Animation system"
     },
     {

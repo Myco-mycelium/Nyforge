@@ -301,8 +301,9 @@ compiler-verified yet.**
   number/string/boolean value — validated byte-identically on both
   Nyrqis gates and as ER-NUI-022; the desktop shell's Start menu fade
   is a 3-keyframe curve playing on toggle. The animation timeline
-  editor is the remaining follow-on. Tracked as FEATURE_STATUS
-  `Animations` (implemented).
+  editor (Animations tab, landed 2026-08-18) edits each animation's
+  timing, easing, and keyframes inline — add/remove keyframes, edit
+  offset/value. Tracked as FEATURE_STATUS `Animations` (implemented).
 - ~~State scopes~~ — **resolved 2026-08-17.** `NuiDocument.StateScopes`
   (NUI-SCHEMA §8.4): the five named state tables (global/screen/
   component/session/persistent) referenced as dotted `scope.key` names

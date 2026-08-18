@@ -1,0 +1,125 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Nyforge.Shell.ViewModels"
+             x:Class="Nyforge.Shell.Views.AnimationsPanel"
+             x:DataType="vm:MainWindowViewModel"
+             x:Name="Root">
+
+  <Grid ColumnDefinitions="220,*" Margin="8">
+
+    <!-- Left: animation list + add button -->
+    <StackPanel Grid.Column="0" Spacing="{DynamicResource Nyforge.Space.1}" Margin="{DynamicResource Nyforge.Margin.BehaviorsLeft}">
+      <TextBlock Classes="section-header" Text="ANIMATIONS" />
+
+      <TextBlock Classes="field-label"
+                 Text="Declarative timed property transitions (NUI-SCHEMA §8.3). Each animation targets one component property."
+                 TextWrapping="Wrap" />
+
+      <Button Content="+ add animation" FontSize="11" Padding="6,1"
+              HorizontalAlignment="Left"
+              Command="{Binding AddAnimationCommand}" />
+
+      <TextBlock Text="No animations defined yet."
+                 FontSize="11" TextWrapping="Wrap"
+                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                 IsVisible="{Binding !HasAnimations}" />
+    </StackPanel>
+
+    <!-- Right: animation cards -->
+    <ScrollViewer Grid.Column="1">
+      <ItemsControl ItemsSource="{Binding Animations}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="vm:AnimationViewModel">
+            <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                    CornerRadius="{DynamicResource Nyforge.Radius.Small}"
+                    Padding="{DynamicResource Nyforge.Padding.Card}" Margin="{DynamicResource Nyforge.Margin.BehaviorCard}">
+              <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
+
+                <!-- Header: summary + remove -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{Binding Summary}" FontSize="{DynamicResource Nyforge.Type.Body}"
+                             Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
+                             TextWrapping="Wrap" VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Content="✕" Padding="6,2"
+                          Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveAnimationCommand}"
+                          CommandParameter="{Binding}" />
+                </Grid>
+
+                <!-- Properties row 1: id, target, property -->
+                <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Column="0" Classes="field-label" Text="id"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <TextBox Grid.Column="1" Text="{Binding Id}" Margin="4,0" />
+                  <TextBlock Grid.Column="2" Classes="field-label" Text="target"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <TextBox Grid.Column="3" Text="{Binding Target}" Margin="4,0" />
+                  <TextBlock Grid.Column="4" Classes="field-label" Text="property"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <TextBox Grid.Column="5" Text="{Binding Property}" Margin="4,0" />
+                </Grid>
+
+                <!-- Properties row 2: duration, delay, easing, direction, repeat -->
+                <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*,Auto,*,Auto,*">
+                  <TextBlock Grid.Column="0" Classes="field-label" Text="duration"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <TextBox Grid.Column="1" Text="{Binding Duration}" Margin="4,0" Watermark="ms" />
+                  <TextBlock Grid.Column="2" Classes="field-label" Text="delay"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <TextBox Grid.Column="3" Text="{Binding Delay}" Margin="4,0" Watermark="ms" />
+                  <TextBlock Grid.Column="4" Classes="field-label" Text="easing"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <ComboBox Grid.Column="5" ItemsSource="{Binding EasingOptions}"
+                            SelectedItem="{Binding Easing}" Margin="4,0" />
+                  <TextBlock Grid.Column="6" Classes="field-label" Text="direction"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <ComboBox Grid.Column="7" ItemsSource="{Binding DirectionOptions}"
+                            SelectedItem="{Binding Direction}" Margin="4,0" />
+                  <TextBlock Grid.Column="8" Classes="field-label" Text="repeat"
+                             VerticalAlignment="Center" Margin="{DynamicResource Nyforge.Margin.LabelRight}" />
+                  <TextBox Grid.Column="9" Text="{Binding Repeat}" Margin="4,0" Watermark="0=once" />
+                </Grid>
+
+                <!-- Keyframes -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Classes="field-label" Text="KEYFRAMES"
+                             VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Content="+ add" FontSize="11" Padding="6,1"
+                          Command="{Binding AddKeyframeCommand}" />
+                </Grid>
+
+                <TextBlock Text="No keyframes — a single-segment transition."
+                           FontSize="11" TextWrapping="Wrap"
+                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                           IsVisible="{Binding !Keyframes.Count}" />
+
+                <ItemsControl ItemsSource="{Binding Keyframes}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:KeyframeViewModel">
+                      <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto" Margin="0,2">
+                        <TextBlock Grid.Column="0" Classes="field-label" Text="offset"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding Offset}" Margin="4,0" Width="80"
+                                 Watermark="0.0–1.0" />
+                        <TextBlock Grid.Column="2" Classes="field-label" Text="→"
+                                   VerticalAlignment="Center" Margin="6,0,0,0"
+                                   Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                        <TextBox Grid.Column="3" Text="{Binding Value}" Margin="4,0" Width="100"
+                                 Watermark="value" />
+                        <Button Grid.Column="5" Content="✕" Padding="4,1" Margin="6,0,0,0"
+                                Command="{Binding $parent[ItemsControl].((vm:AnimationViewModel)DataContext).RemoveKeyframeCommand}"
+                                CommandParameter="{Binding}" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

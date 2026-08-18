@@ -62,6 +62,10 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// <summary>All behaviors reachable from the current screen's component tree, v0.2 Logic Editor.</summary>
     public ObservableCollection<BehaviorViewModel> Behaviors { get; } = new();
 
+    /// <summary>All animations declared in the document's animations section (NUI-SCHEMA §8.3).</summary>
+    public ObservableCollection<AnimationViewModel> Animations { get; } = new();
+    public bool HasAnimations => Animations.Count > 0;
+
     /// <summary>The v0.1 palette, sourced from the same contract table the schema doc references.</summary>
     public IReadOnlyList<ComponentContract> PaletteItems => ComponentContracts.All;
 
@@ -183,6 +187,8 @@ public sealed class MainWindowViewModel : ViewModelBase
     public RelayCommand<string> SetThemeCommand { get; }
     public RelayCommand<string> AddBehaviorForSelectedCommand { get; }
     public RelayCommand<BehaviorViewModel> RemoveBehaviorCommand { get; }
+    public RelayCommand AddAnimationCommand { get; }
+    public RelayCommand<AnimationViewModel> RemoveAnimationCommand { get; }
 
     /// <summary>Unbound events on the currently selected element — what AddBehaviorForSelectedCommand can attach to. Empty unless exactly one element is selected.</summary>
     public IReadOnlyList<string> AvailableEventsForSelection
@@ -225,6 +231,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         SetThemeCommand = new RelayCommand<string>(name => { if (name is not null) _themeManager.SetTheme(name); });
         AddBehaviorForSelectedCommand = new RelayCommand<string>(AddBehaviorForSelected);
         RemoveBehaviorCommand = new RelayCommand<BehaviorViewModel>(RemoveBehavior);
+        AddAnimationCommand = new RelayCommand(AddAnimation);
+        RemoveAnimationCommand = new RelayCommand<AnimationViewModel>(RemoveAnimation);
         UndoCommand = new RelayCommand(() => History.Undo(), () => History.CanUndo);
         RedoCommand = new RelayCommand(() => History.Redo(), () => History.CanRedo);
         CopySelectionCommand = new RelayCommand(CopySelection, () => HasSelection);
@@ -304,6 +312,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         var selectedIds = _selectedElements.Select(vm => vm.Id).ToHashSet();
         CanvasElements.Clear();
         Behaviors.Clear();
+        Animations.Clear();
 
         var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
         if (root is not null)
@@ -315,7 +324,8 @@ public sealed class MainWindowViewModel : ViewModelBase
             RebuildRenderItems();
             RebuildBehaviors(root);
         }
-        else
+        RebuildAnimations();
+        if (root is null)
         {
             RebuildRenderItems();
         }
@@ -357,6 +367,37 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
 
         Walk(node);
+    }
+
+    // ---- animations -------------------------------------------------------
+
+    private void RebuildAnimations()
+    {
+        foreach (var anim in _projectService.Current.Document.Animations)
+        {
+            Animations.Add(new AnimationViewModel(anim));
+        }
+        OnPropertyChanged(nameof(HasAnimations));
+    }
+
+    private void AddAnimation()
+    {
+        var anim = new NuiAnimation { Id = "anim_" + Guid.NewGuid().ToString("N")[..6] };
+        _projectService.Current.Document.Animations.Add(anim);
+        Animations.Add(new AnimationViewModel(anim));
+        _projectService.Current.MarkDirty();
+        OnPropertyChanged(nameof(HasAnimations));
+        StatusMessage = "Added animation.";
+    }
+
+    private void RemoveAnimation(AnimationViewModel? anim)
+    {
+        if (anim is null) return;
+        _projectService.Current.Document.Animations.Remove(anim.Model);
+        Animations.Remove(anim);
+        _projectService.Current.MarkDirty();
+        OnPropertyChanged(nameof(HasAnimations));
+        StatusMessage = "Removed animation.";
     }
 
     private string? ResolveComponentType(string componentId)

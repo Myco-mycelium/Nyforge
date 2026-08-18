@@ -154,7 +154,9 @@ change set per NFC-001 §7 (its own NFS if it touches the schema).
       multi-point curve of strictly increasing offsets in [0, 1], each
       with a number/string/boolean value — round the animation out; the
       desktop shell's Start menu fade is a 3-keyframe curve playing on
-      toggle. The animation timeline editor is the follow-on.
+      toggle. The animation timeline editor (Animations tab, landed
+      2026-08-18) edits each animation's timing, easing, and keyframes
+      inline — add/remove keyframes, edit offset/value.
 - [x] **State scopes** — `NuiDocument.StateScopes` (NUI-SCHEMA §8.4)
       carries the five named state tables (global/screen/component/
       session/persistent) referenced as dotted `scope.key` names in

@@ -87,6 +87,9 @@
             <TabItem Header="Events">
               <views:BehaviorsPanel />
             </TabItem>
+            <TabItem Header="Animations">
+              <views:AnimationsPanel />
+            </TabItem>
             <TabItem Header="Data">
               <TextBlock Text="Bindings editor UI — v0.4. Bindings themselves are implemented (NUI-SCHEMA.md §8) and exercised in Preview; there's just no visual editor for them yet, only hand-editing the .nstudio file."
                          Margin="12" TextWrapping="Wrap" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
