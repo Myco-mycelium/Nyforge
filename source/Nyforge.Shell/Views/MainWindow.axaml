@@ -48,10 +48,11 @@
     <Grid DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.Surface}"
           ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" Height="36">
       <Button Grid.Column="0" Content="▶ Preview" Classes="primary" Margin="{DynamicResource Nyforge.Margin.StatusButton}" Click="OnPreview" />
-      <Button Grid.Column="1" Content="▶ Run in Nyrqis" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}" IsEnabled="False"
-              ToolTip.Tip="No Nyrqis runtime exists yet — see docs/00-platform/REPOSITORY_STATE.md" />
+      <Button Grid.Column="1" Content="▶ Run in Nyrqis" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}"
+              Click="OnRunInNyrqis"
+              ToolTip.Tip="Export the current NUI document to the Nyrqis runtime" />
       <Button Grid.Column="2" Content="Build" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButton}" IsEnabled="False"
-              ToolTip.Tip="Code-gen exporters are v0.2+ scope" />
+              ToolTip.Tip="Code-gen exporters are deferred (doc #21)" />
       <Button Grid.Column="3" Content="Export NUI" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}" Click="OnExportNui" />
       <TextBlock Grid.Column="5" Text="{Binding StatusMessage}" VerticalAlignment="Center"
                  Margin="{DynamicResource Nyforge.Margin.StatusText}"

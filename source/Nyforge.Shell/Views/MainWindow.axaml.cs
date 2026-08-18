@@ -203,6 +203,21 @@ public partial class MainWindow : Window
         window.Show(this);
     }
 
+    private void OnRunInNyrqis(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        // Export the current .nstudio document to the Nyrqis runtime
+        // (ui/runtime.py). For now, save the document to a temp file
+        // and show the path — the actual IPC integration with the
+        // Nyrqis daemon is a follow-on (doc #29).
+        if (Vm is null) return;
+
+        var tmpPath = System.IO.Path.Combine(
+            System.IO.Path.GetTempPath(),
+            "nyrqis-runtime-preview.nstudio");
+        Vm.SaveToPath(tmpPath);
+        Vm.StatusMessage = $"Exported to {tmpPath} — load with: nyrqisctl nui load {tmpPath}";
+    }
+
     private static readonly FilePickerFileType NstudioFileType = new("Nyforge Project")
     {
         Patterns = new[] { "*.nstudio" }
