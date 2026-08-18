@@ -253,9 +253,10 @@ Being upfront about this matters more than pretending otherwise:
   controls, everything else is a labeled placeholder.
 - **No code-generation exporters** beyond the NUI document itself yet
   (no native C++/Rust backend emission).
-- **No Nyrqis Desktop Shell.** That's a separate, later effort per the
-  original design doc's own sequencing — Nyforge is the design tool, not the
-  shell it will eventually be used to build.
+- **Nyrqis Desktop Shell designs exist but aren't a running app.** Six
+  `.nstudio` files under `examples/nyrqis-shell/` (290 components, 37
+  behaviors, 10 screens) cover the full shell vocabulary. The remaining
+  work is the Nyrqis runtime that actually runs these screens on the OS.
 - **Self-hosting covers only the Home tab so far.** The rest of Forge's own
   chrome (palette, canvas, inspector, menu bar) is still hardcoded Avalonia
   — see `engineering/NFS-004-self-hosted-home-screen.md` for the deliberate

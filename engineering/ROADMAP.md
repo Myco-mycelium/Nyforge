@@ -264,11 +264,15 @@ in `engineering/FEATURE_STATUS.json` like every other feature.
       (`engineering/registry/nui-api-v1.json`) by `tools/generate_contracts.py`;
       `tools/check_contracts_synced.py` enforces drift-freedom in CI.
       See `engineering/NFS-006`. (completed 2026-08-17)
-- [ ] **Nyrqis Desktop Shell reference application** — build the shell's
-      screens in Forge as a real end-to-end test (three draft workspaces
-      already exist under `examples/nyrqis-shell/`), driving the editor's
-      structural gaps (nested trees, reparenting, constraints) with real
-      requirements.
+- [~] **Nyrqis Desktop Shell reference application** — six `.nstudio`
+      design files under `examples/nyrqis-shell/` (290 components, 37
+      behaviors, 10 screens): desktop (DesktopSurface + Taskbar +
+      StartMenu + Launcher + CommandPalette + NotificationCenter +
+      QuickSettings + Dock + WindowFrame + ContextMenu + lock screen),
+      windows (WindowControls + PowerMenu), widgets (WidgetHost + OSD +
+      Login), shell draft, Security Center, Vault Workspace. Designs
+      pass the Nyrqis import gate (floor + Rust crate). The remaining
+      work is the runtime that actually runs these screens on Nyrqis.
 
 ## Later, separate effort
 

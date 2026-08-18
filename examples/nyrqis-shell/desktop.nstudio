@@ -48,7 +48,8 @@
     "themeName": "Eclipse",
     "currentWorkspace": 1,
     "clockTime": "14:32",
-    "clockFormat": "24h"
+    "clockFormat": "24h",
+    "notifCount": 2
   },
   "stateScopes": {
     "persistent": {
@@ -246,6 +247,39 @@
                 "layout": { "x": 520, "y": 700, "width": 400, "height": 64 },
                 "events": { "appClicked": "behavior_launch_terminal" },
                 "children": []
+              },
+              {
+                "id": "ctx_desktop",
+                "type": "ContextMenu",
+                "properties": { "open": false },
+                "layout": { "x": 0, "y": 0, "width": 200, "height": 120 },
+                "events": {},
+                "children": [
+                  {
+                    "id": "ctx_refresh",
+                    "type": "MenuItem",
+                    "properties": { "label": "Refresh desktop", "icon": "Refresh" },
+                    "layout": { "x": 0, "y": 0, "width": 200, "height": 32 },
+                    "events": {},
+                    "children": []
+                  },
+                  {
+                    "id": "ctx_settings",
+                    "type": "MenuItem",
+                    "properties": { "label": "Display settings", "icon": "Gear" },
+                    "layout": { "x": 0, "y": 32, "width": 200, "height": 32 },
+                    "events": {},
+                    "children": []
+                  },
+                  {
+                    "id": "ctx_terminal",
+                    "type": "MenuItem",
+                    "properties": { "label": "Open terminal here", "icon": "Terminal" },
+                    "layout": { "x": 0, "y": 64, "width": 200, "height": 32 },
+                    "events": { "clicked": "behavior_launch_terminal" },
+                    "children": []
+                  }
+                ]
               }
             ]
           },
@@ -333,7 +367,7 @@
               {
                 "id": "tray",
                 "type": "SystemTray",
-                "properties": { "icons": ["Network", "Volume", "Battery"], "visible": true },
+                "properties": { "icons": ["Network", "Volume", "Battery"], "visible": true, "badge": "$state:notifCount" },
                 "layout": { "x": 1304, "y": 16, "width": 128, "height": 48 },
                 "events": {},
                 "children": []

@@ -346,11 +346,11 @@ compiler-verified yet.**
   (Nyforge.Core, `ConditionTreeTests` ×9) so the editor and the gate
   share one recursion; action names stay contract-driven per target.
   Tracked as FEATURE_STATUS `NodeGraphLogicEditor` (implemented).
-- The Nyrqis Desktop Shell as a *running product* — the Shell
-  vocabulary (24 types, incl. `AppGrid`/`Clock`/`Dock`/`TitleBar` added
-  2026-08-18) and the reference `desktop.nstudio` screens exist and pass
-  both Nyrqis gates (FEATURE_STATUS `NyrqisDesktopShell` partial); the
-  full shell as a shipping runtime stays later.
+- The Nyrqis Desktop Shell as a *running product* — six `.nstudio` design
+  files (290 components, 37 behaviors, 10 screens) cover the full shell
+  vocabulary (FEATURE_STATUS `NyrqisDesktopShell` partial); the designs
+  pass the Nyrqis import gate (floor + Rust crate). The remaining work
+  is the Nyrqis runtime that actually runs these screens on the OS.
 - ~~A compiler-verified build~~ — **resolved 2026-08-17.** CI
   restores/builds/tests/publishes on every push (releases v0.1.0, v0.2.0
   carry the binaries), and the codebase was built and tested locally with

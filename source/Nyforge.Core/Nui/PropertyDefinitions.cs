@@ -222,6 +222,7 @@ public static class PropertyDefinitions
             {
                 new PropertyDefinition("icons", "array", DefaultValue: new object[] {  }),
                 new PropertyDefinition("visible", "boolean", DefaultValue: true),
+                new PropertyDefinition("badge", "number", DefaultValue: 0),
             },
             ["NotificationCenter"] = new[]
             {

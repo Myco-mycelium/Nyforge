@@ -67,7 +67,7 @@ public static class ComponentContracts
         new ComponentContract("DesktopIcon", "Shell", new[] { "glyph", "label", "target" }, new[] { "activated" }, Actions: new[] { "Launch" }),
         new ComponentContract("Taskbar", "Shell", new[] { "position", "alignment", "autoHide", "pinnedApps", "runningApps", "showClock", "showTray" }, Array.Empty<string>()),
         new ComponentContract("StartMenu", "Shell", new[] { "open", "pinnedApps", "recommendedApps" }, new[] { "opened", "closed" }, Actions: new[] { "Open", "Close", "Toggle" }),
-        new ComponentContract("SystemTray", "Shell", new[] { "icons", "visible" }, Array.Empty<string>()),
+        new ComponentContract("SystemTray", "Shell", new[] { "icons", "visible", "badge" }, Array.Empty<string>()),
         new ComponentContract("NotificationCenter", "Shell", new[] { "open", "notifications" }, new[] { "opened", "closed", "notificationClicked" }, Actions: new[] { "Open", "Close", "Clear" }),
         new ComponentContract("QuickSettings", "Shell", new[] { "open", "toggles" }, new[] { "opened", "closed", "toggleChanged" }, Actions: new[] { "Open", "Close", "Toggle" }),
         new ComponentContract("WorkspaceSwitcher", "Shell", new[] { "workspaces", "currentWorkspace" }, new[] { "changed" }, Actions: new[] { "SetCurrentWorkspace" }),
