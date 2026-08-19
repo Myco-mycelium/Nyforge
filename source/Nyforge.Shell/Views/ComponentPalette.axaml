@@ -171,7 +171,7 @@
                   ToolTip.Tip="Generic container with padding">
             <StackPanel Orientation="Horizontal" Spacing="10">
               <Border BorderBrush="{DynamicResource Nyforge.Brush.ControlBorder}" BorderThickness="1"
-                      BorderThickness="1" CornerRadius="4" Width="28" Height="20">
+                      CornerRadius="4" Width="28" Height="20">
                 <TextBlock Text="[]" FontSize="10" HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
