@@ -5,47 +5,63 @@ namespace Nyforge.Shell.Services;
 
 /// <summary>
 /// Swaps which theme token dictionary (Themes/*.axaml) is merged into
-/// Application.Styles. See docs/how-to/switching-themes.md and NFC-001 §6.
+/// Application. Persists the selected theme across restarts via PreferencesService.
 /// </summary>
 public sealed class ThemeManager
 {
-    /// <summary>
-    /// Registered themes, name -> avares URI. Add an entry here (and the
-    /// matching .axaml file) to introduce a new theme without touching
-    /// component code, per NFC-001 §6.2.
-    /// </summary>
     public static readonly IReadOnlyDictionary<string, string> AvailableThemes =
         new Dictionary<string, string>
         {
-            // avares URIs must match the assembly's simple name (csproj
-            // <AssemblyName>Nyforge</AssemblyName>), not the project name.
             ["Eclipse"] = "avares://Nyforge/Themes/Eclipse.axaml",
             ["Solar"] = "avares://Nyforge/Themes/Solar.axaml",
         };
 
     private readonly Application _app;
+    private readonly PreferencesService _preferences;
     private StyleInclude? _currentThemeStyle;
 
     public string CurrentTheme { get; private set; } = "Eclipse";
 
     public event EventHandler<string>? ThemeChanged;
 
-    public ThemeManager(Application app)
+    public ThemeManager(Application app, PreferencesService preferences)
     {
         _app = app;
-        // App.axaml already loads Eclipse at startup; track that reference
-        // so subsequent switches replace rather than stack dictionaries.
+        _preferences = preferences;
+
+        // Restore saved theme, falling back to Eclipse
+        var savedTheme = _preferences.Theme;
+        if (!AvailableThemes.ContainsKey(savedTheme)) savedTheme = "Eclipse";
+        CurrentTheme = savedTheme;
+
+        // App.axaml loads Eclipse at startup — track that reference
         _currentThemeStyle = _app.Styles
             .OfType<StyleInclude>()
             .FirstOrDefault(s => s.Source?.OriginalString.Contains("/Themes/") == true);
+
+        // If saved theme differs from default, apply it
+        if (savedTheme != "Eclipse")
+        {
+            ApplyTheme(savedTheme);
+        }
     }
 
     public void SetTheme(string themeName)
     {
         if (!AvailableThemes.TryGetValue(themeName, out var uri))
         {
-            throw new ArgumentException($"Unknown theme '{themeName}'. Registered themes: {string.Join(", ", AvailableThemes.Keys)}");
+            throw new ArgumentException(
+                $"Unknown theme '{themeName}'. Registered themes: {string.Join(", ", AvailableThemes.Keys)}");
         }
+
+        ApplyTheme(themeName);
+        _preferences.Theme = themeName;
+        ThemeChanged?.Invoke(this, themeName);
+    }
+
+    private void ApplyTheme(string themeName)
+    {
+        if (!AvailableThemes.TryGetValue(themeName, out var uri)) return;
 
         if (_currentThemeStyle is not null)
         {
@@ -59,6 +75,5 @@ public sealed class ThemeManager
         _app.Styles.Add(newStyle);
         _currentThemeStyle = newStyle;
         CurrentTheme = themeName;
-        ThemeChanged?.Invoke(this, themeName);
     }
 }

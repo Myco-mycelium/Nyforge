@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
+using Nyforge.Core.Nui;
 using Nyforge.Core.Project;
 using Nyforge.Shell.Services;
 using Nyforge.Shell.ViewModels;
@@ -15,11 +16,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        // MainWindow is constructed before its DataContext is assigned
-        // (App.axaml.cs sets it via object initializer right after `new
-        // MainWindow`), so subscribing here — rather than assuming the
-        // DataContext is already set — reliably catches that assignment
-        // via the DataContextChanged event once it happens.
         DataContextChanged += (_, _) =>
         {
             if (Vm is not null)
@@ -36,7 +32,6 @@ public partial class MainWindow : Window
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (Vm is null) return;
-        // Don't hijack arrows while the user is typing (Inspector, etc.).
         if (FocusManager?.GetFocusedElement() is TextBox) return;
 
         var step = e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? 20.0 : 4.0;
@@ -49,15 +44,12 @@ public partial class MainWindow : Window
         }
     }
 
-    // --- Clipboard (OS clipboard IO lives here, not the ViewModel) ---
+    // --- Clipboard ---
 
     private async void OnCopyRequested(object? sender, string json)
     {
         var clipboard = Clipboard;
-        if (clipboard is not null)
-        {
-            await clipboard.SetTextAsync(json);
-        }
+        if (clipboard is not null) await clipboard.SetTextAsync(json);
     }
 
     private async void OnPasteRequested(object? sender, EventArgs e)
@@ -65,26 +57,17 @@ public partial class MainWindow : Window
         var clipboard = Clipboard;
         if (clipboard is null) return;
         var text = await clipboard.GetTextAsync();
-        if (text is not null)
-        {
-            Vm?.Paste(text);
-        }
+        if (text is not null) Vm?.Paste(text);
     }
+
+    // --- Home screen file dialog ---
 
     private void OnHomeCommandRequestedFileDialog(object? sender, string commandId)
     {
-        // Route Home screen's "Open Project"/"Save Project" buttons through
-        // the exact same file-dialog flows the File menu uses — see
-        // ForgeCommands' doc comment for why this is id-based rather than
-        // going through the Behaviors/Events system.
         switch (commandId)
         {
-            case ForgeCommands.OpenProject:
-                _ = OpenProjectAsync();
-                break;
-            case ForgeCommands.SaveProject:
-                _ = SaveInternalAsync();
-                break;
+            case ForgeCommands.OpenProject: _ = OpenProjectAsync(); break;
+            case ForgeCommands.SaveProject: _ = SaveInternalAsync(); break;
         }
     }
 
@@ -94,22 +77,19 @@ public partial class MainWindow : Window
     private async Task CustomizeHomeScreenAsync()
     {
         if (Vm is null) return;
-
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Choose a .nstudio file to render as Forge's Home screen",
+            Title = "Choose a .nstudio file for the Home screen",
             AllowMultiple = false,
             FileTypeFilter = new[] { NstudioFileType }
         });
-
         var path = files.FirstOrDefault()?.TryGetLocalPath();
-        if (path is null) return;
-
-        Vm.SetCustomHomeScreen(path);
+        if (path is not null) Vm.SetCustomHomeScreen(path);
     }
 
-    private void OnNewProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-        Vm?.NewProject();
+    // --- File operations ---
+
+    private void OnNewProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => Vm?.NewProject();
 
     private async void OnOpenProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         await OpenProjectAsync();
@@ -122,47 +102,23 @@ public partial class MainWindow : Window
             AllowMultiple = false,
             FileTypeFilter = new[] { NstudioFileType }
         });
-
         var path = files.FirstOrDefault()?.TryGetLocalPath();
         if (path is null) return;
-
-        try
-        {
-            Vm?.OpenFromPath(path);
-        }
-        catch (NuiVersionMismatchException ex)
-        {
-            if (Vm is not null) Vm.StatusMessage = ex.Message;
-        }
+        try { Vm?.OpenFromPath(path); }
+        catch (NuiVersionMismatchException ex) { if (Vm is not null) Vm.StatusMessage = ex.Message; }
     }
 
-    private async void OnSaveProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (Vm is null) return;
-        // SaveInternalAsync tries a direct save first and only prompts for
-        // a path (Save As behavior) if the project has never been saved —
-        // see the InvalidOperationException catch below.
+    private async void OnSaveProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         await SaveInternalAsync();
-    }
 
-    private async void OnSaveProjectAs(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
+    private async void OnSaveProjectAs(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         await SaveInternalAsync(forcePrompt: true);
-    }
 
     private async Task SaveInternalAsync(bool forcePrompt = false)
     {
         if (Vm is null) return;
-
-        try
-        {
-            Vm.SaveToPath();
-        }
-        catch (InvalidOperationException)
-        {
-            forcePrompt = true;
-        }
-
+        try { Vm.SaveToPath(); }
+        catch (InvalidOperationException) { forcePrompt = true; }
         if (!forcePrompt) return;
 
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -172,50 +128,101 @@ public partial class MainWindow : Window
             SuggestedFileName = string.IsNullOrWhiteSpace(Vm.ProjectName) ? "Untitled" : Vm.ProjectName,
             FileTypeChoices = new[] { NstudioFileType }
         });
-
         var path = file?.TryGetLocalPath();
-        if (path is null) return;
-
-        Vm.SaveToPath(path);
+        if (path is not null) Vm.SaveToPath(path);
     }
 
-    private void OnExportNui(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        // v0.1: exporting the NUI document IS saving the .nstudio file — see
-        // docs/reference/nui-schema/NUI-SCHEMA.md. Separate export targets
-        // (native code generators) are v0.2+.
+    private void OnExportNui(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         _ = SaveInternalAsync(forcePrompt: true);
-    }
+
+    // --- Preview ---
 
     private void OnPreview(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var previewVm = Vm?.CreatePreview();
         if (previewVm is null) return;
-
         var window = new PreviewWindow { DataContext = previewVm };
-        previewVm.CloseRequested += (_, _) =>
-        {
-            // v0.3 preview only ever has one window (the screen root), so
-            // any Close action just closes the preview — honest about not
-            // supporting multi-window semantics yet, rather than pretending to.
-            window.Close();
-        };
+        previewVm.CloseRequested += (_, _) => window.Close();
         window.Show(this);
     }
 
     private void OnRunInNyrqis(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        // Export the current .nstudio document to the Nyrqis runtime
-        // (ui/runtime.py). For now, save the document to a temp file
-        // and show the path — the actual IPC integration with the
-        // Nyrqis daemon is a follow-on (doc #29).
         if (Vm is null) return;
-
-        var tmpPath = System.IO.Path.Combine(
-            System.IO.Path.GetTempPath(),
-            "nyrqis-runtime-preview.nstudio");
+        var tmpPath = Path.Combine(Path.GetTempPath(), "nyrqis-runtime-preview.nstudio");
         Vm.SaveToPath(tmpPath);
         Vm.StatusMessage = $"Exported to {tmpPath} — load with: nyrqisctl nui load {tmpPath}";
+    }
+
+    // --- Theme toggle ---
+
+    private void OnToggleTheme(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Vm is null) return;
+        var next = Vm.CurrentTheme == "Eclipse" ? "Solar" : "Eclipse";
+        Vm.SetThemeCommand.Execute(next);
+    }
+
+    // --- Validation ---
+
+    private void OnValidate(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Vm is null) return;
+        var doc = Vm.CreatePreview()?.Document;
+        if (doc is null)
+        {
+            Vm.StatusMessage = "Cannot validate — no document loaded.";
+            return;
+        }
+        var result = NuiValidator.Validate(doc);
+        if (result.HasErrors)
+        {
+            var first = result.Errors.First();
+            Vm.StatusMessage = $"Validation failed: {result.Errors.Count()} error(s) — {first.Message}";
+        }
+        else if (result.HasWarnings)
+        {
+            Vm.StatusMessage = $"Validation passed with {result.Warnings.Count()} warning(s).";
+        }
+        else
+        {
+            Vm.StatusMessage = "Validation passed — no issues found.";
+        }
+    }
+
+    // --- Help ---
+
+    private void OnHelpGettingStarted(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Vm is not null) Vm.StatusMessage = "See docs/getting-started.md in the Nyrqis repository.";
+    }
+
+    private void OnHelpSchemaReference(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Vm is not null) Vm.StatusMessage = "See docs/reference/nui-schema/NUI-SCHEMA.md in the Nyrqis repository.";
+    }
+
+    // --- About ---
+
+    private void OnAbout(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var about = new AboutWindow();
+        about.ShowDialog(this);
+    }
+
+    // --- Settings / Preferences ---
+
+    private void OnOpenPreferences(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var settings = new SettingsWindow();
+        settings.ShowDialog(this);
+    }
+
+    // --- Exit ---
+
+    private void OnExit(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Close();
     }
 
     private static readonly FilePickerFileType NstudioFileType = new("Nyforge Project")

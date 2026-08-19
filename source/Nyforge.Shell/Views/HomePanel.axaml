@@ -6,60 +6,58 @@
 
   <DockPanel Background="{DynamicResource Nyforge.Brush.Background}">
 
-    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}"
-            Padding="{DynamicResource Nyforge.Padding.Banner}">
+    <!-- Source description footer -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.Surface}"
+            BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,1,0,0"
+            Padding="16,8">
       <TextBlock Text="{Binding SourceDescription}" FontSize="{DynamicResource Nyforge.Type.Caption}"
-                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                 Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
     </Border>
 
-    <!--
-      Same rendering pattern as PreviewWindow.axaml (reusing
-      PreviewElementViewModel), because this genuinely is the same kind of
-      thing: an .nstudio document being rendered live. The difference is
-      only in what a Button click does — ForgeCommands routing here,
-      Behaviors/BehaviorDispatcher there. See NFS-004.
-    -->
-    <Canvas Background="{DynamicResource Nyforge.Brush.Background}">
-      <ItemsControl ItemsSource="{Binding Elements}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <Canvas />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
+    <!-- Home screen preview -->
+    <Panel>
+      <Canvas Background="{DynamicResource Nyforge.Brush.Background}">
+        <ItemsControl ItemsSource="{Binding Elements}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <Canvas />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
 
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="vm:PreviewElementViewModel">
-            <ContentControl Width="{Binding Width}" Height="{Binding Height}"
-                             Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
-                             Content="{Binding}">
-              <ContentControl.ContentTemplate>
-                <DataTemplate DataType="vm:PreviewElementViewModel">
-                  <Panel>
-                    <Button Content="{Binding Text}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsButton}}"
-                            Click="OnButtonClicked" Tag="{Binding}" />
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:PreviewElementViewModel">
+              <ContentControl Width="{Binding Width}" Height="{Binding Height}"
+                               Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
+                               Content="{Binding}">
+                <ContentControl.ContentTemplate>
+                  <DataTemplate DataType="vm:PreviewElementViewModel">
+                    <Panel>
+                      <Button Content="{Binding Text}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                              IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsButton}}"
+                              Click="OnButtonClicked" Tag="{Binding}" />
 
-                    <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
-                               FontSize="20"
-                               Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
-                               IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsText}}" />
+                      <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
+                                 FontSize="20"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
+                                 IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsText}}" />
 
-                    <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
-                            BorderBrush="{DynamicResource Nyforge.Brush.Border}" BorderThickness="1"
-                            CornerRadius="{DynamicResource Nyforge.Radius.Small}"
-                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
-                      <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
-                                 Margin="{DynamicResource Nyforge.Inset.Small}"
-                                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-                    </Border>
-                  </Panel>
-                </DataTemplate>
-              </ContentControl.ContentTemplate>
-            </ContentControl>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </Canvas>
+                      <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                              BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="1"
+                              CornerRadius="{DynamicResource Nyforge.Radius.Small}"
+                              IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
+                        <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                                   Margin="8"
+                                   Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+                      </Border>
+                    </Panel>
+                  </DataTemplate>
+                </ContentControl.ContentTemplate>
+              </ContentControl>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Canvas>
+    </Panel>
   </DockPanel>
 
 </UserControl>

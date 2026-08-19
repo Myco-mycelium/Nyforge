@@ -4,24 +4,43 @@
              x:Class="Nyforge.Shell.Views.LayersPanel"
              x:DataType="vm:MainWindowViewModel">
 
-  <!-- v0.6: the Layers panel is now a real hierarchy, mirroring the
-       component tree (root children, then each container's children).
-       Selection is shared with the canvas via SelectedElement. -->
-  <TreeView ItemsSource="{Binding CanvasElements}"
-            SelectedItem="{Binding SelectedElement}"
-            Background="Transparent"
-            Padding="{DynamicResource Nyforge.Inset.Small}">
-    <TreeView.ItemTemplate>
-      <TreeDataTemplate x:DataType="vm:CanvasElementViewModel"
-                        ItemsSource="{Binding Children}">
-        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Nyforge.Space.2}">
-          <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Body}"
-                     Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
-          <TextBlock Text="{Binding Id}" FontSize="{DynamicResource Nyforge.Type.Caption}"
-                     Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-        </StackPanel>
-      </TreeDataTemplate>
-    </TreeView.ItemTemplate>
-  </TreeView>
+  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}">
+
+    <!-- Header -->
+    <DockPanel DockPanel.Dock="Top" Margin="12,10,12,4">
+      <TextBlock Text="Layers" FontSize="{DynamicResource Nyforge.Type.Subhead}"
+                 FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+    </DockPanel>
+
+    <!-- Tree view -->
+    <TreeView ItemsSource="{Binding CanvasElements}"
+              SelectedItem="{Binding SelectedElement}"
+              Background="Transparent"
+              Padding="4">
+      <TreeView.ItemTemplate>
+        <TreeDataTemplate x:DataType="vm:CanvasElementViewModel"
+                          ItemsSource="{Binding Children}">
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="2,1">
+            <!-- Type icon/label -->
+            <Border Background="{DynamicResource Nyforge.Brush.AccentMuted}"
+                    CornerRadius="4" Padding="4,1" MinWidth="50"
+                    HorizontalAlignment="Left">
+              <TextBlock Text="{Binding Type}"
+                         FontSize="{DynamicResource Nyforge.Type.Caption}"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+            </Border>
+
+            <!-- Component ID -->
+            <TextBlock Text="{Binding Id}"
+                       FontSize="{DynamicResource Nyforge.Type.Caption}"
+                       Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                       VerticalAlignment="Center"
+                       MaxWidth="120" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+        </TreeDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+  </DockPanel>
 
 </UserControl>

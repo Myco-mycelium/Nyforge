@@ -3,96 +3,145 @@
         xmlns:sys="using:System">
 
   <!--
-    Eclipse: the dark, immersive Nyrqis theme. Token names match
-    docs/reference/nui-schema/NUI-SCHEMA.md §6 exactly, prefixed with
-    "Nyforge.Color." so Forge's own chrome and the design canvas draw from
-    the same set a project's .nstudio theme section would reference.
+    Eclipse: Apple-inspired dark theme for Nyforge.
 
-    Design tokens (docs/reference/design-system.md): every theme defines
-    the SAME keys — colors (NUI §6 + interaction states), spacing
-    (4px grid), radius, and type scale — so swapping themes at runtime
-    (ThemeManager) changes appearance only, never layout.
+    Design principles (following Apple HIG):
+    1. Clarity — clean surfaces, generous whitespace, content is king
+    2. Depth — layered surfaces with subtle shadows create hierarchy
+    3. Consistency — 8pt grid, unified type scale, predictable spacing
+    4. Restraint — accent color used sparingly for actionable elements
+    5. Motion — smooth transitions implied by hover/pressed state pairs
+
+    Every token is prefixed "Nyforge." and mirrors the NUI SCHEMA §6
+    contract — swapping themes changes appearance, never structure.
   -->
   <Styles.Resources>
     <ResourceDictionary>
 
-      <!-- NUI §6 semantic colors (the contract a .nstudio theme overrides). -->
-      <Color x:Key="Nyforge.Color.Background">#0B0D10</Color>
-      <Color x:Key="Nyforge.Color.Surface">#15181D</Color>
-      <Color x:Key="Nyforge.Color.SurfaceElevated">#1D2128</Color>
-      <Color x:Key="Nyforge.Color.SurfaceOverlay">#242832</Color>
-      <Color x:Key="Nyforge.Color.TextPrimary">#EDEFF3</Color>
-      <Color x:Key="Nyforge.Color.TextSecondary">#9AA1AC</Color>
-      <Color x:Key="Nyforge.Color.Accent">#6C8CFF</Color>
-      <Color x:Key="Nyforge.Color.Border">#2A2E37</Color>
-      <Color x:Key="Nyforge.Color.Shadow">#66000000</Color>
-      <Color x:Key="Nyforge.Color.Success">#4CC38A</Color>
-      <Color x:Key="Nyforge.Color.Warning">#E5B567</Color>
-      <Color x:Key="Nyforge.Color.Error">#E5686B</Color>
+      <!-- ============================================================
+           COLOR TOKENS — Apple-inspired dark palette
+           ============================================================ -->
 
-      <!-- Interaction states (best-practice affordance: hover/pressed/
-           selection/focus/disabled are explicit, not implied). -->
-      <Color x:Key="Nyforge.Color.Hover">#232833</Color>
-      <Color x:Key="Nyforge.Color.Pressed">#2B3140</Color>
-      <Color x:Key="Nyforge.Color.Selection">#2E3A5C</Color>
-      <Color x:Key="Nyforge.Color.FocusRing">#8FA8FF</Color>
-      <Color x:Key="Nyforge.Color.ControlBorder">#333A47</Color>
-      <Color x:Key="Nyforge.Color.TextDisabled">#5C636E</Color>
-      <!-- Filled (primary) button surface: enough contrast for the
-           theme's own background text (AA normal text, WCAG 2.1). -->
-      <Color x:Key="Nyforge.Color.AccentStrong">#5E7EFF</Color>
+      <!-- Surface hierarchy: Background > Surface > Elevated > Overlay
+           (maps to Apple's layered window chrome) -->
+      <Color x:Key="Nyforge.Color.Background">#1C1C1E</Color>
+      <Color x:Key="Nyforge.Color.Surface">#2C2C2E</Color>
+      <Color x:Key="Nyforge.Color.SurfaceElevated">#3A3A3C</Color>
+      <Color x:Key="Nyforge.Color.SurfaceOverlay">#48484A</Color>
 
-      <!-- Spacing scale — 4 px grid (docs/reference/design-system.md). -->
+      <!-- Separators: hairline dividers between sections -->
+      <Color x:Key="Nyforge.Color.Separator">#3A3A3C</Color>
+
+      <!-- Text hierarchy: Primary > Secondary > Tertiary -->
+      <Color x:Key="Nyforge.Color.TextPrimary">#F2F2F7</Color>
+      <Color x:Key="Nyforge.Color.TextSecondary">#AEAEB2</Color>
+      <Color x:Key="Nyforge.Color.TextTertiary">#636366</Color>
+
+      <!-- Accent: system blue — reserved for primary actions only -->
+      <Color x:Key="Nyforge.Color.Accent">#0A84FF</Color>
+      <Color x:Key="Nyforge.Color.AccentStrong">#409CFF</Color>
+      <Color x:Key="Nyforge.Color.AccentMuted">#1C3A5E</Color>
+
+      <!-- Semantic status -->
+      <Color x:Key="Nyforge.Color.Success">#30D158</Color>
+      <Color x:Key="Nyforge.Color.Warning">#FFD60A</Color>
+      <Color x:Key="Nyforge.Color.Error">#FF453A</Color>
+
+      <!-- Borders: subtle separators -->
+      <Color x:Key="Nyforge.Color.Border">#3A3A3C</Color>
+      <Color x:Key="Nyforge.Color.ControlBorder">#48484A</Color>
+
+      <!-- Shadows: layered depth -->
+      <Color x:Key="Nyforge.Color.Shadow">#40000000</Color>
+      <Color x:Key="Nyforge.Color.ShadowElevated">#60000000</Color>
+
+      <!-- Interaction states -->
+      <Color x:Key="Nyforge.Color.Hover">#3A3A3C</Color>
+      <Color x:Key="Nyforge.Color.Pressed">#48484A</Color>
+      <Color x:Key="Nyforge.Color.Selection">#0A84FF33</Color>
+      <Color x:Key="Nyforge.Color.FocusRing">#0A84FF</Color>
+      <Color x:Key="Nyforge.Color.ControlBorder">#545458</Color>
+      <Color x:Key="Nyforge.Color.TextDisabled">#636366</Color>
+
+      <!-- ============================================================
+           SPACING TOKENS — 8pt grid (Apple HIG)
+           ============================================================ -->
       <sys:Double x:Key="Nyforge.Space.1">4</sys:Double>
       <sys:Double x:Key="Nyforge.Space.2">8</sys:Double>
       <sys:Double x:Key="Nyforge.Space.3">12</sys:Double>
       <sys:Double x:Key="Nyforge.Space.4">16</sys:Double>
       <sys:Double x:Key="Nyforge.Space.5">24</sys:Double>
       <sys:Double x:Key="Nyforge.Space.6">32</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.7">48</sys:Double>
+      <sys:Double x:Key="Nyforge.Space.8">64</sys:Double>
 
-      <!-- Corner radii. -->
-      <CornerRadius x:Key="Nyforge.Radius.Small">4</CornerRadius>
-      <CornerRadius x:Key="Nyforge.Radius.Medium">8</CornerRadius>
-      <CornerRadius x:Key="Nyforge.Radius.Large">12</CornerRadius>
+      <!-- ============================================================
+           CORNER RADIUS — Apple-style rounded corners
+           ============================================================ -->
+      <CornerRadius x:Key="Nyforge.Radius.Small">6</CornerRadius>
+      <CornerRadius x:Key="Nyforge.Radius.Medium">10</CornerRadius>
+      <CornerRadius x:Key="Nyforge.Radius.Large">14</CornerRadius>
+      <CornerRadius x:Key="Nyforge.Radius.Pill">9999</CornerRadius>
 
-      <!-- Type scale (documented in docs/reference/design-system.md). -->
+      <!-- ============================================================
+           TYPE SCALE — SF Pro-inspired hierarchy
+           ============================================================ -->
       <sys:Double x:Key="Nyforge.Type.Caption">11</sys:Double>
       <sys:Double x:Key="Nyforge.Type.Body">13</sys:Double>
-      <sys:Double x:Key="Nyforge.Type.Title">15</sys:Double>
-      <sys:Double x:Key="Nyforge.Type.Display">20</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Callout">12</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Subhead">14</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Title">16</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Headline">17</sys:Double>
+      <sys:Double x:Key="Nyforge.Type.Display">22</sys:Double>
 
-      <!-- Thickness (margin/padding) tokens: composite markup extensions
-           are not reliable in attribute values, so every padding/margin
-           that resolves to a Thickness is a named resource, never an
-           inline composition of spacing doubles. -->
+      <!-- ============================================================
+           THICKNESS TOKENS — margin/padding compositions
+           ============================================================ -->
       <Thickness x:Key="Nyforge.Inset.Small">4</Thickness>
       <Thickness x:Key="Nyforge.Inset.Medium">8</Thickness>
-      <Thickness x:Key="Nyforge.Margin.SectionHeader">12,12,12,4</Thickness>
-      <Thickness x:Key="Nyforge.Margin.SectionTop">0,8,0,0</Thickness>
-      <Thickness x:Key="Nyforge.Margin.SectionBottom">0,0,0,4</Thickness>
+      <Thickness x:Key="Nyforge.Inset.Large">12</Thickness>
+
+      <!-- Panel / section spacing -->
       <Thickness x:Key="Nyforge.Margin.Panel">12</Thickness>
       <Thickness x:Key="Nyforge.Margin.Canvas">16</Thickness>
-      <Thickness x:Key="Nyforge.Margin.PaletteItem">4,4</Thickness>
-      <Thickness x:Key="Nyforge.Padding.PaletteItem">8,6</Thickness>
+      <Thickness x:Key="Nyforge.Margin.SectionHeader">16,16,16,6</Thickness>
+      <Thickness x:Key="Nyforge.Margin.SectionTop">0,12,0,0</Thickness>
+      <Thickness x:Key="Nyforge.Margin.SectionBottom">0,0,0,6</Thickness>
+
+      <!-- Palette -->
+      <Thickness x:Key="Nyforge.Margin.PaletteItem">4,2</Thickness>
+      <Thickness x:Key="Nyforge.Padding.PaletteItem">10,7</Thickness>
+
+      <!-- Status bar -->
       <Thickness x:Key="Nyforge.Margin.StatusButton">8,4</Thickness>
       <Thickness x:Key="Nyforge.Margin.StatusButtonSide">0,4</Thickness>
       <Thickness x:Key="Nyforge.Margin.StatusText">0,0,12,0</Thickness>
-      <Thickness x:Key="Nyforge.Margin.LabelRight">0,0,4,0</Thickness>
+
+      <!-- Inspector / behavior / label -->
+      <Thickness x:Key="Nyforge.Margin.LabelRight">0,0,6,0</Thickness>
       <Thickness x:Key="Nyforge.Margin.BehaviorsLeft">0,0,12,0</Thickness>
       <Thickness x:Key="Nyforge.Margin.BehaviorCard">0,0,0,8</Thickness>
       <Thickness x:Key="Nyforge.Margin.ConditionState">0,0,8,0</Thickness>
-      <Thickness x:Key="Nyforge.Padding.Card">8</Thickness>
-      <Thickness x:Key="Nyforge.Padding.Banner">8,4</Thickness>
-      <Thickness x:Key="Nyforge.Padding.LogBar">8</Thickness>
 
+      <!-- Card / banner / log -->
+      <Thickness x:Key="Nyforge.Padding.Card">10</Thickness>
+      <Thickness x:Key="Nyforge.Padding.Banner">10,6</Thickness>
+      <Thickness x:Key="Nyforge.Padding.LogBar">10</Thickness>
+
+      <!-- ============================================================
+           BRUSH TOKENS — convenience references
+           ============================================================ -->
       <SolidColorBrush x:Key="Nyforge.Brush.Background" Color="{StaticResource Nyforge.Color.Background}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Surface" Color="{StaticResource Nyforge.Color.Surface}" />
       <SolidColorBrush x:Key="Nyforge.Brush.SurfaceElevated" Color="{StaticResource Nyforge.Color.SurfaceElevated}" />
       <SolidColorBrush x:Key="Nyforge.Brush.SurfaceOverlay" Color="{StaticResource Nyforge.Color.SurfaceOverlay}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Separator" Color="{StaticResource Nyforge.Color.Separator}" />
       <SolidColorBrush x:Key="Nyforge.Brush.TextPrimary" Color="{StaticResource Nyforge.Color.TextPrimary}" />
       <SolidColorBrush x:Key="Nyforge.Brush.TextSecondary" Color="{StaticResource Nyforge.Color.TextSecondary}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.TextTertiary" Color="{StaticResource Nyforge.Color.TextTertiary}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Accent" Color="{StaticResource Nyforge.Color.Accent}" />
       <SolidColorBrush x:Key="Nyforge.Brush.AccentStrong" Color="{StaticResource Nyforge.Color.AccentStrong}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.AccentMuted" Color="{StaticResource Nyforge.Color.AccentMuted}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Border" Color="{StaticResource Nyforge.Color.Border}" />
       <SolidColorBrush x:Key="Nyforge.Brush.ControlBorder" Color="{StaticResource Nyforge.Color.ControlBorder}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Hover" Color="{StaticResource Nyforge.Color.Hover}" />
@@ -103,6 +152,12 @@
       <SolidColorBrush x:Key="Nyforge.Brush.Success" Color="{StaticResource Nyforge.Color.Success}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Warning" Color="{StaticResource Nyforge.Color.Warning}" />
       <SolidColorBrush x:Key="Nyforge.Brush.Error" Color="{StaticResource Nyforge.Color.Error}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.Shadow" Color="{StaticResource Nyforge.Color.Shadow}" />
+      <SolidColorBrush x:Key="Nyforge.Brush.ShadowElevated" Color="{StaticResource Nyforge.Color.ShadowElevated}" />
+
+      <!-- Alias used by BehaviorsPanel -->
+      <SolidColorBrush x:Key="Nyforge.Brush.BorderSubtle" Color="{StaticResource Nyforge.Color.Separator}" />
+
     </ResourceDictionary>
   </Styles.Resources>
 

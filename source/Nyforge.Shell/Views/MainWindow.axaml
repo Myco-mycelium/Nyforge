@@ -4,86 +4,172 @@
         xmlns:views="using:Nyforge.Shell.Views"
         x:Class="Nyforge.Shell.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="Nyrqis Forge"
-        Width="1280" Height="820"
+        Title="Nyforge — NUI Design Studio"
+        Width="1440" Height="900"
+        MinWidth="1024" MinHeight="680"
         Background="{DynamicResource Nyforge.Brush.Background}"
         KeyDown="OnKeyDown">
 
   <DockPanel>
 
-    <!-- Menu bar -->
+    <!-- ============================================================
+         MENU BAR — refined with separators
+         ============================================================ -->
     <Menu DockPanel.Dock="Top" Background="{DynamicResource Nyforge.Brush.Surface}">
       <MenuItem Header="_File">
-        <MenuItem Header="_New Project" Click="OnNewProject" />
-        <MenuItem Header="_Open..." Click="OnOpenProject" />
+        <MenuItem Header="_New Project" Click="OnNewProject" HotKey="Ctrl+N" />
+        <MenuItem Header="_Open..." Click="OnOpenProject" HotKey="Ctrl+O" />
         <Separator />
-        <MenuItem Header="_Save" Click="OnSaveProject" />
-        <MenuItem Header="Save _As..." Click="OnSaveProjectAs" />
+        <MenuItem Header="_Save" Click="OnSaveProject" HotKey="Ctrl+S" />
+        <MenuItem Header="Save _As..." Click="OnSaveProjectAs" HotKey="Ctrl+Shift+S" />
         <Separator />
         <MenuItem Header="Customize Home Screen..." Click="OnCustomizeHomeScreen"
-                  ToolTip.Tip="Point Forge's own Home tab at any .nstudio file you design — see docs/how-to/redesigning-the-home-screen.md" />
+                  ToolTip.Tip="Point Nyforge's Home tab at any .nstudio file" />
+        <Separator />
+        <MenuItem Header="E_xit" Click="OnExit" HotKey="Alt+F4" />
       </MenuItem>
       <MenuItem Header="_Edit">
         <MenuItem Header="Undo" Command="{Binding UndoCommand}" HotKey="Ctrl+Z" />
-        <MenuItem Header="Redo" Command="{Binding RedoCommand}" HotKey="Ctrl+Y" />
+        <MenuItem Header="Redo" Command="{Binding RedoCommand}" HotKey="Ctrl+Shift+Z" />
         <Separator />
+        <MenuItem Header="Cut" HotKey="Ctrl+X" IsEnabled="False" />
         <MenuItem Header="Copy" Command="{Binding CopySelectionCommand}" HotKey="Ctrl+C" />
         <MenuItem Header="Paste" Command="{Binding PasteCommand}" HotKey="Ctrl+V" />
+        <MenuItem Header="Duplicate" HotKey="Ctrl+D" IsEnabled="False" />
         <Separator />
-        <MenuItem Header="Delete Selected" Command="{Binding DeleteSelectedCommand}" />
+        <MenuItem Header="Select All" HotKey="Ctrl+A" IsEnabled="False" />
+        <MenuItem Header="Delete Selected" Command="{Binding DeleteSelectedCommand}" HotKey="Delete" />
+        <Separator />
+        <MenuItem Header="_Preferences..." Click="OnOpenPreferences" HotKey="Ctrl+," />
       </MenuItem>
       <MenuItem Header="_View">
         <MenuItem Header="Theme">
-          <MenuItem Header="Eclipse" Command="{Binding SetThemeCommand}" CommandParameter="Eclipse" />
-          <MenuItem Header="Solar" Command="{Binding SetThemeCommand}" CommandParameter="Solar" />
+          <MenuItem Header="Eclipse (Dark)" Command="{Binding SetThemeCommand}" CommandParameter="Eclipse" />
+          <MenuItem Header="Solar (Light)" Command="{Binding SetThemeCommand}" CommandParameter="Solar" />
         </MenuItem>
+        <Separator />
+        <MenuItem Header="Zoom In" HotKey="Ctrl+=" IsEnabled="False" />
+        <MenuItem Header="Zoom Out" HotKey="Ctrl+-" IsEnabled="False" />
+        <MenuItem Header="Reset Zoom" HotKey="Ctrl+0" IsEnabled="False" />
+        <Separator />
+        <MenuItem Header="Show Grid" IsChecked="True" IsEnabled="False" />
+        <MenuItem Header="Show Rulers" IsChecked="False" IsEnabled="False" />
+        <MenuItem Header="Show Guides" IsChecked="True" IsEnabled="False" />
       </MenuItem>
-      <MenuItem Header="_Build" />
-      <MenuItem Header="_Preview" />
-      <MenuItem Header="_Export" />
+      <MenuItem Header="_Project">
+        <MenuItem Header="Validate" Click="OnValidate" ToolTip.Tip="Run NUI validator on current document" />
+        <MenuItem Header="Preview" Click="OnPreview" HotKey="F5" />
+        <Separator />
+        <MenuItem Header="Run in Nyrqis" Click="OnRunInNyrqis" />
+      </MenuItem>
+      <MenuItem Header="_Export">
+        <MenuItem Header="Export NUI (.nstudio)" Click="OnExportNui" />
+        <Separator />
+        <MenuItem Header="Generate Rust" IsEnabled="False" ToolTip.Tip="Coming in v1.1" />
+        <MenuItem Header="Generate C++" IsEnabled="False" ToolTip.Tip="Coming in v1.1" />
+        <MenuItem Header="Generate Python" IsEnabled="False" ToolTip.Tip="Coming in v1.1" />
+      </MenuItem>
+      <MenuItem Header="_Help">
+        <MenuItem Header="Getting Started" Click="OnHelpGettingStarted" />
+        <MenuItem Header="NUI Schema Reference" Click="OnHelpSchemaReference" />
+        <Separator />
+        <MenuItem Header="Check for Updates" IsEnabled="False" />
+        <Separator />
+        <MenuItem Header="_About Nyforge" Click="OnAbout" />
+      </MenuItem>
     </Menu>
 
-    <!-- Bottom status / run bar (spacing on the 4px grid, primary action
-         emphasized — docs/reference/design-system.md) -->
+    <!-- ============================================================
+         STATUS BAR — bottom, with project info + actions
+         ============================================================ -->
     <Grid DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.Surface}"
-          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" Height="36">
-      <Button Grid.Column="0" Content="▶ Preview" Classes="primary" Margin="{DynamicResource Nyforge.Margin.StatusButton}" Click="OnPreview" />
-      <Button Grid.Column="1" Content="▶ Run in Nyrqis" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}"
-              Click="OnRunInNyrqis"
-              ToolTip.Tip="Export the current NUI document to the Nyrqis runtime" />
-      <Button Grid.Column="2" Content="Build" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButton}" IsEnabled="False"
-              ToolTip.Tip="Code-gen exporters are deferred (doc #21)" />
-      <Button Grid.Column="3" Content="Export NUI" Classes="toolbar" Margin="{DynamicResource Nyforge.Margin.StatusButtonSide}" Click="OnExportNui" />
-      <TextBlock Grid.Column="5" Text="{Binding StatusMessage}" VerticalAlignment="Center"
-                 Margin="{DynamicResource Nyforge.Margin.StatusText}"
-                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
-                 FontSize="{DynamicResource Nyforge.Type.Caption}" />
+          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" Height="36"
+          BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,1,0,0">
+
+      <!-- Preview + Run actions -->
+      <Button Grid.Column="0" Content="▶ Preview" Classes="primary"
+              Margin="8,4" Click="OnPreview"
+              ToolTip.Tip="Preview the current design (F5)" />
+      <Button Grid.Column="1" Content="▶ Run in Nyrqis" Classes="toolbar"
+              Margin="0,4" Click="OnRunInNyrqis"
+              ToolTip.Tip="Export to Nyrqis runtime" />
+      <Button Grid.Column="2" Content="Export" Classes="toolbar"
+              Margin="8,4" Click="OnExportNui"
+              ToolTip.Tip="Export .nstudio file" />
+
+      <!-- Status message -->
+      <TextBlock Grid.Column="4" Text="{Binding StatusMessage}"
+                 Margin="12,0" VerticalAlignment="Center"
+                 Classes="status-text" />
+
+      <!-- Theme switcher (compact) -->
+      <Button Grid.Column="5" Content="{Binding CurrentTheme}"
+              Classes="ghost" Margin="0,4,4,4"
+              Click="OnToggleTheme"
+              ToolTip.Tip="Switch between Eclipse (Dark) and Solar (Light)" />
+
+      <!-- Validation indicator -->
+      <Border Grid.Column="6" Background="Transparent" Margin="4,4,8,4"
+              CornerRadius="{DynamicResource Nyforge.Radius.Small}" Padding="6,4">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <Border Width="8" Height="8" CornerRadius="4"
+                  Background="{DynamicResource Nyforge.Brush.Success}" />
+          <TextBlock Text="Valid" FontSize="11" VerticalAlignment="Center"
+                     Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+        </StackPanel>
+      </Border>
     </Grid>
 
-    <!-- Home (self-hosted, NFS-004) vs. Design (the editor itself) -->
+    <!-- ============================================================
+         MAIN CONTENT — TabControl with Home + Design
+         ============================================================ -->
     <TabControl>
-      <TabItem Header="Home">
+      <TabItem Header="  Home  ">
         <views:HomePanel DataContext="{Binding Home}" />
       </TabItem>
 
-      <TabItem Header="Design">
-        <!-- Main 3-panel layout: Palette | Canvas | Inspector, with a bottom tab strip -->
-        <Grid ColumnDefinitions="220,*,260" RowDefinitions="*,180">
+      <TabItem Header="  Design  ">
+        <!-- 3-panel layout: Palette (240) | Canvas (*) | Inspector (280)
+             with bottom panel (200) for Layers/State/Events/Animations/Data -->
+        <Grid ColumnDefinitions="240,*,280" RowDefinitions="*,200">
 
+          <!-- Left: Component Palette with search -->
           <views:ComponentPalette Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" />
 
-          <ScrollViewer Grid.Column="1" Grid.Row="0">
-            <views:DesignCanvas Margin="{DynamicResource Nyforge.Margin.Canvas}" />
-          </ScrollViewer>
+          <!-- Center: Design Canvas -->
+          <Border Grid.Column="1" Grid.Row="0"
+                  Background="{DynamicResource Nyforge.Brush.Background}"
+                  BorderBrush="{DynamicResource Nyforge.Brush.Separator}"
+                  BorderThickness="0,0,1,0">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto">
+              <views:DesignCanvas Margin="{DynamicResource Nyforge.Margin.Canvas}" />
+            </ScrollViewer>
+          </Border>
 
+          <!-- Right: Inspector -->
           <views:InspectorPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" />
 
-          <TabControl Grid.Column="1" Grid.Row="1" Background="{DynamicResource Nyforge.Brush.Surface}">
+          <!-- Bottom: Layers / State / Events / Animations / Data -->
+          <TabControl Grid.Column="1" Grid.Row="1"
+                      Background="{DynamicResource Nyforge.Brush.Surface}"
+                      BorderBrush="{DynamicResource Nyforge.Brush.Separator}"
+                      BorderThickness="0,1,0,0">
             <TabItem Header="Layers">
               <views:LayersPanel />
             </TabItem>
             <TabItem Header="State">
-              <TextBlock Text="State editor — v0.4." Margin="12" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+              <StackPanel Margin="16" Spacing="8">
+                <TextBlock Text="State Editor" FontSize="{DynamicResource Nyforge.Type.Title}"
+                           FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+                <TextBlock Text="Define state variables for your NUI application. States are accessible in behaviors, bindings, and expressions."
+                           TextWrapping="Wrap" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                           FontSize="{DynamicResource Nyforge.Type.Body}" />
+                <Border Classes="separator" />
+                <TextBlock Text="Global state will be editable here once the state editor UI is implemented. For now, edit the states section directly in the .nstudio file."
+                           TextWrapping="Wrap" Foreground="{DynamicResource Nyforge.Brush.TextTertiary}"
+                           FontSize="{DynamicResource Nyforge.Type.Caption}" />
+              </StackPanel>
             </TabItem>
             <TabItem Header="Events">
               <views:BehaviorsPanel />
@@ -92,8 +178,17 @@
               <views:AnimationsPanel />
             </TabItem>
             <TabItem Header="Data">
-              <TextBlock Text="Bindings editor UI — v0.4. Bindings themselves are implemented (NUI-SCHEMA.md §8) and exercised in Preview; there's just no visual editor for them yet, only hand-editing the .nstudio file."
-                         Margin="12" TextWrapping="Wrap" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+              <StackPanel Margin="16" Spacing="8">
+                <TextBlock Text="Data Bindings" FontSize="{DynamicResource Nyforge.Type.Title}"
+                           FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+                <TextBlock Text="Bind component properties to state variables. Bindings update the UI automatically when state changes."
+                           TextWrapping="Wrap" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                           FontSize="{DynamicResource Nyforge.Type.Body}" />
+                <Border Classes="separator" />
+                <TextBlock Text="Binding editor UI is coming in v1.1. For now, add bindings directly in the .nstudio file under the bindings section."
+                           TextWrapping="Wrap" Foreground="{DynamicResource Nyforge.Brush.TextTertiary}"
+                           FontSize="{DynamicResource Nyforge.Type.Caption}" />
+              </StackPanel>
             </TabItem>
           </TabControl>
 

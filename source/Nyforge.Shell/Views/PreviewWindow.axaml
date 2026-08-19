@@ -3,100 +3,115 @@
         xmlns:vm="using:Nyforge.Shell.ViewModels"
         x:Class="Nyforge.Shell.Views.PreviewWindow"
         x:DataType="vm:PreviewViewModel"
-        Title="Nyforge Preview (Forge renderer — not the real Nyrqis UI Runtime)"
-        Width="1100" Height="760"
+        Title="Nyforge Preview"
+        Width="1200" Height="820"
         Background="{DynamicResource Nyforge.Brush.Background}">
 
-  <Grid RowDefinitions="Auto,*,140">
+  <Grid RowDefinitions="Auto,*,200">
 
-    <Border Grid.Row="0" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}"
-            Padding="{DynamicResource Nyforge.Padding.Banner}">
-      <TextBlock Text="⚠ This is Forge's own Avalonia renderer standing in for the Nyrqis UI Runtime, which doesn't exist yet. Interactions here are simulated, not the real app."
-                 FontSize="{DynamicResource Nyforge.Type.Caption}" TextWrapping="Wrap"
-                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+    <!-- Info banner -->
+    <Border Grid.Row="0" Background="{DynamicResource Nyforge.Brush.AccentMuted}"
+            Padding="16,10">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="ℹ️" FontSize="14" VerticalAlignment="Center" />
+        <TextBlock Text="This is Forge's preview renderer — not the real Nyrqis runtime. Interactions are simulated."
+                   FontSize="{DynamicResource Nyforge.Type.Body}" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+      </StackPanel>
     </Border>
 
-    <Canvas Grid.Row="1" Background="{DynamicResource Nyforge.Brush.Surface}">
-      <ItemsControl ItemsSource="{Binding Elements}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <Canvas />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
+    <!-- Preview canvas -->
+    <Border Grid.Row="1" Background="{DynamicResource Nyforge.Brush.Surface}"
+            BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,1,0,0">
+      <Canvas Background="{DynamicResource Nyforge.Brush.Surface}">
+        <ItemsControl ItemsSource="{Binding Elements}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <Canvas />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
 
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="vm:PreviewElementViewModel">
-            <ContentControl Width="{Binding Width}" Height="{Binding Height}"
-                             Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
-                             Content="{Binding}">
-              <ContentControl.ContentTemplate>
-                <DataTemplate DataType="vm:PreviewElementViewModel">
-                  <!-- Only the handful of types the v0.3 preview actually
-                       makes interactive get a real control; everything
-                       else renders as a clearly-labeled static placeholder,
-                       consistent with NFM-000 §2.1 (the canvas is truthful). -->
-                  <Panel>
-                    <!-- Button -->
-                    <Button Content="{Binding Text}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsButton}}"
-                            Click="OnButtonClicked" Tag="{Binding}" />
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:PreviewElementViewModel">
+              <ContentControl Width="{Binding Width}" Height="{Binding Height}"
+                               Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}"
+                               Content="{Binding}">
+                <ContentControl.ContentTemplate>
+                  <DataTemplate DataType="vm:PreviewElementViewModel">
+                    <Panel>
+                      <!-- Button -->
+                      <Button Content="{Binding Text}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                              Classes="primary"
+                              IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsButton}}"
+                              Click="OnButtonClicked" Tag="{Binding}" />
 
-                    <!-- Toggle / Checkbox / Radio -->
-                    <CheckBox Content="{Binding Text}" IsChecked="{Binding BoolValue}"
-                               IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsToggleLike}}"
-                               Checked="OnToggleChanged" Unchecked="OnToggleChanged" Tag="{Binding}" />
+                      <!-- Toggle / Checkbox / Radio -->
+                      <CheckBox Content="{Binding Text}" IsChecked="{Binding BoolValue}"
+                                 IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsToggleLike}}"
+                                 Checked="OnToggleChanged" Unchecked="OnToggleChanged" Tag="{Binding}" />
 
-                    <!-- Text / Label / Heading / Paragraph -->
-                    <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
-                               Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
-                               IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsText}}" />
+                      <!-- Text / Label / Heading / Paragraph -->
+                      <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
+                                 FontSize="{DynamicResource Nyforge.Type.Body}"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
+                                 IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsText}}" />
 
-                    <!-- Slider -->
-                    <Slider Minimum="0" Maximum="100" Value="50" HorizontalAlignment="Stretch"
-                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsSlider}}" />
+                      <!-- Slider -->
+                      <Slider Minimum="0" Maximum="100" Value="50" HorizontalAlignment="Stretch"
+                              IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsSlider}}" />
 
-                    <!-- ProgressBar -->
-                    <ProgressBar Minimum="0" Maximum="100" Value="60" HorizontalAlignment="Stretch"
-                                 IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsProgressBar}}" />
+                      <!-- ProgressBar -->
+                      <ProgressBar Minimum="0" Maximum="100" Value="60" HorizontalAlignment="Stretch"
+                                   IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsProgressBar}}" />
 
-                    <!-- Image (placeholder rectangle) -->
-                    <Border Background="{DynamicResource Nyforge.Brush.Border}"
-                            CornerRadius="{DynamicResource Nyforge.Radius.Small}"
-                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsImage}}">
-                      <TextBlock Text="[Image]" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                 FontSize="{DynamicResource Nyforge.Type.Caption}"
-                                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-                    </Border>
+                      <!-- Image (placeholder) -->
+                      <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                              CornerRadius="{DynamicResource Nyforge.Radius.Medium}"
+                              BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="1"
+                              IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsImage}}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+                          <TextBlock Text="🖼️" FontSize="20" HorizontalAlignment="Center" />
+                          <TextBlock Text="Image" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                                     Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                                     HorizontalAlignment="Center" />
+                        </StackPanel>
+                      </Border>
 
-                    <!-- Generic placeholder for all other registered component types -->
-                    <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
-                            BorderBrush="{DynamicResource Nyforge.Brush.Border}" BorderThickness="1"
-                            CornerRadius="{DynamicResource Nyforge.Radius.Small}"
-                            IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
-                      <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
-                                 Margin="{DynamicResource Nyforge.Inset.Small}"
-                                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
-                    </Border>
-                  </Panel>
-                </DataTemplate>
-              </ContentControl.ContentTemplate>
-            </ContentControl>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </Canvas>
+                      <!-- Generic placeholder -->
+                      <Border Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                              BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="1"
+                              CornerRadius="{DynamicResource Nyforge.Radius.Small}"
+                              IsVisible="{Binding Type, Converter={x:Static vm:PreviewTypeConverters.IsPlaceholder}}">
+                        <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                                   Margin="8"
+                                   Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+                      </Border>
+                    </Panel>
+                  </DataTemplate>
+                </ContentControl.ContentTemplate>
+              </ContentControl>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Canvas>
+    </Border>
 
+    <!-- Event log -->
     <Border Grid.Row="2" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}"
-            Padding="{DynamicResource Nyforge.Padding.LogBar}">
+            BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,1,0,0"
+            Padding="12">
       <DockPanel>
-        <TextBlock DockPanel.Dock="Top" Classes="section-header" Text="EVENT LOG"
-                   Margin="{DynamicResource Nyforge.Margin.SectionBottom}" />
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+          <TextBlock Text="Event Log" FontSize="{DynamicResource Nyforge.Type.Subhead}"
+                     FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+        </DockPanel>
         <ScrollViewer>
           <ItemsControl ItemsSource="{Binding Log}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="x:String">
                 <TextBlock Text="{Binding}" FontSize="{DynamicResource Nyforge.Type.Caption}"
-                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}"
+                           Margin="0,1" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>

@@ -4,96 +4,136 @@
              x:Class="Nyforge.Shell.Views.InspectorPanel"
              x:DataType="vm:MainWindowViewModel">
 
-  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}">
-    <TextBlock DockPanel.Dock="Top" Classes="section-header"
-               Text="INSPECTOR"
-               Margin="{DynamicResource Nyforge.Margin.SectionHeader}" />
+  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}"
+             BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="1,0,0,0">
+
+    <!-- Header -->
+    <DockPanel DockPanel.Dock="Top" Margin="16,12,12,8">
+      <TextBlock Text="Inspector" FontSize="{DynamicResource Nyforge.Type.Title}"
+                 FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+    </DockPanel>
 
     <Panel>
-      <StackPanel IsVisible="{Binding !HasSelection}" Margin="{DynamicResource Nyforge.Margin.Panel}" Spacing="{DynamicResource Nyforge.Space.1}">
-        <TextBlock Classes="field-label" Text="Nothing selected." />
+      <!-- Empty state -->
+      <StackPanel IsVisible="{Binding !HasSelection}"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Spacing="8" Margin="24">
+        <TextBlock Text="🎨" FontSize="32" HorizontalAlignment="Center"
+                   Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+        <TextBlock Text="No selection" FontSize="{DynamicResource Nyforge.Type.Subhead}"
+                   FontWeight="SemiBold" HorizontalAlignment="Center"
+                   Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+        <TextBlock Text="Select a component on the canvas to inspect its properties."
+                   FontSize="{DynamicResource Nyforge.Type.Caption}" TextWrapping="Wrap"
+                   TextAlignment="Center" HorizontalAlignment="Center" MaxWidth="200"
+                   Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
       </StackPanel>
 
-      <!-- The IsVisible toggle binds on MainWindowViewModel, so the
-           DataContext override to the selected element moves one level
-           down: the outer panel keeps the root VM type for its own
-           bindings (compiled bindings are statically typed). -->
-      <StackPanel IsVisible="{Binding HasSelection}" Margin="{DynamicResource Nyforge.Margin.Panel}">
-        <StackPanel Spacing="{DynamicResource Nyforge.Space.2}"
+      <!-- Inspector content -->
+      <ScrollViewer IsVisible="{Binding HasSelection}">
+        <StackPanel Margin="12,0,12,12" Spacing="0"
                     DataContext="{Binding SelectedElement}"
                     x:DataType="vm:CanvasElementViewModel">
-          <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
-          <TextBlock Classes="field-label" Text="Id" />
-          <TextBlock Text="{Binding Id}" FontSize="{DynamicResource Nyforge.Type.Body}"
-                     Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+
+          <!-- Identity section -->
+          <Border Classes="card" Margin="0,0,0,8" Padding="12">
+            <StackPanel Spacing="6">
+              <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Grid.Column="0" Classes="field-label" Text="ID"
+                           VerticalAlignment="Center" Margin="0,0,8,0" Width="60" />
+                <TextBlock Grid.Column="1" Text="{Binding Id}"
+                           FontSize="{DynamicResource Nyforge.Type.Body}"
+                           Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Grid.Column="0" Classes="field-label" Text="Type"
+                           VerticalAlignment="Center" Margin="0,0,8,0" Width="60" />
+                <Border Background="{DynamicResource Nyforge.Brush.AccentMuted}"
+                        CornerRadius="{DynamicResource Nyforge.Radius.Pill}" Padding="8,2">
+                  <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Caption}"
+                             FontWeight="SemiBold"
+                             Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+                </Border>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Position section -->
+          <Border Classes="card" Margin="0,0,0,8" Padding="12">
+            <StackPanel Spacing="8">
+              <TextBlock Text="Position" FontSize="{DynamicResource Nyforge.Type.Subhead}"
+                         FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+              <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="X" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Y" />
+                <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding X}"
+                               FormatString="0" />
+                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Y}"
+                               FormatString="0" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Size section -->
+          <Border Classes="card" Margin="0,0,0,8" Padding="12">
+            <StackPanel Spacing="8">
+              <TextBlock Text="Size" FontSize="{DynamicResource Nyforge.Type.Subhead}"
+                         FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+              <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="Width" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Height" />
+                <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding Width}"
+                               Minimum="1" FormatString="0" />
+                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Height}"
+                               Minimum="1" FormatString="0" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Properties section -->
+          <Border Classes="card" Margin="0,0,0,8" Padding="12">
+            <StackPanel Spacing="8">
+              <TextBlock Text="Properties" FontSize="{DynamicResource Nyforge.Type.Subhead}"
+                         FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+
+              <ItemsControl ItemsSource="{Binding PropertyEditors}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:PropertyEditorViewModel">
+                    <StackPanel Spacing="4" Margin="0,4,0,0">
+                      <TextBlock Classes="field-label" Text="{Binding Name}" />
+
+                      <TextBox Text="{Binding Value, Mode=TwoWay}"
+                               Watermark="(text)"
+                               IsVisible="{Binding IsStringEditor}" />
+
+                      <CheckBox Content="{Binding Name}" IsChecked="{Binding Value, Mode=TwoWay}"
+                                IsVisible="{Binding IsBooleanEditor}" />
+
+                      <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsNumberEditor}">
+                        <NumericUpDown Value="{Binding Value, Mode=TwoWay}"
+                                       Minimum="{Binding Min}" Maximum="{Binding Max}"
+                                       FormatString="0.##" />
+                        <TextBlock Grid.Column="1" Classes="field-label"
+                                   Text="{Binding Units}" VerticalAlignment="Center"
+                                   Margin="8,0,0,0" />
+                      </Grid>
+
+                      <ComboBox ItemsSource="{Binding EnumValues}"
+                                SelectedItem="{Binding Value, Mode=TwoWay}"
+                                IsVisible="{Binding IsEnumEditor}" />
+
+                      <TextBlock Classes="field-label" Text="(array — edit in .nstudio)"
+                                 IsVisible="{Binding IsArrayEditor}"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
         </StackPanel>
-
-        <StackPanel Spacing="{DynamicResource Nyforge.Space.1}">
-          <TextBlock Classes="field-label" Text="Type" />
-          <TextBlock Text="{Binding Type}" FontSize="{DynamicResource Nyforge.Type.Body}"
-                     Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
-        </StackPanel>
-
-        <TextBlock Classes="section-header" Text="POSITION"
-                   Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
-        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" >
-          <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="X" />
-          <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Y" />
-          <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding X}" Margin="0,2,4,0" />
-          <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Y}" Margin="4,2,0,0" />
-        </Grid>
-
-        <TextBlock Classes="section-header" Text="SIZE"
-                   Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
-        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-          <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="Width" />
-          <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Height" />
-          <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding Width}" Margin="0,2,4,0" />
-          <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Height}" Margin="4,2,0,0" />
-        </Grid>
-
-        <TextBlock Classes="section-header" Text="PROPERTIES"
-                   Margin="{DynamicResource Nyforge.Margin.SectionTop}" />
-
-        <!-- Metadata-driven (NFS-006): one editor per property, chosen
-             from the registry's PropertyDefinition.Type — string → text
-             box, boolean → checkbox, number → numeric up-down, enum →
-             combo box, array → read-only text.  Writes route through
-             MainWindowViewModel's undoable history. -->
-        <ItemsControl ItemsSource="{Binding PropertyEditors}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:PropertyEditorViewModel">
-              <StackPanel Spacing="{DynamicResource Nyforge.Space.1}" Margin="0,4,0,0">
-                <TextBlock Classes="field-label" Text="{Binding Name}" />
-
-                <TextBox Text="{Binding Value, Mode=TwoWay}"
-                         Watermark="(text)"
-                         IsVisible="{Binding IsStringEditor}" />
-
-                <CheckBox Content="{Binding Name}" IsChecked="{Binding Value, Mode=TwoWay}"
-                          IsVisible="{Binding IsBooleanEditor}" />
-
-                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsNumberEditor}">
-                  <NumericUpDown Value="{Binding Value, Mode=TwoWay}"
-                                 Minimum="{Binding Min}" Maximum="{Binding Max}"
-                                 FormatString="0.##" />
-                  <TextBlock Grid.Column="1" Classes="field-label"
-                             Text="{Binding Units}" VerticalAlignment="Center"
-                             Margin="4,0,0,0" />
-                </Grid>
-
-                <ComboBox ItemsSource="{Binding EnumValues}"
-                          SelectedItem="{Binding Value, Mode=TwoWay}"
-                          IsVisible="{Binding IsEnumEditor}" />
-
-                <TextBlock Classes="field-label" Text="(array)"
-                           IsVisible="{Binding IsArrayEditor}" />
-              </StackPanel>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        </StackPanel>
-      </StackPanel>
+      </ScrollViewer>
     </Panel>
   </DockPanel>
 

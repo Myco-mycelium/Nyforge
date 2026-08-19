@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Nyforge.Shell.Views.AboutWindow"
+        Title="About Nyforge"
+        Width="420" Height="360"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Nyforge.Brush.Background}">
+
+  <Grid RowDefinitions="*,Auto">
+
+    <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Spacing="12" Margin="32">
+
+      <!-- App icon -->
+      <Border Width="80" Height="80" CornerRadius="20"
+              Background="{DynamicResource Nyforge.Brush.Accent}"
+              HorizontalAlignment="Center">
+        <TextBlock Text="🎨" FontSize="40" HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+      </Border>
+
+      <!-- App name -->
+      <TextBlock Text="Nyforge" FontSize="{DynamicResource Nyforge.Type.Display}"
+                 FontWeight="Bold" HorizontalAlignment="Center"
+                 Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+
+      <!-- Version -->
+      <TextBlock Text="Version 1.0.0" FontSize="{DynamicResource Nyforge.Type.Body}"
+                 HorizontalAlignment="Center"
+                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+
+      <!-- Description -->
+      <TextBlock Text="The visual design studio for NUI — Nyrqis's native UI platform."
+                 FontSize="{DynamicResource Nyforge.Type.Body}" TextWrapping="Wrap"
+                 HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="320"
+                 Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+
+      <Border Classes="separator" Margin="0,4" />
+
+      <!-- Credits -->
+      <TextBlock FontSize="{DynamicResource Nyforge.Type.Caption}"
+                 HorizontalAlignment="Center" TextAlignment="Center"
+                 Foreground="{DynamicResource Nyforge.Brush.TextTertiary}">
+        <TextBlock.Text>
+          <MultiBinding StringFormat="{}Built with Avalonia UI{0}NUI Schema 1.0.0{0}{0}© 2026 Myco-mycelium">
+            <Binding Source="&#x0A;" />
+          </MultiBinding>
+        </TextBlock.Text>
+      </TextBlock>
+    </StackPanel>
+
+    <!-- Bottom: links -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center"
+                Spacing="16" Margin="0,0,0,20">
+      <Button Content="GitHub" Classes="ghost" FontSize="{DynamicResource Nyforge.Type.Caption}"
+              Click="OnGitHub" />
+      <TextBlock Text="·" VerticalAlignment="Center"
+                 Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+      <Button Content="Documentation" Classes="ghost" FontSize="{DynamicResource Nyforge.Type.Caption}"
+              Click="OnDocumentation" />
+      <TextBlock Text="·" VerticalAlignment="Center"
+                 Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+      <Button Content="License" Classes="ghost" FontSize="{DynamicResource Nyforge.Type.Caption}"
+              Click="OnLicense" />
+    </StackPanel>
+
+  </Grid>
+
+</Window>

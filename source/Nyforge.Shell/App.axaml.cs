@@ -18,9 +18,9 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var themeManager = new ThemeManager(this);
-            var projectService = new ProjectService();
             var preferences = new PreferencesService();
+            var themeManager = new ThemeManager(this, preferences);
+            var projectService = new ProjectService();
 
             desktop.MainWindow = new MainWindow
             {

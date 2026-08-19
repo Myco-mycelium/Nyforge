@@ -5,28 +5,358 @@
              x:Class="Nyforge.Shell.Views.ComponentPalette"
              x:DataType="vm:MainWindowViewModel">
 
-  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}">
-    <TextBlock DockPanel.Dock="Top" Classes="section-header"
-               Text="COMPONENTS"
-               Margin="{DynamicResource Nyforge.Margin.SectionHeader}" />
+  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}"
+             BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,0,1,0">
 
+    <!-- Header -->
+    <DockPanel DockPanel.Dock="Top" Margin="16,12,12,8">
+      <TextBlock Text="Components" FontSize="{DynamicResource Nyforge.Type.Title}"
+                 FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+    </DockPanel>
+
+    <!-- Search bar -->
+    <Border DockPanel.Dock="Top" Margin="12,0,12,8" Background="{DynamicResource Nyforge.Brush.Background}"
+            CornerRadius="{DynamicResource Nyforge.Radius.Small}" Padding="2">
+      <TextBox x:Name="SearchBox" Watermark="Search components..."
+               FontSize="{DynamicResource Nyforge.Type.Body}"
+               Background="Transparent" BorderThickness="0"
+               TextChanged="OnSearchChanged" />
+    </Border>
+
+    <!-- Component list -->
     <ScrollViewer>
-      <ItemsControl ItemsSource="{Binding PaletteItems}" Margin="{DynamicResource Nyforge.Inset.Small}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="nui:ComponentContract">
-            <Border Classes="palette-item"
-                    Padding="{DynamicResource Nyforge.Padding.PaletteItem}"
-                    Margin="{DynamicResource Nyforge.Margin.PaletteItem}"
-                    DoubleTapped="OnPaletteItemDoubleTapped"
-                    Tag="{Binding Type}"
-                    ToolTip.Tip="Double-click to add to canvas">
-              <TextBlock Text="{Binding Type}"
-                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
-                         FontSize="{DynamicResource Nyforge.Type.Body}" />
-            </Border>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+      <StackPanel Margin="0,0,0,8">
+
+        <!-- Basic -->
+        <TextBlock Classes="category-header" Text="BASIC" Margin="12,0,12,0" />
+        <StackPanel Margin="8,0">
+          <Border Classes="palette-item" Tag="Text"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Text label">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="Aa" FontSize="16" FontWeight="Bold" Width="28"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+              <TextBlock Text="Text" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Button"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Clickable button">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Background="{DynamicResource Nyforge.Brush.Accent}" CornerRadius="6"
+                      Width="28" Height="20" HorizontalAlignment="Center">
+                <TextBlock Text="B" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" Foreground="#FFFFFF" />
+              </Border>
+              <TextBlock Text="Button" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Icon"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Icon glyph">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="★" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Warning}" />
+              <TextBlock Text="Icon" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Image"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Image element">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="🖼" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Image" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Link"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Hyperlink">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="🔗" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Link" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Input"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Text input field">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border BorderBrush="{DynamicResource Nyforge.Brush.ControlBorder}" BorderThickness="1"
+                      CornerRadius="4" Width="28" Height="20">
+                <TextBlock Text="_" FontSize="10" HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+              </Border>
+              <TextBlock Text="Input" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Checkbox"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Checkbox toggle">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="☑" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+              <TextBlock Text="Checkbox" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Toggle"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Toggle switch">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="🔘" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Toggle" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Slider"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Range slider">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="⟷" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+              <TextBlock Text="Slider" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="ProgressBar"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Progress indicator">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="▰" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Success}" />
+              <TextBlock Text="Progress" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- Layout -->
+        <TextBlock Classes="category-header" Text="LAYOUT" Margin="12,8,12,0" />
+        <StackPanel Margin="8,0">
+          <Border Classes="palette-item" Tag="Container"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Generic container with padding">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border BorderBrush="{DynamicResource Nyforge.Brush.ControlBorder}" BorderThickness="1"
+                      BorderThickness="1" CornerRadius="4" Width="28" Height="20">
+                <TextBlock Text="[]" FontSize="10" HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
+              </Border>
+              <TextBlock Text="Container" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Stack"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Vertical or horizontal stack layout">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="☰" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+              <TextBlock Text="Stack" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Grid"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Grid layout with rows and columns">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="⊞" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+              <TextBlock Text="Grid" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Card"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Card with elevation">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="▢" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Warning}" />
+              <TextBlock Text="Card" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Window"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Window frame">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="▢" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+              <TextBlock Text="Window" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- Shell -->
+        <TextBlock Classes="category-header" Text="SHELL" Margin="12,8,12,0" />
+        <StackPanel Margin="8,0">
+          <Border Classes="palette-item" Tag="Taskbar"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Desktop taskbar">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="▬" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Success}" />
+              <TextBlock Text="Taskbar" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="StartMenu"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Start menu">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="⊞" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+              <TextBlock Text="Start Menu" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Dock"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Application dock">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="▂" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+              <TextBlock Text="Dock" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="SystemTray"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="System tray icons">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="◉" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Warning}" />
+              <TextBlock Text="System Tray" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="NotificationCenter"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Notification center">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="🔔" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Notifications" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Clock"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Clock display">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="🕐" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Clock" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="LockScreen"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Lock screen">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="🔒" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Lock Screen" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- System -->
+        <TextBlock Classes="category-header" Text="SYSTEM" Margin="12,8,12,0" />
+        <StackPanel Margin="8,0">
+          <Border Classes="palette-item" Tag="Dialog"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Modal dialog">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="◻" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.Warning}" />
+              <TextBlock Text="Dialog" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="palette-item" Tag="Notification"
+                  DoubleTapped="OnPaletteItemDoubleTapped"
+                  ToolTip.Tip="Toast notification">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="💬" FontSize="16" Width="28" HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="Toast" FontSize="{DynamicResource Nyforge.Type.Body}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+      </StackPanel>
     </ScrollViewer>
   </DockPanel>
 
