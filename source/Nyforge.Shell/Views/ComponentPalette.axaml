@@ -5,8 +5,9 @@
              x:Class="Nyforge.Shell.Views.ComponentPalette"
              x:DataType="vm:MainWindowViewModel">
 
-  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}"
-             BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,0,1,0">
+  <Border Background="{DynamicResource Nyforge.Brush.Surface}"
+          BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,0,1,0">
+  <DockPanel>
 
     <!-- Header -->
     <DockPanel DockPanel.Dock="Top" Margin="16,12,12,8">
@@ -359,5 +360,6 @@
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
+  </Border>
 
 </UserControl>

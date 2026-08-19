@@ -82,9 +82,9 @@
     <!-- ============================================================
          STATUS BAR — bottom, with project info + actions
          ============================================================ -->
-    <Grid DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.Surface}"
-          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" Height="36"
-          BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,1,0,0">
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Nyforge.Brush.Surface}"
+            BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="0,1,0,0">
+    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" Height="36">
 
       <!-- Preview + Run actions -->
       <Button Grid.Column="0" Content="▶ Preview" Classes="primary"
@@ -119,6 +119,7 @@
         </StackPanel>
       </Border>
     </Grid>
+    </Border>
 
     <!-- ============================================================
          MAIN CONTENT — TabControl with Home + Design

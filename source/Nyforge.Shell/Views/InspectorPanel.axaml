@@ -4,8 +4,9 @@
              x:Class="Nyforge.Shell.Views.InspectorPanel"
              x:DataType="vm:MainWindowViewModel">
 
-  <DockPanel Background="{DynamicResource Nyforge.Brush.Surface}"
-             BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="1,0,0,0">
+  <Border Background="{DynamicResource Nyforge.Brush.Surface}"
+          BorderBrush="{DynamicResource Nyforge.Brush.Separator}" BorderThickness="1,0,0,0">
+  <DockPanel>
 
     <!-- Header -->
     <DockPanel DockPanel.Dock="Top" Margin="16,12,12,8">
@@ -63,12 +64,12 @@
             <StackPanel Spacing="8">
               <TextBlock Text="Position" FontSize="{DynamicResource Nyforge.Type.Subhead}"
                          FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
-              <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+              <Grid ColumnDefinitions="*,8,*" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="X" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Y" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Classes="field-label" Text="Y" />
                 <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding X}"
                                FormatString="0" />
-                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Y}"
+                <NumericUpDown Grid.Row="1" Grid.Column="2" Value="{Binding Y}"
                                FormatString="0" />
               </Grid>
             </StackPanel>
@@ -79,12 +80,12 @@
             <StackPanel Spacing="8">
               <TextBlock Text="Size" FontSize="{DynamicResource Nyforge.Type.Subhead}"
                          FontWeight="SemiBold" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
-              <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+              <Grid ColumnDefinitions="*,8,*" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label" Text="Width" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Classes="field-label" Text="Height" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Classes="field-label" Text="Height" />
                 <NumericUpDown Grid.Row="1" Grid.Column="0" Value="{Binding Width}"
                                Minimum="1" FormatString="0" />
-                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Height}"
+                <NumericUpDown Grid.Row="1" Grid.Column="2" Value="{Binding Height}"
                                Minimum="1" FormatString="0" />
               </Grid>
             </StackPanel>
@@ -136,5 +137,6 @@
       </ScrollViewer>
     </Panel>
   </DockPanel>
+  </Border>
 
 </UserControl>

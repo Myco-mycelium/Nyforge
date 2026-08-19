@@ -147,7 +147,7 @@
 
             <Border Classes="separator" />
 
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Margin="0,8,0,0" Spacing="0,12">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Margin="0,8,0,0">
               <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4">
                 <TextBlock Text="Snap to Grid" FontSize="{DynamicResource Nyforge.Type.Body}"
                            Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
@@ -280,7 +280,7 @@
                     CornerRadius="{DynamicResource Nyforge.Radius.Medium}" Padding="4">
               <StackPanel Spacing="0">
                 <!-- Header -->
-                <Grid ColumnDefinitions="*,*" Padding="12,8" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}">
+                <Grid ColumnDefinitions="*,*" Margin="12,8" Background="{DynamicResource Nyforge.Brush.SurfaceOverlay}">
                   <TextBlock Text="Action" FontWeight="SemiBold" FontSize="{DynamicResource Nyforge.Type.Caption}"
                              Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" />
                   <TextBlock Grid.Column="1" Text="Shortcut" FontWeight="SemiBold" FontSize="{DynamicResource Nyforge.Type.Caption}"
@@ -289,55 +289,55 @@
                 <Border Classes="separator" />
 
                 <!-- Shortcuts -->
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="New Project" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+N" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
                   <TextBlock Text="Open Project" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+O" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="Save" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+S" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
                   <TextBlock Text="Save As" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+Shift+S" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="Undo" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+Z" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
                   <TextBlock Text="Redo" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+Shift+Z" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="Copy" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+C" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
                   <TextBlock Text="Paste" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+V" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="Delete" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Delete" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
                   <TextBlock Text="Preview" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="F5" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="Nudge" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Arrow Keys" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
                   <TextBlock Text="Nudge ×5" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Shift+Arrow" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
-                <Grid ColumnDefinitions="*,*" Padding="12,6">
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
                   <TextBlock Text="Preferences" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+," FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
