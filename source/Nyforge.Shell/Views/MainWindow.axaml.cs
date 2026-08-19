@@ -168,7 +168,7 @@ public partial class MainWindow : Window
     private void OnValidate(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (Vm is null) return;
-        var doc = Vm.CreatePreview()?.Document;
+        var doc = Vm.GetDocumentForValidation();
         if (doc is null)
         {
             Vm.StatusMessage = "Cannot validate — no document loaded.";

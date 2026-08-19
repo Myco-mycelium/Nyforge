@@ -860,4 +860,12 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
         return new PreviewViewModel(_projectService.Current, _themeManager);
     }
+
+    /// <summary>
+    /// Returns the current document for validation (used by the Validate menu action).
+    /// </summary>
+    public NuiDocument? GetDocumentForValidation()
+    {
+        return _projectService.Current.Document;
+    }
 }
