@@ -55,9 +55,9 @@
             <MenuItem Header="Solar (Light)" Command="{Binding SetThemeCommand}" CommandParameter="Solar" />
           </MenuItem>
           <Separator />
-          <MenuItem Header="Zoom In" HotKey="Ctrl+=" IsEnabled="False" />
-          <MenuItem Header="Zoom Out" HotKey="Ctrl+-" IsEnabled="False" />
-          <MenuItem Header="Reset Zoom" HotKey="Ctrl+0" IsEnabled="False" />
+          <MenuItem Header="Zoom In" HotKey="Ctrl+=" IsEnabled="False" ToolTip.Tip="Use Ctrl+Scroll to zoom" />
+          <MenuItem Header="Zoom Out" HotKey="Ctrl+-" IsEnabled="False" ToolTip.Tip="Use Ctrl+Scroll to zoom" />
+          <MenuItem Header="Reset Zoom" HotKey="Ctrl+0" IsEnabled="False" ToolTip.Tip="Use Ctrl+Scroll to zoom" />
           <Separator />
           <MenuItem Header="Show Grid" IsChecked="True" IsEnabled="False" />
           <MenuItem Header="Show Rulers" IsChecked="False" IsEnabled="False" />

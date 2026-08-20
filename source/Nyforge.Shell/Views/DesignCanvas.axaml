@@ -2,77 +2,84 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Nyforge.Shell.ViewModels"
              x:Class="Nyforge.Shell.Views.DesignCanvas"
-             x:DataType="vm:MainWindowViewModel">
+             x:DataType="vm:MainWindowViewModel"
+             PointerWheelChanged="OnPointerWheelChanged">
 
   <Border Background="{DynamicResource Nyforge.Brush.Background}" ClipToBounds="True">
     <!--
-      Design canvas with subtle grid pattern, refined selection handles,
+      Design canvas with zoom support, subtle grid pattern, refined selection handles,
       and Apple-inspired component rendering.
     -->
-    <Canvas x:Name="RootCanvas"
-            Width="1024" Height="768"
-            Background="{DynamicResource Nyforge.Brush.Surface}"
-            PointerPressed="OnCanvasPointerPressed">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
+      <Canvas x:Name="RootCanvas"
+              Width="1024" Height="768"
+              Background="{DynamicResource Nyforge.Brush.Surface}"
+              PointerPressed="OnCanvasPointerPressed">
+        <Canvas.RenderTransform>
+          <ScaleTransform x:Name="CanvasScale" ScaleX="1" ScaleY="1" />
+        </Canvas.RenderTransform>
 
-      <!-- Canvas render items -->
-      <ItemsControl ItemsSource="{Binding CanvasRenderItems}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <Canvas />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
+        <!-- Canvas render items -->
+        <ItemsControl ItemsSource="{Binding CanvasRenderItems}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <Canvas />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
 
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="vm:CanvasElementViewModel">
-            <Border Name="ElementBorder"
-                    Width="{Binding Width}" Height="{Binding Height}"
-                    Canvas.Left="{Binding RenderX}" Canvas.Top="{Binding RenderY}"
-                    Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
-                    BorderBrush="{Binding IsSelected, Converter={x:Static vm:SelectionBrushConverter.Instance}}"
-                    BorderThickness="{Binding IsSelected, Converter={x:Static vm:SelectionThicknessConverter.Instance}}"
-                    CornerRadius="{DynamicResource Nyforge.Radius.Small}"
-                    BoxShadow="0 1 3 0 #20000000"
-                    PointerPressed="OnElementPointerPressed"
-                    PointerMoved="OnElementPointerMoved"
-                    PointerReleased="OnElementPointerReleased"
-                    Cursor="SizeAll">
-              <Grid>
-                <!-- Component label -->
-                <TextBlock Text="{Binding DisplayText}"
-                           Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
-                           FontSize="{DynamicResource Nyforge.Type.Caption}"
-                           Margin="10,0,10,0"
-                           VerticalAlignment="Center" HorizontalAlignment="Left"
-                           IsHitTestVisible="False"
-                           TextTrimming="CharacterEllipsis" />
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:CanvasElementViewModel">
+              <Border Name="ElementBorder"
+                      Width="{Binding Width}" Height="{Binding Height}"
+                      Canvas.Left="{Binding RenderX}" Canvas.Top="{Binding RenderY}"
+                      Background="{DynamicResource Nyforge.Brush.SurfaceElevated}"
+                      BorderBrush="{Binding IsSelected, Converter={x:Static vm:SelectionBrushConverter.Instance}}"
+                      BorderThickness="{Binding IsSelected, Converter={x:Static vm:SelectionThicknessConverter.Instance}}"
+                      CornerRadius="{DynamicResource Nyforge.Radius.Small}"
+                      BoxShadow="0 1 3 0 #20000000"
+                      PointerPressed="OnElementPointerPressed"
+                      PointerMoved="OnElementPointerMoved"
+                      PointerReleased="OnElementPointerReleased"
+                      Cursor="SizeAll">
+                <Grid>
+                  <!-- Component label -->
+                  <TextBlock Text="{Binding DisplayText}"
+                             Foreground="{DynamicResource Nyforge.Brush.TextPrimary}"
+                             FontSize="{DynamicResource Nyforge.Type.Caption}"
+                             Margin="10,0,10,0"
+                             VerticalAlignment="Center" HorizontalAlignment="Left"
+                             IsHitTestVisible="False"
+                             TextTrimming="CharacterEllipsis" />
 
-                <!-- Type badge (bottom-right) -->
-                <Border HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                        Margin="0,0,4,4"
-                        Background="{DynamicResource Nyforge.Brush.AccentMuted}"
-                        CornerRadius="{DynamicResource Nyforge.Radius.Pill}"
-                        Padding="6,2">
-                  <TextBlock Text="{Binding Type}"
-                             FontSize="9" FontWeight="SemiBold"
-                             Foreground="{DynamicResource Nyforge.Brush.Accent}" />
-                </Border>
+                  <!-- Type badge (bottom-right) -->
+                  <Border HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                          Margin="0,0,4,4"
+                          Background="{DynamicResource Nyforge.Brush.AccentMuted}"
+                          CornerRadius="{DynamicResource Nyforge.Radius.Pill}"
+                          Padding="6,2">
+                    <TextBlock Text="{Binding Type}"
+                               FontSize="9" FontWeight="SemiBold"
+                               Foreground="{DynamicResource Nyforge.Brush.Accent}" />
+                  </Border>
 
-                <!-- Resize handle (bottom-right) -->
-                <Border Name="ResizeHandle" Width="12" Height="12"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                        Background="{DynamicResource Nyforge.Brush.Accent}"
-                        CornerRadius="3"
-                        IsVisible="{Binding IsSelected}"
-                        Cursor="BottomRightCorner"
-                        PointerPressed="OnResizeHandlePointerPressed"
-                        PointerMoved="OnResizeHandlePointerMoved"
-                        PointerReleased="OnResizeHandlePointerReleased" />
-              </Grid>
-            </Border>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </Canvas>
+                  <!-- Resize handle (bottom-right) -->
+                  <Border Name="ResizeHandle" Width="12" Height="12"
+                          HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                          Background="{DynamicResource Nyforge.Brush.Accent}"
+                          CornerRadius="3"
+                          IsVisible="{Binding IsSelected}"
+                          Cursor="BottomRightCorner"
+                          PointerPressed="OnResizeHandlePointerPressed"
+                          PointerMoved="OnResizeHandlePointerMoved"
+                          PointerReleased="OnResizeHandlePointerReleased" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Canvas>
+    </ScrollViewer>
   </Border>
 
 </UserControl>

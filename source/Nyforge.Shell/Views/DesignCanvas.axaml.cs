@@ -1,3 +1,4 @@
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -284,5 +285,49 @@ public partial class DesignCanvas : UserControl
             }
             _resizeTarget = null;
         }
+    }
+
+    // --- Zoom ---
+
+    private double _zoomLevel = 1.0;
+    private const double ZoomStep = 0.1;
+    private const double ZoomMin = 0.25;
+    private const double ZoomMax = 4.0;
+
+    private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Control) ||
+            e.KeyModifiers.HasFlag(KeyModifiers.Meta))
+        {
+            var delta = e.Delta.Y > 0 ? ZoomStep : -ZoomStep;
+            SetZoom(_zoomLevel + delta);
+            e.Handled = true;
+        }
+    }
+
+    public void SetZoom(double level)
+    {
+        _zoomLevel = Math.Clamp(level, ZoomMin, ZoomMax);
+        CanvasScale.ScaleX = _zoomLevel;
+        CanvasScale.ScaleY = _zoomLevel;
+        if (Vm is not null)
+        {
+            Vm.StatusMessage = $"Zoom: {Math.Round(_zoomLevel * 100)}%";
+        }
+    }
+
+    public void ZoomIn() => SetZoom(_zoomLevel + ZoomStep);
+    public void ZoomOut() => SetZoom(_zoomLevel - ZoomStep);
+    public void ZoomReset() => SetZoom(1.0);
+    public void ZoomFit()
+    {
+        if (Vm is null) return;
+        var bounds = RootCanvas.Bounds;
+        if (bounds.Width <= 0 || bounds.Height <= 0) return;
+        var maxW = Vm.CanvasRenderItems.Count > 0 ? Vm.CanvasRenderItems.Max(vm => vm.RenderX + vm.Width) : 1024;
+        var maxH = Vm.CanvasRenderItems.Count > 0 ? Vm.CanvasRenderItems.Max(vm => vm.RenderY + vm.Height) : 768;
+        var scaleX = bounds.Width / maxW;
+        var scaleY = bounds.Height / maxH;
+        SetZoom(Math.Min(scaleX, scaleY) * 0.9); // 90% margin
     }
 }
