@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Nyforge.Shell.ViewModels"
+             x:Class="Nyforge.Shell.Views.CommandPalette"
+             x:DataType="vm:CommandPaletteViewModel"
+             IsVisible="{Binding IsOpen}">
+
+  <!-- Frosted-glass overlay -->
+  <Panel>
+    <Border Background="#80000000" PointerPressed="OnOverlayClicked" />
+
+    <!-- Palette container — centered, 600px wide, Apple-style -->
+    <Border HorizontalAlignment="Center" VerticalAlignment="Top"
+            Margin="0,120,0,0"
+            Width="600" MaxHeight="480"
+            Background="{DynamicResource Nyforge.Brush.Surface}"
+            BorderBrush="{DynamicResource Nyforge.Brush.Separator}"
+            BorderThickness="1"
+            CornerRadius="12"
+            BoxShadow="0 20px 60px 0 #40000000, 0 0 1px 0 #20000000"
+            ClipToBounds="True">
+
+      <DockPanel>
+        <!-- Search input -->
+        <Border DockPanel.Dock="Top" Padding="16,12"
+                BorderBrush="{DynamicResource Nyforge.Brush.Separator}"
+                BorderThickness="0,0,0,1">
+          <TextBox Text="{Binding Query}"
+                   Watermark="Type a command..."
+                   FontSize="18"
+                   FontWeight="Light"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Padding="0,4"
+                   KeyDown="OnSearchKeyDown"
+                   x:Name="SearchBox" />
+        </Border>
+
+        <!-- Command list -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="400">
+          <ItemsControl ItemsSource="{Binding FilteredCommands}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:PaletteCommand">
+                <Border Padding="12,8"
+                        CornerRadius="8"
+                        Margin="4,1"
+                        Background="Transparent"
+                        PointerEnter="OnCommandHover"
+                        PointerPressed="OnCommandClick"
+                        Tag="{Binding}">
+                  <Grid ColumnDefinitions="28,*,Auto">
+                    <TextBlock Grid.Column="0" Text="{Binding Icon}"
+                               FontSize="16" VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0"
+                                VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Label}" FontSize="14"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+                      <TextBlock Text="{Binding Category}" FontSize="11"
+                                 Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding Shortcut}"
+                               FontSize="12" FontFamily="Consolas,Menlo,monospace"
+                               Foreground="{DynamicResource Nyforge.Brush.TextTertiary}"
+                               VerticalAlignment="Center"
+                               IsVisible="{Binding Shortcut, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Footer hint -->
+        <Border DockPanel.Dock="Bottom" Padding="16,8"
+                BorderBrush="{DynamicResource Nyforge.Brush.Separator}"
+                BorderThickness="0,1,0,0">
+          <StackPanel Orientation="Horizontal" Spacing="16">
+            <TextBlock FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextTertiary}">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0} commands">
+                  <Binding Path="FilteredCommands.Count" />
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+            <TextBlock Text="↑↓ navigate  ↵ select  esc close"
+                       FontSize="11" Foreground="{DynamicResource Nyforge.Brush.TextTertiary}" />
+          </StackPanel>
+        </Border>
+      </DockPanel>
+    </Border>
+  </Panel>
+</UserControl>

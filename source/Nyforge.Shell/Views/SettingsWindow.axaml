@@ -341,6 +341,14 @@
                   <TextBlock Text="Preferences" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
                   <TextBlock Grid.Column="1" Text="Ctrl+," FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
                 </Grid>
+                <Grid ColumnDefinitions="*,*" Margin="12,6" Background="{DynamicResource Nyforge.Brush.Hover}">
+                  <TextBlock Text="Command Palette" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+                  <TextBlock Grid.Column="1" Text="Ctrl+K" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
+                </Grid>
+                <Grid ColumnDefinitions="*,*" Margin="12,6">
+                  <TextBlock Text="Toggle Theme" FontSize="{DynamicResource Nyforge.Type.Body}" Foreground="{DynamicResource Nyforge.Brush.TextPrimary}" />
+                  <TextBlock Grid.Column="1" Text="Ctrl+Shift+T" FontSize="{DynamicResource Nyforge.Type.Caption}" Foreground="{DynamicResource Nyforge.Brush.TextSecondary}" HorizontalAlignment="Right" />
+                </Grid>
               </StackPanel>
             </Border>
           </StackPanel>

@@ -27,13 +27,34 @@ public partial class MainWindow : Window
         };
     }
 
-    // --- Arrow-key nudging (4 px grid step; Shift = 5x) ---
+    // --- Global keyboard shortcuts ---
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (Vm is null) return;
+
+        // Cmd+K / Ctrl+K opens the Command Palette
+        if (e.Key == Key.K &&
+            (e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta)))
+        {
+            if (Vm.CommandPalette is not null)
+                Vm.CommandPalette.IsOpen = !Vm.CommandPalette.IsOpen;
+            e.Handled = true;
+            return;
+        }
+
+        // Escape closes the Command Palette if open
+        if (e.Key == Key.Escape && Vm.CommandPalette is { IsOpen: true })
+        {
+            Vm.CommandPalette.IsOpen = false;
+            e.Handled = true;
+            return;
+        }
+
+        // Don't process canvas shortcuts when a TextBox has focus
         if (FocusManager?.GetFocusedElement() is TextBox) return;
 
+        // Arrow-key nudging (4 px grid step; Shift = 5x)
         var step = e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? 20.0 : 4.0;
         switch (e.Key)
         {
@@ -151,7 +172,7 @@ public partial class MainWindow : Window
         if (Vm is null) return;
         var tmpPath = Path.Combine(Path.GetTempPath(), "nyrqis-runtime-preview.nstudio");
         Vm.SaveToPath(tmpPath);
-        Vm.StatusMessage = $"Exported to {tmpPath} — load with: nyrqisctl nui load {tmpPath}";
+        Vm.StatusMessage = $@"Exported to {tmpPath} — load with: nyrqisctl nui load {tmpPath}";
     }
 
     // --- Theme toggle ---
@@ -178,16 +199,24 @@ public partial class MainWindow : Window
         if (result.HasErrors)
         {
             var first = result.Errors.First();
-            Vm.StatusMessage = $"Validation failed: {result.Errors.Count()} error(s) — {first.Message}";
+            Vm.StatusMessage = $@"Validation failed: {result.Errors.Count()} error(s) — {first.Message}";
         }
         else if (result.HasWarnings)
         {
-            Vm.StatusMessage = $"Validation passed with {result.Warnings.Count()} warning(s).";
+            Vm.StatusMessage = $@"Validation passed with {result.Warnings.Count()} warning(s).";
         }
         else
         {
             Vm.StatusMessage = "Validation passed — no issues found.";
         }
+    }
+
+    // --- Command Palette ---
+
+    private void OnOpenCommandPalette(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Vm?.CommandPalette is not null)
+            Vm.CommandPalette.IsOpen = !Vm.CommandPalette.IsOpen;
     }
 
     // --- Help ---

@@ -13,6 +13,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly PreferencesService _preferences;
 
     public HomeViewModel Home { get; }
+    public CommandPaletteViewModel CommandPalette { get; }
 
     /// <summary>
     /// Command-based undo/redo (v0.6, 2026-08-17 architecture review item
@@ -249,6 +250,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         };
 
         Home = new HomeViewModel(new RelayCommand<string>(OnHomeCommand));
+        CommandPalette = new CommandPaletteViewModel(this, projectService);
         ReloadHomeScreen();
 
         LoadFromProject();
