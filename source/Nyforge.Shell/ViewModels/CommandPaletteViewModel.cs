@@ -59,14 +59,14 @@ public sealed class CommandPaletteViewModel : ViewModelBase
     public PaletteCommand? SelectedCommand { get; set; }
 
     public event EventHandler? CommandExecuted;
-    public event EventHandler? CloseRequested;
+    public Action? CloseRequested;
 
     public CommandPaletteViewModel(MainWindowViewModel mainVm, ProjectService projectService)
     {
         // --- File ---
         Add("New Project", "File", "Ctrl+N", "📄", () => mainVm.NewProject(),
             "new create blank empty");
-        Add("Open Project", "File", "Ctrl+O", "📂", () => mainVm.HomeCommandRequestedFileDialog?.Invoke(mainVm, ForgeCommands.OpenProject),
+        Add("Open Project", "File", "Ctrl+O", "📂", () => mainVm.HomeCommandRequestedFileDialog?.Invoke(ForgeCommands.OpenProject),
             "open load file");
         Add("Save Project", "File", "Ctrl+S", "💾", () => mainVm.SaveToPath(),
             "save write export");
@@ -152,7 +152,7 @@ public sealed class CommandPaletteViewModel : ViewModelBase
         SelectedCommand.Execute();
         IsOpen = false;
         CommandExecuted?.Invoke(this, EventArgs.Empty);
-        CloseRequested?.Invoke(this, EventArgs.Empty);
+        CloseRequested?.Invoke();
     }
 
     public void MoveSelection(int delta)

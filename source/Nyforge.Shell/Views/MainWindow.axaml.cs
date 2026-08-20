@@ -20,7 +20,7 @@ public partial class MainWindow : Window
         {
             if (Vm is not null)
             {
-                Vm.HomeCommandRequestedFileDialog += OnHomeCommandRequestedFileDialog;
+                Vm.HomeCommandRequestedFileDialog = OnHomeCommandRequestedFileDialog;
                 Vm.CopyRequested += OnCopyRequested;
                 Vm.PasteRequested += OnPasteRequested;
             }
@@ -83,7 +83,7 @@ public partial class MainWindow : Window
 
     // --- Home screen file dialog ---
 
-    private void OnHomeCommandRequestedFileDialog(object? sender, string commandId)
+    private void OnHomeCommandRequestedFileDialog(string commandId)
     {
         switch (commandId)
         {

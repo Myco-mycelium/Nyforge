@@ -59,7 +59,7 @@ public partial class CommandPalette : UserControl
             if (Vm is not null)
             {
                 Vm.IsOpen = false;
-                Vm.CloseRequested?.Invoke(Vm, EventArgs.Empty);
+                Vm.CloseRequested?.Invoke();
             }
         }
     }

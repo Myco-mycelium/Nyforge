@@ -36,7 +36,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// project's existing split (see the OnOpenProject/OnSaveProject
     /// pattern already used by the File menu).
     /// </summary>
-    public event EventHandler<string>? HomeCommandRequestedFileDialog;
+    public Action<string>? HomeCommandRequestedFileDialog;
 
     /// <summary>Copy produced a payload — the window writes it to the OS clipboard.</summary>
     public event EventHandler<string>? CopyRequested;
@@ -267,7 +267,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             case ForgeCommands.SaveProject:
                 // These need a file dialog, which lives in MainWindow's
                 // code-behind — see HomeCommandRequestedFileDialog's doc comment.
-                HomeCommandRequestedFileDialog?.Invoke(this, commandId);
+                HomeCommandRequestedFileDialog?.Invoke(commandId);
                 break;
         }
     }
