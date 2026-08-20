@@ -29,9 +29,13 @@ public partial class DesignCanvas : UserControl
     private double? _guideX;  // vertical guide line X position (null = no guide)
     private double? _guideY;  // horizontal guide line Y position (null = no guide)
 
+    // Zoom: ScaleTransform found from RootCanvas after InitializeComponent
+    private ScaleTransform? _canvasScale;
+
     public DesignCanvas()
     {
         InitializeComponent();
+        _canvasScale = RootCanvas.RenderTransform as ScaleTransform;
     }
 
     private MainWindowViewModel? Vm => DataContext as MainWindowViewModel;
@@ -308,8 +312,11 @@ public partial class DesignCanvas : UserControl
     public void SetZoom(double level)
     {
         _zoomLevel = Math.Clamp(level, ZoomMin, ZoomMax);
-        CanvasScale.ScaleX = _zoomLevel;
-        CanvasScale.ScaleY = _zoomLevel;
+        if (_canvasScale is not null)
+        {
+            _canvasScale.ScaleX = _zoomLevel;
+            _canvasScale.ScaleY = _zoomLevel;
+        }
         if (Vm is not null)
         {
             Vm.StatusMessage = $"Zoom: {Math.Round(_zoomLevel * 100)}%";
