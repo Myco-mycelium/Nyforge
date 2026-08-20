@@ -45,7 +45,6 @@
                         CornerRadius="8"
                         Margin="4,1"
                         Background="Transparent"
-                        PointerEnter="OnCommandHover"
                         PointerPressed="OnCommandClick"
                         Tag="{Binding}">
                   <Grid ColumnDefinitions="28,*,Auto">

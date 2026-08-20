@@ -43,14 +43,6 @@ public partial class CommandPalette : UserControl
         if (Vm is not null) Vm.IsOpen = false;
     }
 
-    private void OnCommandHover(object? sender, PointerEventArgs e)
-    {
-        if (sender is Border border && border.Tag is PaletteCommand cmd && Vm is not null)
-        {
-            Vm.SelectedCommand = cmd;
-        }
-    }
-
     private void OnCommandClick(object? sender, PointerPressedEventArgs e)
     {
         if (sender is Border border && border.Tag is PaletteCommand cmd)
