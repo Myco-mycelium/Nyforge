@@ -62,6 +62,14 @@ public partial class MainWindow : Window
             case Key.Right: Vm.Nudge(step, 0); e.Handled = true; break;
             case Key.Up: Vm.Nudge(0, -step); e.Handled = true; break;
             case Key.Down: Vm.Nudge(0, step); e.Handled = true; break;
+            case Key.A when e.KeyModifiers.HasFlag(KeyModifiers.Control):
+                Vm.SelectAll(); e.Handled = true; break;
+            case Key.D when e.KeyModifiers.HasFlag(KeyModifiers.Control):
+                Vm.DuplicateSelection(); e.Handled = true; break;
+            case Key.X when e.KeyModifiers.HasFlag(KeyModifiers.Control):
+                Vm.CutSelection(); e.Handled = true; break;
+            case Key.Delete:
+                Vm.DeleteSelected(); e.Handled = true; break;
         }
     }
 

@@ -39,12 +39,12 @@
           <MenuItem Header="Undo" Command="{Binding UndoCommand}" HotKey="Ctrl+Z" />
           <MenuItem Header="Redo" Command="{Binding RedoCommand}" HotKey="Ctrl+Shift+Z" />
           <Separator />
-          <MenuItem Header="Cut" HotKey="Ctrl+X" IsEnabled="False" />
+          <MenuItem Header="Cut" Command="{Binding CutSelectionCommand}" HotKey="Ctrl+X" />
           <MenuItem Header="Copy" Command="{Binding CopySelectionCommand}" HotKey="Ctrl+C" />
           <MenuItem Header="Paste" Command="{Binding PasteCommand}" HotKey="Ctrl+V" />
-          <MenuItem Header="Duplicate" HotKey="Ctrl+D" IsEnabled="False" />
+          <MenuItem Header="Duplicate" Command="{Binding DuplicateSelectionCommand}" HotKey="Ctrl+D" />
           <Separator />
-          <MenuItem Header="Select All" HotKey="Ctrl+A" IsEnabled="False" />
+          <MenuItem Header="Select All" Command="{Binding SelectAllCommand}" HotKey="Ctrl+A" />
           <MenuItem Header="Delete Selected" Command="{Binding DeleteSelectedCommand}" HotKey="Delete" />
           <Separator />
           <MenuItem Header="_Preferences..." Click="OnOpenPreferences" HotKey="Ctrl+," />

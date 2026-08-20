@@ -26,8 +26,11 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public RelayCommand UndoCommand { get; }
     public RelayCommand RedoCommand { get; }
+    public RelayCommand CutSelectionCommand { get; }
     public RelayCommand CopySelectionCommand { get; }
     public RelayCommand PasteCommand { get; }
+    public RelayCommand DuplicateSelectionCommand { get; }
+    public RelayCommand SelectAllCommand { get; }
 
     /// <summary>
     /// Raised when the Home screen's "Open Project" or "Save Project"
@@ -146,7 +149,9 @@ public sealed class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(AvailableEventsForSelection));
         OnPropertyChanged(nameof(NoUnboundEventsOnSelection));
         DeleteSelectedCommand.RaiseCanExecuteChanged();
+        CutSelectionCommand.RaiseCanExecuteChanged();
         CopySelectionCommand.RaiseCanExecuteChanged();
+        DuplicateSelectionCommand.RaiseCanExecuteChanged();
 
         // The metadata-driven Inspector rows (one per property from the
         // Nyrqis API Registry); commits route through the history so
@@ -236,8 +241,11 @@ public sealed class MainWindowViewModel : ViewModelBase
         RemoveAnimationCommand = new RelayCommand<AnimationViewModel>(RemoveAnimation);
         UndoCommand = new RelayCommand(() => History.Undo(), () => History.CanUndo);
         RedoCommand = new RelayCommand(() => History.Redo(), () => History.CanRedo);
+        CutSelectionCommand = new RelayCommand(CutSelection, () => HasSelection);
         CopySelectionCommand = new RelayCommand(CopySelection, () => HasSelection);
         PasteCommand = new RelayCommand(() => PasteRequested?.Invoke(this, EventArgs.Empty));
+        DuplicateSelectionCommand = new RelayCommand(DuplicateSelection, () => HasSelection);
+        SelectAllCommand = new RelayCommand(SelectAll);
 
         // After any command (execute/undo/redo/clear) the model changed:
         // rebuild the VM tree + render list + behaviors from the model,
@@ -723,6 +731,64 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// one undoable command per paste. Pasted components get fresh ids and
     /// arrive unbound; each paste cascades 8 px so repeats stay visible.
     /// </summary>
+
+    /// <summary>Cut: copies to clipboard then deletes the selection.</summary>
+    public void CutSelection()
+    {
+        if (!HasSelection) return;
+        CopySelection();
+        DeleteSelected();
+        StatusMessage = "Cut selection.";
+    }
+
+    /// <summary>Duplicate: copy + paste in-place with a small offset.</summary>
+    public void DuplicateSelection()
+    {
+        if (!HasSelection) return;
+        var topmost = TopmostSelected();
+        var payload = ComponentClipboard.Serialize(topmost.Select(vm => vm.Model));
+        var parsed = ComponentClipboard.Deserialize(payload);
+        if (parsed.Count == 0) return;
+
+        var root = _projectService.Current.Document.Screens.FirstOrDefault()?.Root;
+        if (root is null) return;
+
+        var container = SelectedElement is { CanContainChildren: true } sel ? sel : null;
+        var parentModel = container?.Model ?? root;
+
+        var clones = ComponentClipboard.CloneWithFreshIds(parsed);
+        // Small offset so duplicates don't overlap
+        foreach (var clone in clones)
+        {
+            clone.Layout.X += 16;
+            clone.Layout.Y += 16;
+        }
+
+        var commands = clones
+            .Select(c => (IEditorCommand)new AddComponentCommand(parentModel, c))
+            .ToList();
+        if (commands.Count == 1) History.Execute(commands[0]);
+        else History.Execute(new CompositeCommand(commands));
+
+        // Select what was duplicated
+        var duplicated = CanvasRenderItems.Where(vm => clones.Contains(vm.Model)).ToList();
+        for (var i = 0; i < duplicated.Count; i++)
+        {
+            SelectForInteraction(duplicated[i], additive: i > 0);
+        }
+
+        _projectService.Current.MarkDirty();
+        StatusMessage = $"Duplicated {clones.Count} element{(clones.Count == 1 ? "" : "s")}.";
+    }
+
+    /// <summary>Select all components in the current screen.</summary>
+    public void SelectAll()
+    {
+        SetSelection(CanvasRenderItems);
+        OnSelectionChanged();
+        StatusMessage = HasSelection ? $"Selected {CanvasRenderItems.Count} elements." : "Nothing to select.";
+    }
+
     public void Paste(string? json)
     {
         if (string.IsNullOrEmpty(json)) return;
