@@ -1,7 +1,7 @@
 {
   "registryVersion": "1.0",
   "nuiSchemaVersion": "0.4.0",
-  "purpose": "The Nyrqis API Registry \u2014 the single machine-readable source of truth for the NUI component vocabulary, per NFS-006 (Nyforge) / the platform ADR-0025 pipeline. The Nyrqis NUI import gate (ui/nstudio.py, rust/nyui) and Nyforge's palette/Inspector/Behaviors contract tables all derive from this file. Add a component or action HERE first; never edit a consumer's tables by hand. registryVersion majors on breaking contract changes, alongside the NUI schema version.",
+  "purpose": "The Nyrqis API Registry — the single machine-readable source of truth for the NUI component vocabulary, per NFS-006 (Nyforge) / the platform ADR-0025 pipeline. The Nyrqis NUI import gate (ui/nstudio.py, rust/nyui) and Nyforge's palette/Inspector/Behaviors contract tables all derive from this file. Add a component or action HERE first; never edit a consumer's tables by hand. registryVersion majors on breaking contract changes, alongside the NUI schema version.",
   "components": [
     {
       "type": "Text",
@@ -70,6 +70,49 @@
       "actions": []
     },
     {
+      "type": "SearchBox",
+      "category": "Basic",
+      "properties": [
+        {
+          "name": "placeholder",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "query",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "visible",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "mode",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": ""
+        }
+      ],
+      "events": [
+        "changed",
+        "submitted"
+      ],
+      "actions": [
+        "Open",
+        "Close",
+        "Clear"
+      ]
+    },
+    {
       "type": "Button",
       "category": "Basic",
       "properties": [
@@ -100,6 +143,13 @@
           "required": false,
           "type": "boolean",
           "default": true
+        },
+        {
+          "name": "tooltip",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": ""
         }
       ],
       "events": [
@@ -396,6 +446,13 @@
           "required": false,
           "type": "string",
           "default": ""
+        },
+        {
+          "name": "title",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": ""
         }
       ],
       "events": [],
@@ -407,6 +464,17 @@
       "properties": [
         {
           "name": "orientation",
+          "bindable": true,
+          "required": false,
+          "type": "enum",
+          "enumValues": [
+            "vertical",
+            "horizontal"
+          ],
+          "default": "vertical"
+        },
+        {
+          "name": "direction",
           "bindable": true,
           "required": false,
           "type": "enum",
@@ -922,6 +990,27 @@
           "required": false,
           "type": "boolean",
           "default": true
+        },
+        {
+          "name": "showStartButton",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showSearch",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showTaskView",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
         }
       ],
       "events": [],
@@ -951,6 +1040,41 @@
           "required": false,
           "type": "array",
           "default": []
+        },
+        {
+          "name": "visible",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "searchPlaceholder",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "showCategories",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showPinned",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showRecent",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
         }
       ],
       "events": [
@@ -988,6 +1112,27 @@
           "type": "number",
           "default": 0,
           "description": "Notification badge count shown on the tray icon"
+        },
+        {
+          "name": "showClock",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showVolume",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showNetwork",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
         }
       ],
       "events": [],
@@ -1010,6 +1155,34 @@
           "required": false,
           "type": "array",
           "default": []
+        },
+        {
+          "name": "visible",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "showQuickSettings",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showNotifications",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showCalendar",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
         }
       ],
       "events": [
@@ -1040,6 +1213,41 @@
           "required": false,
           "type": "array",
           "default": []
+        },
+        {
+          "name": "showWifi",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showBluetooth",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showBrightness",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showVolume",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showDoNotDisturb",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
         }
       ],
       "events": [
@@ -1307,6 +1515,48 @@
           "required": false,
           "type": "boolean",
           "default": false
+        },
+        {
+          "name": "visible",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "showShutdown",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showRestart",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showSleep",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showLogout",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showLock",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
         }
       ],
       "events": [
@@ -1347,6 +1597,41 @@
           "required": false,
           "type": "string",
           "default": ""
+        },
+        {
+          "name": "visible",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "showClock",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "showDate",
+          "bindable": true,
+          "required": false,
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "unlockMethod",
+          "bindable": true,
+          "required": false,
+          "type": "string",
+          "default": "swipe"
+        },
+        {
+          "name": "autoLockTimeout",
+          "bindable": true,
+          "required": false,
+          "type": "number",
+          "default": 300
         }
       ],
       "events": [
