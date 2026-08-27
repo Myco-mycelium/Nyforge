@@ -49,12 +49,20 @@ public static class PropertyDefinitions
                 new PropertyDefinition("source", "string", DefaultValue: ""),
                 new PropertyDefinition("visible", "boolean", DefaultValue: true),
             },
+            ["SearchBox"] = new[]
+            {
+                new PropertyDefinition("placeholder", "string", DefaultValue: ""),
+                new PropertyDefinition("query", "string", DefaultValue: ""),
+                new PropertyDefinition("visible", "boolean", DefaultValue: true),
+                new PropertyDefinition("mode", "string", DefaultValue: ""),
+            },
             ["Button"] = new[]
             {
                 new PropertyDefinition("text", "string", DefaultValue: ""),
                 new PropertyDefinition("icon", "string", DefaultValue: ""),
                 new PropertyDefinition("enabled", "boolean", DefaultValue: true),
                 new PropertyDefinition("visible", "boolean", DefaultValue: true),
+                new PropertyDefinition("tooltip", "string", DefaultValue: ""),
             },
             ["Link"] = new[]
             {
@@ -110,10 +118,12 @@ public static class PropertyDefinitions
             {
                 new PropertyDefinition("padding", "number", DefaultValue: 0),
                 new PropertyDefinition("background", "string", DefaultValue: ""),
+                new PropertyDefinition("title", "string", DefaultValue: ""),
             },
             ["Stack"] = new[]
             {
                 new PropertyDefinition("orientation", "enum", DefaultValue: "vertical", EnumValues: new[] { "vertical", "horizontal" }),
+                new PropertyDefinition("direction", "enum", DefaultValue: "vertical", EnumValues: new[] { "vertical", "horizontal" }),
                 new PropertyDefinition("spacing", "number", DefaultValue: 0),
             },
             ["Grid"] = new[]
@@ -211,28 +221,48 @@ public static class PropertyDefinitions
                 new PropertyDefinition("runningApps", "array", DefaultValue: new object[] {  }),
                 new PropertyDefinition("showClock", "boolean", DefaultValue: true),
                 new PropertyDefinition("showTray", "boolean", DefaultValue: true),
+                new PropertyDefinition("showStartButton", "boolean", DefaultValue: true),
+                new PropertyDefinition("showSearch", "boolean", DefaultValue: true),
+                new PropertyDefinition("showTaskView", "boolean", DefaultValue: true),
             },
             ["StartMenu"] = new[]
             {
                 new PropertyDefinition("open", "boolean", DefaultValue: false),
                 new PropertyDefinition("pinnedApps", "array", DefaultValue: new object[] {  }),
                 new PropertyDefinition("recommendedApps", "array", DefaultValue: new object[] {  }),
+                new PropertyDefinition("visible", "boolean", DefaultValue: false),
+                new PropertyDefinition("searchPlaceholder", "string", DefaultValue: ""),
+                new PropertyDefinition("showCategories", "boolean", DefaultValue: true),
+                new PropertyDefinition("showPinned", "boolean", DefaultValue: true),
+                new PropertyDefinition("showRecent", "boolean", DefaultValue: true),
             },
             ["SystemTray"] = new[]
             {
                 new PropertyDefinition("icons", "array", DefaultValue: new object[] {  }),
                 new PropertyDefinition("visible", "boolean", DefaultValue: true),
                 new PropertyDefinition("badge", "number", DefaultValue: 0),
+                new PropertyDefinition("showClock", "boolean", DefaultValue: true),
+                new PropertyDefinition("showVolume", "boolean", DefaultValue: true),
+                new PropertyDefinition("showNetwork", "boolean", DefaultValue: true),
             },
             ["NotificationCenter"] = new[]
             {
                 new PropertyDefinition("open", "boolean", DefaultValue: false),
                 new PropertyDefinition("notifications", "array", DefaultValue: new object[] {  }),
+                new PropertyDefinition("visible", "boolean", DefaultValue: false),
+                new PropertyDefinition("showQuickSettings", "boolean", DefaultValue: true),
+                new PropertyDefinition("showNotifications", "boolean", DefaultValue: true),
+                new PropertyDefinition("showCalendar", "boolean", DefaultValue: true),
             },
             ["QuickSettings"] = new[]
             {
                 new PropertyDefinition("open", "boolean", DefaultValue: false),
                 new PropertyDefinition("toggles", "array", DefaultValue: new object[] {  }),
+                new PropertyDefinition("showWifi", "boolean", DefaultValue: true),
+                new PropertyDefinition("showBluetooth", "boolean", DefaultValue: true),
+                new PropertyDefinition("showBrightness", "boolean", DefaultValue: true),
+                new PropertyDefinition("showVolume", "boolean", DefaultValue: true),
+                new PropertyDefinition("showDoNotDisturb", "boolean", DefaultValue: true),
             },
             ["WorkspaceSwitcher"] = new[]
             {
@@ -278,12 +308,23 @@ public static class PropertyDefinitions
             ["PowerMenu"] = new[]
             {
                 new PropertyDefinition("open", "boolean", DefaultValue: false),
+                new PropertyDefinition("visible", "boolean", DefaultValue: false),
+                new PropertyDefinition("showShutdown", "boolean", DefaultValue: true),
+                new PropertyDefinition("showRestart", "boolean", DefaultValue: true),
+                new PropertyDefinition("showSleep", "boolean", DefaultValue: true),
+                new PropertyDefinition("showLogout", "boolean", DefaultValue: true),
+                new PropertyDefinition("showLock", "boolean", DefaultValue: true),
             },
             ["LockScreen"] = new[]
             {
                 new PropertyDefinition("open", "boolean", DefaultValue: false),
                 new PropertyDefinition("clockFormat", "enum", DefaultValue: "12h", EnumValues: new[] { "12h", "24h" }),
                 new PropertyDefinition("wallpaper", "string", DefaultValue: ""),
+                new PropertyDefinition("visible", "boolean", DefaultValue: false),
+                new PropertyDefinition("showClock", "boolean", DefaultValue: true),
+                new PropertyDefinition("showDate", "boolean", DefaultValue: true),
+                new PropertyDefinition("unlockMethod", "string", DefaultValue: "swipe"),
+                new PropertyDefinition("autoLockTimeout", "number", DefaultValue: 300),
             },
             ["Application"] = new[]
             {
